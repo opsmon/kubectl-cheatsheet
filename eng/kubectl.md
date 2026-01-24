@@ -37,3 +37,33 @@ kubectl get nodes
 kubectl get namespaces
 kubectl get ns
 ```
+
+## Detailed information (describe)
+
+```bash
+# Detailed info about a pod
+kubectl describe pod <pod-name>
+
+# Detailed info about a node
+kubectl describe node <node-name>
+
+# Detailed info about a service
+kubectl describe service <service-name>
+kubectl describe svc <service-name>
+
+# Detailed info about a deployment
+kubectl describe deployment <deployment-name>
+
+# Detailed info about a configmap
+kubectl describe configmap <configmap-name>
+kubectl describe cm <configmap-name>
+
+# Detailed info about a secret
+kubectl describe secret <secret-name>
+
+# Detailed info about an ingress
+kubectl describe ingress <ingress-name>
+
+# Describe in specific namespace
+kubectl describe pod <pod-name> -n <namespace>
+```
