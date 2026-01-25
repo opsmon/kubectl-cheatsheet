@@ -67,3 +67,38 @@ kubectl describe ingress <ingress-name>
 # Describe в определённом namespace
 kubectl describe pod <pod-name> -n <namespace>
 ```
+
+## Просмотр логов (logs)
+
+```bash
+# Логи пода
+kubectl logs <pod-name>
+
+# Логи конкретного контейнера в поде (если несколько контейнеров)
+kubectl logs <pod-name> -c <container-name>
+
+# Логи в реальном времени (follow)
+kubectl logs -f <pod-name>
+
+# Последние N строк логов
+kubectl logs --tail=100 <pod-name>
+
+# Логи за последний час
+kubectl logs --since=1h <pod-name>
+
+# Логи за последние 30 минут
+kubectl logs --since=30m <pod-name>
+
+# Логи предыдущего контейнера (после рестарта)
+kubectl logs <pod-name> --previous
+kubectl logs <pod-name> -p
+
+# Логи всех подов по label
+kubectl logs -l app=myapp
+
+# Логи в определённом namespace
+kubectl logs <pod-name> -n <namespace>
+
+# Комбинация: follow + tail + namespace
+kubectl logs -f --tail=50 <pod-name> -n <namespace>
+```
