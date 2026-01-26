@@ -102,3 +102,32 @@ kubectl logs <pod-name> -n <namespace>
 # Комбинация: follow + tail + namespace
 kubectl logs -f --tail=50 <pod-name> -n <namespace>
 ```
+
+## Выполнение команд в контейнере (exec)
+
+```bash
+# Выполнить команду в поде
+kubectl exec <pod-name> -- <command>
+
+# Пример: посмотреть список файлов
+kubectl exec <pod-name> -- ls -la
+
+# Интерактивный shell в поде
+kubectl exec -it <pod-name> -- /bin/bash
+kubectl exec -it <pod-name> -- /bin/sh
+
+# Exec в конкретный контейнер (если несколько)
+kubectl exec -it <pod-name> -c <container-name> -- /bin/bash
+
+# Exec в определённом namespace
+kubectl exec -it <pod-name> -n <namespace> -- /bin/bash
+
+# Посмотреть переменные окружения
+kubectl exec <pod-name> -- env
+
+# Проверить сетевую доступность изнутри пода
+kubectl exec <pod-name> -- curl -s http://service-name:port
+
+# Посмотреть содержимое файла
+kubectl exec <pod-name> -- cat /path/to/file
+```
