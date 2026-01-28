@@ -131,3 +131,66 @@ kubectl exec <pod-name> -- curl -s http://service-name:port
 # View file contents
 kubectl exec <pod-name> -- cat /path/to/file
 ```
+
+## Creating and applying resources (apply/create)
+
+```bash
+# Apply configuration from file
+kubectl apply -f deployment.yaml
+
+# Apply all yaml files from directory
+kubectl apply -f ./configs/
+
+# Apply configuration from URL
+kubectl apply -f https://example.com/config.yaml
+
+# Create namespace
+kubectl create namespace <namespace-name>
+kubectl create ns <namespace-name>
+
+# Create deployment imperatively
+kubectl create deployment <name> --image=<image>
+
+# Create service
+kubectl create service clusterip <name> --tcp=80:8080
+
+# Create configmap from file
+kubectl create configmap <name> --from-file=config.txt
+
+# Create configmap from literal
+kubectl create configmap <name> --from-literal=key=value
+
+# Create secret from literal
+kubectl create secret generic <name> --from-literal=password=secret123
+
+# Create secret for docker registry
+kubectl create secret docker-registry <name> --docker-server=<server> --docker-username=<user> --docker-password=<pass>
+```
+
+## Deleting resources (delete)
+
+```bash
+# Delete pod
+kubectl delete pod <pod-name>
+
+# Delete deployment
+kubectl delete deployment <deployment-name>
+
+# Delete service
+kubectl delete service <service-name>
+
+# Delete resources from file
+kubectl delete -f deployment.yaml
+
+# Delete all resources by label
+kubectl delete pods -l app=myapp
+
+# Delete namespace (and all resources in it)
+kubectl delete namespace <namespace-name>
+
+# Force delete pod
+kubectl delete pod <pod-name> --force --grace-period=0
+
+# Delete all pods in namespace
+kubectl delete pods --all -n <namespace>
+```
