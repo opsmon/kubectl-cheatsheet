@@ -194,3 +194,48 @@ kubectl delete pod <pod-name> --force --grace-period=0
 # Удалить все поды в namespace
 kubectl delete pods --all -n <namespace>
 ```
+
+## Масштабирование (scale)
+
+```bash
+# Масштабировать deployment до N реплик
+kubectl scale deployment <deployment-name> --replicas=3
+
+# Масштабировать replicaset
+kubectl scale replicaset <replicaset-name> --replicas=5
+
+# Масштабировать statefulset
+kubectl scale statefulset <statefulset-name> --replicas=2
+
+# Масштабировать в определённом namespace
+kubectl scale deployment <deployment-name> --replicas=3 -n <namespace>
+
+# Автомасштабирование (HPA - Horizontal Pod Autoscaler)
+kubectl autoscale deployment <deployment-name> --min=2 --max=10 --cpu-percent=80
+
+# Посмотреть статус автомасштабирования
+kubectl get hpa
+```
+
+## Проброс портов (port-forward)
+
+```bash
+# Пробросить порт пода на локальную машину
+kubectl port-forward <pod-name> 8080:80
+
+# Пробросить порт сервиса
+kubectl port-forward service/<service-name> 8080:80
+kubectl port-forward svc/<service-name> 8080:80
+
+# Пробросить несколько портов
+kubectl port-forward <pod-name> 8080:80 8443:443
+
+# Пробросить на все интерфейсы (не только localhost)
+kubectl port-forward --address 0.0.0.0 <pod-name> 8080:80
+
+# Пробросить в определённом namespace
+kubectl port-forward <pod-name> 8080:80 -n <namespace>
+
+# Пробросить порт deployment
+kubectl port-forward deployment/<deployment-name> 8080:80
+```

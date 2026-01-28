@@ -194,3 +194,48 @@ kubectl delete pod <pod-name> --force --grace-period=0
 # Delete all pods in namespace
 kubectl delete pods --all -n <namespace>
 ```
+
+## Scaling (scale)
+
+```bash
+# Scale deployment to N replicas
+kubectl scale deployment <deployment-name> --replicas=3
+
+# Scale replicaset
+kubectl scale replicaset <replicaset-name> --replicas=5
+
+# Scale statefulset
+kubectl scale statefulset <statefulset-name> --replicas=2
+
+# Scale in specific namespace
+kubectl scale deployment <deployment-name> --replicas=3 -n <namespace>
+
+# Auto-scaling (HPA - Horizontal Pod Autoscaler)
+kubectl autoscale deployment <deployment-name> --min=2 --max=10 --cpu-percent=80
+
+# View auto-scaling status
+kubectl get hpa
+```
+
+## Port forwarding (port-forward)
+
+```bash
+# Forward pod port to local machine
+kubectl port-forward <pod-name> 8080:80
+
+# Forward service port
+kubectl port-forward service/<service-name> 8080:80
+kubectl port-forward svc/<service-name> 8080:80
+
+# Forward multiple ports
+kubectl port-forward <pod-name> 8080:80 8443:443
+
+# Forward to all interfaces (not just localhost)
+kubectl port-forward --address 0.0.0.0 <pod-name> 8080:80
+
+# Forward in specific namespace
+kubectl port-forward <pod-name> 8080:80 -n <namespace>
+
+# Forward deployment port
+kubectl port-forward deployment/<deployment-name> 8080:80
+```
