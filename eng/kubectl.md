@@ -239,3 +239,31 @@ kubectl port-forward <pod-name> 8080:80 -n <namespace>
 # Forward deployment port
 kubectl port-forward deployment/<deployment-name> 8080:80
 ```
+
+## Managing updates (rollout)
+
+```bash
+# Deployment rollout status
+kubectl rollout status deployment/<deployment-name>
+
+# Rollout history
+kubectl rollout history deployment/<deployment-name>
+
+# Rollback deployment to previous version
+kubectl rollout undo deployment/<deployment-name>
+
+# Rollback to specific revision
+kubectl rollout undo deployment/<deployment-name> --to-revision=2
+
+# Restart all pods in deployment
+kubectl rollout restart deployment/<deployment-name>
+
+# Pause rollout
+kubectl rollout pause deployment/<deployment-name>
+
+# Resume rollout
+kubectl rollout resume deployment/<deployment-name>
+
+# View specific revision details
+kubectl rollout history deployment/<deployment-name> --revision=3
+```
