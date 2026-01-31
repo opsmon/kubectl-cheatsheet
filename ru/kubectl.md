@@ -267,3 +267,47 @@ kubectl rollout resume deployment/<deployment-name>
 # Посмотреть детали конкретной ревизии
 kubectl rollout history deployment/<deployment-name> --revision=3
 ```
+
+## Копирование файлов (cp)
+
+```bash
+# Скопировать файл из пода на локальную машину
+kubectl cp <pod-name>:/path/to/file ./local-file
+
+# Скопировать файл в под
+kubectl cp ./local-file <pod-name>:/path/to/file
+
+# Копирование с указанием namespace
+kubectl cp <namespace>/<pod-name>:/path/to/file ./local-file
+
+# Скопировать директорию из пода
+kubectl cp <pod-name>:/path/to/dir ./local-dir
+
+# Копирование из конкретного контейнера
+kubectl cp <pod-name>:/path/to/file ./local-file -c <container-name>
+```
+
+## Мониторинг ресурсов (top)
+
+```bash
+# Использование ресурсов нодами
+kubectl top nodes
+
+# Использование ресурсов подами
+kubectl top pods
+
+# Top поды во всех namespace
+kubectl top pods -A
+
+# Top поды в конкретном namespace
+kubectl top pods -n <namespace>
+
+# Top с сортировкой по CPU
+kubectl top pods --sort-by=cpu
+
+# Top с сортировкой по памяти
+kubectl top pods --sort-by=memory
+
+# Top для контейнеров внутри подов
+kubectl top pods --containers
+```

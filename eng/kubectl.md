@@ -267,3 +267,47 @@ kubectl rollout resume deployment/<deployment-name>
 # View specific revision details
 kubectl rollout history deployment/<deployment-name> --revision=3
 ```
+
+## Copying files (cp)
+
+```bash
+# Copy file from pod to local machine
+kubectl cp <pod-name>:/path/to/file ./local-file
+
+# Copy file to pod
+kubectl cp ./local-file <pod-name>:/path/to/file
+
+# Copy with namespace specified
+kubectl cp <namespace>/<pod-name>:/path/to/file ./local-file
+
+# Copy directory from pod
+kubectl cp <pod-name>:/path/to/dir ./local-dir
+
+# Copy from specific container
+kubectl cp <pod-name>:/path/to/file ./local-file -c <container-name>
+```
+
+## Resource monitoring (top)
+
+```bash
+# Node resource usage
+kubectl top nodes
+
+# Pod resource usage
+kubectl top pods
+
+# Top pods in all namespaces
+kubectl top pods -A
+
+# Top pods in specific namespace
+kubectl top pods -n <namespace>
+
+# Top sorted by CPU
+kubectl top pods --sort-by=cpu
+
+# Top sorted by memory
+kubectl top pods --sort-by=memory
+
+# Top for containers inside pods
+kubectl top pods --containers
+```
