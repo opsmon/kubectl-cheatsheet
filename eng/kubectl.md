@@ -311,3 +311,51 @@ kubectl top pods --sort-by=memory
 # Top for containers inside pods
 kubectl top pods --containers
 ```
+
+## Editing resources (edit)
+
+```bash
+# Edit deployment in default editor
+kubectl edit deployment <deployment-name>
+
+# Edit service
+kubectl edit service <service-name>
+
+# Edit configmap
+kubectl edit configmap <configmap-name>
+
+# Edit in specific namespace
+kubectl edit deployment <deployment-name> -n <namespace>
+
+# Use specific editor
+KUBE_EDITOR="nano" kubectl edit deployment <deployment-name>
+```
+
+## Working with labels (label/annotate)
+
+```bash
+# Add label to pod
+kubectl label pod <pod-name> environment=production
+
+# Add label to node
+kubectl label node <node-name> disktype=ssd
+
+# Remove label (minus at the end)
+kubectl label pod <pod-name> environment-
+
+# Overwrite existing label
+kubectl label pod <pod-name> environment=staging --overwrite
+
+# Add annotation
+kubectl annotate pod <pod-name> description="My pod"
+
+# Remove annotation
+kubectl annotate pod <pod-name> description-
+
+# Show labels for all pods
+kubectl get pods --show-labels
+
+# Filter by label
+kubectl get pods -l environment=production
+kubectl get pods -l 'environment in (production,staging)'
+```
