@@ -359,3 +359,62 @@ kubectl get pods --show-labels
 kubectl get pods -l environment=production
 kubectl get pods -l 'environment in (production,staging)'
 ```
+
+## Управление нодами (taint/cordon/drain)
+
+```bash
+# Запретить планирование новых подов на ноду
+kubectl cordon <node-name>
+
+# Разрешить планирование на ноду
+kubectl uncordon <node-name>
+
+# Эвакуировать поды с ноды (для обслуживания)
+kubectl drain <node-name>
+
+# Drain с игнорированием DaemonSet
+kubectl drain <node-name> --ignore-daemonsets
+
+# Drain с удалением локальных данных
+kubectl drain <node-name> --delete-emptydir-data
+
+# Добавить taint на ноду
+kubectl taint nodes <node-name> key=value:NoSchedule
+
+# Удалить taint (минус в конце)
+kubectl taint nodes <node-name> key=value:NoSchedule-
+
+# Типы taint эффектов: NoSchedule, PreferNoSchedule, NoExecute
+kubectl taint nodes <node-name> key=value:NoExecute
+```
+
+## Контексты и конфигурация (config)
+
+```bash
+# Показать текущий контекст
+kubectl config current-context
+
+# Показать все контексты
+kubectl config get-contexts
+
+# Переключиться на другой контекст
+kubectl config use-context <context-name>
+
+# Показать всю конфигурацию
+kubectl config view
+
+# Установить namespace по умолчанию для контекста
+kubectl config set-context --current --namespace=<namespace>
+
+# Добавить новый кластер
+kubectl config set-cluster <cluster-name> --server=https://k8s-api:6443
+
+# Добавить credentials
+kubectl config set-credentials <user-name> --token=<token>
+
+# Создать новый контекст
+kubectl config set-context <context-name> --cluster=<cluster> --user=<user>
+
+# Удалить контекст
+kubectl config delete-context <context-name>
+```
