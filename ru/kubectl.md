@@ -418,3 +418,48 @@ kubectl config set-context <context-name> --cluster=<cluster> --user=<user>
 # Удалить контекст
 kubectl config delete-context <context-name>
 ```
+
+## Отладка и диагностика (debug)
+
+```bash
+# Создать отладочный контейнер в существующем поде
+kubectl debug <pod-name> -it --image=busybox
+
+# Создать копию пода для отладки
+kubectl debug <pod-name> -it --image=busybox --copy-to=debug-pod
+
+# Отладка ноды (создаёт привилегированный под на ноде)
+kubectl debug node/<node-name> -it --image=ubuntu
+
+# Посмотреть события в namespace
+kubectl get events
+
+# События с сортировкой по времени
+kubectl get events --sort-by='.lastTimestamp'
+
+# События для конкретного пода
+kubectl get events --field-selector involvedObject.name=<pod-name>
+
+# Проверить статус API сервера
+kubectl cluster-info
+
+# Детальная информация о кластере
+kubectl cluster-info dump
+
+# Проверить доступ к API
+kubectl auth can-i create pods
+kubectl auth can-i delete deployments --namespace=production
+
+# Проверить доступ для другого пользователя
+kubectl auth can-i create pods --as=<user>
+
+# Список всех разрешений
+kubectl auth can-i --list
+
+# Проверить почему под не запускается
+kubectl describe pod <pod-name> | grep -A 10 Events
+
+# Проверить состояние компонентов кластера
+kubectl get componentstatuses
+kubectl get cs
+```

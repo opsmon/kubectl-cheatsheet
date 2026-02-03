@@ -418,3 +418,48 @@ kubectl config set-context <context-name> --cluster=<cluster> --user=<user>
 # Delete context
 kubectl config delete-context <context-name>
 ```
+
+## Debugging and diagnostics (debug)
+
+```bash
+# Create debug container in existing pod
+kubectl debug <pod-name> -it --image=busybox
+
+# Create pod copy for debugging
+kubectl debug <pod-name> -it --image=busybox --copy-to=debug-pod
+
+# Debug node (creates privileged pod on node)
+kubectl debug node/<node-name> -it --image=ubuntu
+
+# View events in namespace
+kubectl get events
+
+# Events sorted by time
+kubectl get events --sort-by='.lastTimestamp'
+
+# Events for specific pod
+kubectl get events --field-selector involvedObject.name=<pod-name>
+
+# Check API server status
+kubectl cluster-info
+
+# Detailed cluster information
+kubectl cluster-info dump
+
+# Check API access
+kubectl auth can-i create pods
+kubectl auth can-i delete deployments --namespace=production
+
+# Check access for another user
+kubectl auth can-i create pods --as=<user>
+
+# List all permissions
+kubectl auth can-i --list
+
+# Check why pod is not starting
+kubectl describe pod <pod-name> | grep -A 10 Events
+
+# Check cluster components status
+kubectl get componentstatuses
+kubectl get cs
+```
