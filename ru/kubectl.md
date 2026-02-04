@@ -463,3 +463,74 @@ kubectl describe pod <pod-name> | grep -A 10 Events
 kubectl get componentstatuses
 kubectl get cs
 ```
+
+## Патчинг ресурсов (patch)
+
+```bash
+# Изменить количество реплик через patch
+kubectl patch deployment <deployment-name> -p '{"spec":{"replicas":3}}'
+
+# Изменить image контейнера
+kubectl patch deployment <deployment-name> -p '{"spec":{"template":{"spec":{"containers":[{"name":"<container>","image":"nginx:1.21"}]}}}}'
+
+# Patch в формате merge
+kubectl patch deployment <deployment-name> --type=merge -p '{"spec":{"replicas":5}}'
+
+# Patch в формате JSON
+kubectl patch deployment <deployment-name> --type=json -p='[{"op":"replace","path":"/spec/replicas","value":2}]'
+
+# Добавить переменную окружения
+kubectl patch deployment <deployment-name> --type=json -p='[{"op":"add","path":"/spec/template/spec/containers/0/env/-","value":{"name":"NEW_VAR","value":"value"}}]'
+
+# Изменить service type
+kubectl patch svc <service-name> -p '{"spec":{"type":"NodePort"}}'
+```
+
+## Ожидание состояния (wait)
+
+```bash
+# Ждать пока под будет готов
+kubectl wait --for=condition=Ready pod/<pod-name>
+
+# Ждать с таймаутом
+kubectl wait --for=condition=Ready pod/<pod-name> --timeout=60s
+
+# Ждать готовности всех подов по label
+kubectl wait --for=condition=Ready pods -l app=myapp
+
+# Ждать пока deployment завершит rollout
+kubectl wait --for=condition=Available deployment/<deployment-name>
+
+# Ждать удаления ресурса
+kubectl wait --for=delete pod/<pod-name> --timeout=30s
+
+# Ждать готовности job
+kubectl wait --for=condition=Complete job/<job-name>
+
+# Ждать в конкретном namespace
+kubectl wait --for=condition=Ready pod/<pod-name> -n <namespace>
+```
+
+## Работа с API ресурсами (api-resources)
+
+```bash
+# Показать все доступные API ресурсы
+kubectl api-resources
+
+# Показать только namespaced ресурсы
+kubectl api-resources --namespaced=true
+
+# Показать ресурсы конкретной API группы
+kubectl api-resources --api-group=apps
+
+# Показать версии API
+kubectl api-versions
+
+# Объяснить структуру ресурса
+kubectl explain pod
+kubectl explain pod.spec
+kubectl explain pod.spec.containers
+
+# Рекурсивное объяснение
+kubectl explain pod --recursive
+```

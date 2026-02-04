@@ -463,3 +463,74 @@ kubectl describe pod <pod-name> | grep -A 10 Events
 kubectl get componentstatuses
 kubectl get cs
 ```
+
+## Patching resources (patch)
+
+```bash
+# Change replica count via patch
+kubectl patch deployment <deployment-name> -p '{"spec":{"replicas":3}}'
+
+# Change container image
+kubectl patch deployment <deployment-name> -p '{"spec":{"template":{"spec":{"containers":[{"name":"<container>","image":"nginx:1.21"}]}}}}'
+
+# Merge patch format
+kubectl patch deployment <deployment-name> --type=merge -p '{"spec":{"replicas":5}}'
+
+# JSON patch format
+kubectl patch deployment <deployment-name> --type=json -p='[{"op":"replace","path":"/spec/replicas","value":2}]'
+
+# Add environment variable
+kubectl patch deployment <deployment-name> --type=json -p='[{"op":"add","path":"/spec/template/spec/containers/0/env/-","value":{"name":"NEW_VAR","value":"value"}}]'
+
+# Change service type
+kubectl patch svc <service-name> -p '{"spec":{"type":"NodePort"}}'
+```
+
+## Waiting for conditions (wait)
+
+```bash
+# Wait for pod to be ready
+kubectl wait --for=condition=Ready pod/<pod-name>
+
+# Wait with timeout
+kubectl wait --for=condition=Ready pod/<pod-name> --timeout=60s
+
+# Wait for all pods by label
+kubectl wait --for=condition=Ready pods -l app=myapp
+
+# Wait for deployment rollout
+kubectl wait --for=condition=Available deployment/<deployment-name>
+
+# Wait for resource deletion
+kubectl wait --for=delete pod/<pod-name> --timeout=30s
+
+# Wait for job completion
+kubectl wait --for=condition=Complete job/<job-name>
+
+# Wait in specific namespace
+kubectl wait --for=condition=Ready pod/<pod-name> -n <namespace>
+```
+
+## Working with API resources (api-resources)
+
+```bash
+# Show all available API resources
+kubectl api-resources
+
+# Show only namespaced resources
+kubectl api-resources --namespaced=true
+
+# Show resources of specific API group
+kubectl api-resources --api-group=apps
+
+# Show API versions
+kubectl api-versions
+
+# Explain resource structure
+kubectl explain pod
+kubectl explain pod.spec
+kubectl explain pod.spec.containers
+
+# Recursive explanation
+kubectl explain pod --recursive
+```
