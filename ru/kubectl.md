@@ -534,3 +534,43 @@ kubectl explain pod.spec.containers
 # Рекурсивное объяснение
 kubectl explain pod --recursive
 ```
+
+## Быстрое изменение ресурсов (set)
+
+```bash
+# Изменить image контейнера
+kubectl set image deployment/<deployment-name> <container-name>=nginx:1.21
+
+# Изменить image для всех контейнеров
+kubectl set image deployment/<deployment-name> *=nginx:1.21
+
+# Изменить image и записать в аннотацию
+kubectl set image deployment/<deployment-name> nginx=nginx:1.21 --record
+
+# Добавить переменную окружения
+kubectl set env deployment/<deployment-name> ENV_VAR=value
+
+# Добавить несколько переменных
+kubectl set env deployment/<deployment-name> VAR1=value1 VAR2=value2
+
+# Удалить переменную окружения
+kubectl set env deployment/<deployment-name> ENV_VAR-
+
+# Установить переменную из secret
+kubectl set env deployment/<deployment-name> --from=secret/mysecret
+
+# Установить переменную из configmap
+kubectl set env deployment/<deployment-name> --from=configmap/myconfig
+
+# Изменить resource limits
+kubectl set resources deployment/<deployment-name> -c=nginx --limits=cpu=200m,memory=512Mi
+
+# Изменить resource requests
+kubectl set resources deployment/<deployment-name> -c=nginx --requests=cpu=100m,memory=256Mi
+
+# Изменить service account
+kubectl set serviceaccount deployment/<deployment-name> myserviceaccount
+
+# Изменить selector для service
+kubectl set selector service/<service-name> app=myapp,tier=frontend
+```

@@ -534,3 +534,43 @@ kubectl explain pod.spec.containers
 # Recursive explanation
 kubectl explain pod --recursive
 ```
+
+## Quick resource modification (set)
+
+```bash
+# Change container image
+kubectl set image deployment/<deployment-name> <container-name>=nginx:1.21
+
+# Change image for all containers
+kubectl set image deployment/<deployment-name> *=nginx:1.21
+
+# Change image and record in annotation
+kubectl set image deployment/<deployment-name> nginx=nginx:1.21 --record
+
+# Add environment variable
+kubectl set env deployment/<deployment-name> ENV_VAR=value
+
+# Add multiple variables
+kubectl set env deployment/<deployment-name> VAR1=value1 VAR2=value2
+
+# Remove environment variable
+kubectl set env deployment/<deployment-name> ENV_VAR-
+
+# Set variable from secret
+kubectl set env deployment/<deployment-name> --from=secret/mysecret
+
+# Set variable from configmap
+kubectl set env deployment/<deployment-name> --from=configmap/myconfig
+
+# Change resource limits
+kubectl set resources deployment/<deployment-name> -c=nginx --limits=cpu=200m,memory=512Mi
+
+# Change resource requests
+kubectl set resources deployment/<deployment-name> -c=nginx --requests=cpu=100m,memory=256Mi
+
+# Change service account
+kubectl set serviceaccount deployment/<deployment-name> myserviceaccount
+
+# Change selector for service
+kubectl set selector service/<service-name> app=myapp,tier=frontend
+```
