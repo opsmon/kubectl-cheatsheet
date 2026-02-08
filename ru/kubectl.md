@@ -574,3 +574,40 @@ kubectl set serviceaccount deployment/<deployment-name> myserviceaccount
 # Изменить selector для service
 kubectl set selector service/<service-name> app=myapp,tier=frontend
 ```
+
+## Запуск подов и задач (run)
+
+```bash
+# Запустить под с образом
+kubectl run <pod-name> --image=nginx
+
+# Запустить под и сразу открыть shell
+kubectl run -it debug --image=busybox -- /bin/sh
+
+# Запустить под с автоудалением после выхода
+kubectl run tmp --rm -it --image=busybox -- /bin/sh
+
+# Запустить под с переменными окружения
+kubectl run <pod-name> --image=nginx --env="DB_HOST=db" --env="DB_PORT=5432"
+
+# Запустить под с указанием порта
+kubectl run <pod-name> --image=nginx --port=80
+
+# Запустить под с labels
+kubectl run <pod-name> --image=nginx --labels="app=web,tier=frontend"
+
+# Запустить под в определённом namespace
+kubectl run <pod-name> --image=nginx -n <namespace>
+
+# Запустить под и сразу создать service
+kubectl run <pod-name> --image=nginx --port=80 --expose
+
+# Генерация YAML без создания (dry-run)
+kubectl run <pod-name> --image=nginx --dry-run=client -o yaml
+
+# Запустить одноразовую задачу (Job)
+kubectl create job <job-name> --image=busybox -- echo "Hello"
+
+# Запустить CronJob
+kubectl create cronjob <name> --image=busybox --schedule="*/5 * * * *" -- echo "tick"
+```

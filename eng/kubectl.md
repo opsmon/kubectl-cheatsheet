@@ -574,3 +574,40 @@ kubectl set serviceaccount deployment/<deployment-name> myserviceaccount
 # Change selector for service
 kubectl set selector service/<service-name> app=myapp,tier=frontend
 ```
+
+## Running pods and jobs (run)
+
+```bash
+# Run pod with image
+kubectl run <pod-name> --image=nginx
+
+# Run pod and open shell immediately
+kubectl run -it debug --image=busybox -- /bin/sh
+
+# Run pod with auto-delete on exit
+kubectl run tmp --rm -it --image=busybox -- /bin/sh
+
+# Run pod with environment variables
+kubectl run <pod-name> --image=nginx --env="DB_HOST=db" --env="DB_PORT=5432"
+
+# Run pod with port specified
+kubectl run <pod-name> --image=nginx --port=80
+
+# Run pod with labels
+kubectl run <pod-name> --image=nginx --labels="app=web,tier=frontend"
+
+# Run pod in specific namespace
+kubectl run <pod-name> --image=nginx -n <namespace>
+
+# Run pod and create service immediately
+kubectl run <pod-name> --image=nginx --port=80 --expose
+
+# Generate YAML without creating (dry-run)
+kubectl run <pod-name> --image=nginx --dry-run=client -o yaml
+
+# Run one-time task (Job)
+kubectl create job <job-name> --image=busybox -- echo "Hello"
+
+# Run CronJob
+kubectl create cronjob <name> --image=busybox --schedule="*/5 * * * *" -- echo "tick"
+```
