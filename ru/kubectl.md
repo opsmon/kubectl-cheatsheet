@@ -611,3 +611,37 @@ kubectl create job <job-name> --image=busybox -- echo "Hello"
 # Запустить CronJob
 kubectl create cronjob <name> --image=busybox --schedule="*/5 * * * *" -- echo "tick"
 ```
+
+## Создание сервисов (expose)
+
+```bash
+# Создать service из deployment
+kubectl expose deployment <deployment-name> --port=80 --target-port=8080
+
+# Создать service типа NodePort
+kubectl expose deployment <deployment-name> --type=NodePort --port=80
+
+# Создать service типа LoadBalancer
+kubectl expose deployment <deployment-name> --type=LoadBalancer --port=80
+
+# Создать service из пода
+kubectl expose pod <pod-name> --port=80 --target-port=8080
+
+# Создать service с именем
+kubectl expose deployment <deployment-name> --port=80 --name=my-service
+
+# Создать service с указанием протокола
+kubectl expose deployment <deployment-name> --port=80 --protocol=TCP
+
+# Создать service для нескольких портов
+kubectl expose deployment <deployment-name> --port=80,443 --target-port=8080
+
+# Создать service в определённом namespace
+kubectl expose deployment <deployment-name> --port=80 -n <namespace>
+
+# Генерация YAML без создания
+kubectl expose deployment <deployment-name> --port=80 --dry-run=client -o yaml
+
+# Создать ExternalName service
+kubectl create service externalname <name> --external-name=db.example.com
+```
