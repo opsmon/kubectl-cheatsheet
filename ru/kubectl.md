@@ -645,3 +645,37 @@ kubectl expose deployment <deployment-name> --port=80 --dry-run=client -o yaml
 # Создать ExternalName service
 kubectl create service externalname <name> --external-name=db.example.com
 ```
+
+## Продвинутый вывод данных (jsonpath/custom-columns)
+
+```bash
+# Получить IP адреса всех подов
+kubectl get pods -o jsonpath='{.items[*].status.podIP}'
+
+# Получить имена всех подов
+kubectl get pods -o jsonpath='{.items[*].metadata.name}'
+
+# Получить image каждого пода (с переносом строки)
+kubectl get pods -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.containers[0].image}{"\n"}{end}'
+
+# Получить имена нод и их IP
+kubectl get nodes -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.addresses[0].address}{"\n"}{end}'
+
+# Получить External IP нод
+kubectl get nodes -o jsonpath='{.items[*].status.addresses[?(@.type=="ExternalIP")].address}'
+
+# Кастомные колонки
+kubectl get pods -o custom-columns=NAME:.metadata.name,STATUS:.status.phase,NODE:.spec.nodeName
+
+# Кастомные колонки с IP
+kubectl get pods -o custom-columns=POD:.metadata.name,IP:.status.podIP,NODE:.spec.nodeName
+
+# Получить все image в кластере
+kubectl get pods -A -o jsonpath='{range .items[*]}{range .spec.containers[*]}{.image}{"\n"}{end}{end}' | sort -u
+
+# Получить секрет в декодированном виде
+kubectl get secret <secret-name> -o jsonpath='{.data.password}' | base64 -d
+
+# Получить endpoint адреса сервиса
+kubectl get endpoints <service-name> -o jsonpath='{.subsets[*].addresses[*].ip}'
+```

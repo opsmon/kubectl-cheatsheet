@@ -645,3 +645,37 @@ kubectl expose deployment <deployment-name> --port=80 --dry-run=client -o yaml
 # Create ExternalName service
 kubectl create service externalname <name> --external-name=db.example.com
 ```
+
+## Advanced output (jsonpath/custom-columns)
+
+```bash
+# Get IP addresses of all pods
+kubectl get pods -o jsonpath='{.items[*].status.podIP}'
+
+# Get names of all pods
+kubectl get pods -o jsonpath='{.items[*].metadata.name}'
+
+# Get image of each pod (with newline)
+kubectl get pods -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.containers[0].image}{"\n"}{end}'
+
+# Get node names and their IPs
+kubectl get nodes -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.addresses[0].address}{"\n"}{end}'
+
+# Get External IP of nodes
+kubectl get nodes -o jsonpath='{.items[*].status.addresses[?(@.type=="ExternalIP")].address}'
+
+# Custom columns
+kubectl get pods -o custom-columns=NAME:.metadata.name,STATUS:.status.phase,NODE:.spec.nodeName
+
+# Custom columns with IP
+kubectl get pods -o custom-columns=POD:.metadata.name,IP:.status.podIP,NODE:.spec.nodeName
+
+# Get all images in cluster
+kubectl get pods -A -o jsonpath='{range .items[*]}{range .spec.containers[*]}{.image}{"\n"}{end}{end}' | sort -u
+
+# Get decoded secret value
+kubectl get secret <secret-name> -o jsonpath='{.data.password}' | base64 -d
+
+# Get service endpoint addresses
+kubectl get endpoints <service-name> -o jsonpath='{.subsets[*].addresses[*].ip}'
+```
