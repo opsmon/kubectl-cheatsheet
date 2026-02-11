@@ -679,3 +679,35 @@ kubectl get secret <secret-name> -o jsonpath='{.data.password}' | base64 -d
 # Get service endpoint addresses
 kubectl get endpoints <service-name> -o jsonpath='{.subsets[*].addresses[*].ip}'
 ```
+
+## Comparing configurations (diff)
+
+```bash
+# Compare local file with current state in cluster
+kubectl diff -f deployment.yaml
+
+# Compare all files from directory
+kubectl diff -f ./configs/
+
+# Compare configuration from URL
+kubectl diff -f https://example.com/config.yaml
+
+# Compare using kustomize
+kubectl diff -k ./overlays/production/
+
+# Show diff before apply (useful in CI/CD)
+kubectl diff -f deployment.yaml && kubectl apply -f deployment.yaml
+
+# Diff with server-side
+kubectl diff -f deployment.yaml --server-side
+
+# Check configuration without applying (dry-run + diff)
+kubectl apply -f deployment.yaml --dry-run=server
+kubectl apply -f deployment.yaml --dry-run=client
+
+# Validate file without applying
+kubectl apply --validate=true --dry-run=client -f deployment.yaml
+
+# Check what will change on delete
+kubectl delete -f deployment.yaml --dry-run=client
+```
