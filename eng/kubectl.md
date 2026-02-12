@@ -711,3 +711,36 @@ kubectl apply --validate=true --dry-run=client -f deployment.yaml
 # Check what will change on delete
 kubectl delete -f deployment.yaml --dry-run=client
 ```
+
+## Proxy and API access (proxy)
+
+```bash
+# Start proxy to API server (localhost:8001)
+kubectl proxy
+
+# Proxy on specific port
+kubectl proxy --port=8080
+
+# Proxy accessible from all interfaces
+kubectl proxy --address=0.0.0.0 --accept-hosts='.*'
+
+# After starting proxy — access API via curl
+# curl http://localhost:8001/api/v1/namespaces
+# curl http://localhost:8001/api/v1/pods
+
+# Direct API access without proxy (with token)
+kubectl get --raw /api/v1/namespaces
+kubectl get --raw /apis/apps/v1/deployments
+
+# Check cluster health via API
+kubectl get --raw /healthz
+kubectl get --raw /readyz
+kubectl get --raw /livez
+
+# Get metrics (if metrics-server installed)
+kubectl get --raw /apis/metrics.k8s.io/v1beta1/nodes
+kubectl get --raw /apis/metrics.k8s.io/v1beta1/pods
+
+# Access specific service API via proxy
+# curl http://localhost:8001/api/v1/namespaces/<ns>/services/<svc>/proxy/
+```

@@ -711,3 +711,36 @@ kubectl apply --validate=true --dry-run=client -f deployment.yaml
 # Проверить что изменится при удалении
 kubectl delete -f deployment.yaml --dry-run=client
 ```
+
+## Прокси и доступ к API (proxy)
+
+```bash
+# Запустить прокси к API серверу (localhost:8001)
+kubectl proxy
+
+# Прокси на указанном порту
+kubectl proxy --port=8080
+
+# Прокси доступный со всех интерфейсов
+kubectl proxy --address=0.0.0.0 --accept-hosts='.*'
+
+# После запуска прокси — доступ к API через curl
+# curl http://localhost:8001/api/v1/namespaces
+# curl http://localhost:8001/api/v1/pods
+
+# Прямой доступ к API без прокси (с токеном)
+kubectl get --raw /api/v1/namespaces
+kubectl get --raw /apis/apps/v1/deployments
+
+# Проверить здоровье кластера через API
+kubectl get --raw /healthz
+kubectl get --raw /readyz
+kubectl get --raw /livez
+
+# Получить метрики (если metrics-server установлен)
+kubectl get --raw /apis/metrics.k8s.io/v1beta1/nodes
+kubectl get --raw /apis/metrics.k8s.io/v1beta1/pods
+
+# Обращение к API конкретного сервиса через прокси
+# curl http://localhost:8001/api/v1/namespaces/<ns>/services/<svc>/proxy/
+```
