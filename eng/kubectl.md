@@ -744,3 +744,43 @@ kubectl get --raw /apis/metrics.k8s.io/v1beta1/pods
 # Access specific service API via proxy
 # curl http://localhost:8001/api/v1/namespaces/<ns>/services/<svc>/proxy/
 ```
+
+## Replace and attach to resources (replace/attach)
+
+```bash
+# Full resource replacement from file
+kubectl replace -f deployment.yaml
+
+# Force replacement (delete and recreate)
+kubectl replace --force -f deployment.yaml
+
+# Replace from stdin
+cat deployment.yaml | kubectl replace -f -
+
+# Attach to stdout/stderr of running container
+kubectl attach <pod-name>
+
+# Interactive attach to container (stdin + tty)
+kubectl attach -it <pod-name>
+
+# Attach to specific container
+kubectl attach <pod-name> -c <container-name>
+
+# Attach in specific namespace
+kubectl attach <pod-name> -n <namespace>
+
+# Convert config between API versions
+kubectl convert -f deployment.yaml --output-version apps/v1
+
+# View completion for bash/zsh
+kubectl completion bash
+kubectl completion zsh
+
+# Enable autocompletion (add to .bashrc/.zshrc)
+# source <(kubectl completion bash)
+# source <(kubectl completion zsh)
+
+# Create alias for kubectl
+# alias k=kubectl
+# complete -o default -F __start_kubectl k
+```
