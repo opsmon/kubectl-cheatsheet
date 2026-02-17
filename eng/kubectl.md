@@ -784,3 +784,45 @@ kubectl completion zsh
 # alias k=kubectl
 # complete -o default -F __start_kubectl k
 ```
+
+## Working with Kustomize (kustomize)
+
+```bash
+# Apply configuration via kustomize
+kubectl apply -k ./overlays/production/
+
+# Preview final YAML without applying
+kubectl kustomize ./overlays/production/
+
+# Delete resources via kustomize
+kubectl delete -k ./overlays/production/
+
+# Diff with kustomize
+kubectl diff -k ./overlays/production/
+
+# Apply base configuration
+kubectl apply -k ./base/
+
+# Kustomize project structure:
+# ./base/
+#   kustomization.yaml
+#   deployment.yaml
+#   service.yaml
+# ./overlays/
+#   production/
+#     kustomization.yaml  (patches, images, replicas)
+#   staging/
+#     kustomization.yaml
+
+# Example kustomization.yaml:
+# apiVersion: kustomize.config.k8s.io/v1beta1
+# kind: Kustomization
+# resources:
+#   - ../../base
+# images:
+#   - name: nginx
+#     newTag: "1.21"
+# replicas:
+#   - name: my-deployment
+#     count: 3
+```
