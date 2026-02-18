@@ -826,3 +826,56 @@ kubectl apply -k ./base/
 #   - name: my-deployment
 #     count: 3
 ```
+
+## Persistent Volumes (pv/pvc)
+
+```bash
+# List all PersistentVolumes (cluster-wide)
+kubectl get pv
+
+# List all PersistentVolumeClaims
+kubectl get pvc
+
+# List PVCs in all namespaces
+kubectl get pvc -A
+
+# Detailed info about PV
+kubectl describe pv <pv-name>
+
+# Detailed info about PVC
+kubectl describe pvc <pvc-name>
+
+# List StorageClasses
+kubectl get storageclass
+kubectl get sc
+
+# Describe StorageClass
+kubectl describe sc <storageclass-name>
+
+# Create PVC from file
+kubectl apply -f pvc.yaml
+
+# Delete PVC
+kubectl delete pvc <pvc-name>
+
+# Delete PV
+kubectl delete pv <pv-name>
+
+# Get PV sorted by capacity
+kubectl get pv --sort-by=.spec.capacity.storage
+
+# Show PVC with volume name and storage class
+kubectl get pvc -o custom-columns=NAME:.metadata.name,STATUS:.status.phase,VOLUME:.spec.volumeName,CAPACITY:.status.capacity.storage,CLASS:.spec.storageClassName
+
+# Check which pod is using PVC
+kubectl get pods -o json | grep -i "claimName"
+
+# PV reclaim policy types: Retain, Recycle, Delete
+kubectl get pv -o custom-columns=NAME:.metadata.name,RECLAIM:.spec.persistentVolumeReclaimPolicy,STATUS:.status.phase
+
+# Change PV reclaim policy
+kubectl patch pv <pv-name> -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
+
+# Force delete stuck PVC (remove finalizers)
+kubectl patch pvc <pvc-name> -p '{"metadata":{"finalizers":null}}'
+```

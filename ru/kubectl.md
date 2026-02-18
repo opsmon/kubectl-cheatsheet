@@ -826,3 +826,56 @@ kubectl apply -k ./base/
 #   - name: my-deployment
 #     count: 3
 ```
+
+## Постоянные тома (pv/pvc)
+
+```bash
+# Список всех PersistentVolume (уровень кластера)
+kubectl get pv
+
+# Список всех PersistentVolumeClaim
+kubectl get pvc
+
+# PVC во всех namespace
+kubectl get pvc -A
+
+# Детальная информация о PV
+kubectl describe pv <pv-name>
+
+# Детальная информация о PVC
+kubectl describe pvc <pvc-name>
+
+# Список StorageClass
+kubectl get storageclass
+kubectl get sc
+
+# Описание StorageClass
+kubectl describe sc <storageclass-name>
+
+# Создать PVC из файла
+kubectl apply -f pvc.yaml
+
+# Удалить PVC
+kubectl delete pvc <pvc-name>
+
+# Удалить PV
+kubectl delete pv <pv-name>
+
+# Получить PV отсортированные по размеру
+kubectl get pv --sort-by=.spec.capacity.storage
+
+# Показать PVC с именем тома и storage class
+kubectl get pvc -o custom-columns=NAME:.metadata.name,STATUS:.status.phase,VOLUME:.spec.volumeName,CAPACITY:.status.capacity.storage,CLASS:.spec.storageClassName
+
+# Проверить какой под использует PVC
+kubectl get pods -o json | grep -i "claimName"
+
+# Типы политики возврата PV: Retain, Recycle, Delete
+kubectl get pv -o custom-columns=NAME:.metadata.name,RECLAIM:.spec.persistentVolumeReclaimPolicy,STATUS:.status.phase
+
+# Изменить политику возврата PV
+kubectl patch pv <pv-name> -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
+
+# Принудительно удалить зависший PVC (убрать finalizers)
+kubectl patch pvc <pvc-name> -p '{"metadata":{"finalizers":null}}'
+```
