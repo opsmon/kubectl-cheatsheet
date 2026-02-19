@@ -879,3 +879,37 @@ kubectl patch pv <pv-name> -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"
 # Force delete stuck PVC (remove finalizers)
 kubectl patch pvc <pvc-name> -p '{"metadata":{"finalizers":null}}'
 ```
+
+## Secrets management (secret)
+
+```bash
+# List secrets in current namespace
+kubectl get secrets
+
+# List secrets in all namespaces
+kubectl get secrets -A
+
+# Describe secret metadata (without decoded values)
+kubectl describe secret <secret-name>
+
+# View secret as YAML
+kubectl get secret <secret-name> -o yaml
+
+# Decode one key from secret
+kubectl get secret <secret-name> -o jsonpath='{.data.password}' | base64 -d
+
+# Create generic secret from literal values
+kubectl create secret generic <secret-name> --from-literal=username=admin --from-literal=password=changeme
+
+# Create secret from file
+kubectl create secret generic <secret-name> --from-file=./config.env
+
+# Create TLS secret
+kubectl create secret tls <secret-name> --cert=tls.crt --key=tls.key
+
+# Update secret from file (apply declaratively)
+kubectl create secret generic <secret-name> --from-file=./config.env --dry-run=client -o yaml | kubectl apply -f -
+
+# Delete secret
+kubectl delete secret <secret-name>
+```
