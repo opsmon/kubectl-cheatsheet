@@ -913,3 +913,70 @@ kubectl create secret generic <secret-name> --from-file=./config.env --dry-run=c
 # Delete secret
 kubectl delete secret <secret-name>
 ```
+
+## RBAC — Roles and Access Control
+
+```bash
+# List all roles in namespace
+kubectl get roles
+
+# List all ClusterRoles
+kubectl get clusterroles
+
+# List RoleBindings
+kubectl get rolebindings
+
+# List ClusterRoleBindings
+kubectl get clusterrolebindings
+
+# Describe role
+kubectl describe role <role-name>
+kubectl describe clusterrole <clusterrole-name>
+
+# Create role (allows get/list pods)
+kubectl create role pod-reader --verb=get,list,watch --resource=pods
+
+# Create ClusterRole
+kubectl create clusterrole pod-reader --verb=get,list,watch --resource=pods
+
+# Bind role to user
+kubectl create rolebinding <binding-name> --role=pod-reader --user=<username>
+
+# Bind role to ServiceAccount
+kubectl create rolebinding <binding-name> --role=pod-reader --serviceaccount=<namespace>:<sa-name>
+
+# Bind ClusterRole to user (cluster-wide)
+kubectl create clusterrolebinding <binding-name> --clusterrole=pod-reader --user=<username>
+
+# Create ServiceAccount
+kubectl create serviceaccount <sa-name>
+
+# List ServiceAccounts
+kubectl get serviceaccounts
+kubectl get sa
+
+# Describe ServiceAccount
+kubectl describe sa <sa-name>
+
+# Check own permissions
+kubectl auth can-i --list
+
+# Check specific permission
+kubectl auth can-i create pods
+kubectl auth can-i delete deployments -n production
+
+# Check permissions for another user
+kubectl auth can-i create pods --as=<username>
+
+# Check permissions for ServiceAccount
+kubectl auth can-i create pods --as=system:serviceaccount:<namespace>:<sa-name>
+
+# Get token for ServiceAccount (k8s < 1.24)
+kubectl get secret $(kubectl get sa <sa-name> -o jsonpath='{.secrets[0].name}') -o jsonpath='{.data.token}' | base64 -d
+
+# Create token for ServiceAccount (k8s >= 1.24)
+kubectl create token <sa-name>
+
+# Create token with custom TTL
+kubectl create token <sa-name> --duration=24h
+```

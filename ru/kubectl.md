@@ -913,3 +913,70 @@ kubectl create secret generic <secret-name> --from-file=./config.env --dry-run=c
 # Удалить secret
 kubectl delete secret <secret-name>
 ```
+
+## RBAC — Роли и управление доступом
+
+```bash
+# Список ролей в namespace
+kubectl get roles
+
+# Список ClusterRole (уровень кластера)
+kubectl get clusterroles
+
+# Список RoleBinding
+kubectl get rolebindings
+
+# Список ClusterRoleBinding
+kubectl get clusterrolebindings
+
+# Описание роли
+kubectl describe role <role-name>
+kubectl describe clusterrole <clusterrole-name>
+
+# Создать роль (доступ get/list к pods)
+kubectl create role pod-reader --verb=get,list,watch --resource=pods
+
+# Создать ClusterRole
+kubectl create clusterrole pod-reader --verb=get,list,watch --resource=pods
+
+# Привязать роль к пользователю
+kubectl create rolebinding <binding-name> --role=pod-reader --user=<username>
+
+# Привязать роль к ServiceAccount
+kubectl create rolebinding <binding-name> --role=pod-reader --serviceaccount=<namespace>:<sa-name>
+
+# Привязать ClusterRole к пользователю (на весь кластер)
+kubectl create clusterrolebinding <binding-name> --clusterrole=pod-reader --user=<username>
+
+# Создать ServiceAccount
+kubectl create serviceaccount <sa-name>
+
+# Список ServiceAccount
+kubectl get serviceaccounts
+kubectl get sa
+
+# Описание ServiceAccount
+kubectl describe sa <sa-name>
+
+# Проверить свои права доступа
+kubectl auth can-i --list
+
+# Проверить конкретное право
+kubectl auth can-i create pods
+kubectl auth can-i delete deployments -n production
+
+# Проверить права для другого пользователя
+kubectl auth can-i create pods --as=<username>
+
+# Проверить права для ServiceAccount
+kubectl auth can-i create pods --as=system:serviceaccount:<namespace>:<sa-name>
+
+# Получить токен ServiceAccount (k8s < 1.24)
+kubectl get secret $(kubectl get sa <sa-name> -o jsonpath='{.secrets[0].name}') -o jsonpath='{.data.token}' | base64 -d
+
+# Создать токен для ServiceAccount (k8s >= 1.24)
+kubectl create token <sa-name>
+
+# Создать токен с кастомным TTL
+kubectl create token <sa-name> --duration=24h
+```
