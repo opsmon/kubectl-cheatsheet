@@ -980,3 +980,50 @@ kubectl create token <sa-name>
 # Создать токен с кастомным TTL
 kubectl create token <sa-name> --duration=24h
 ```
+
+## Jobs и CronJobs
+
+```bash
+# Список всех Jobs
+kubectl get jobs
+
+# Список всех CronJobs
+kubectl get cronjobs
+kubectl get cj
+
+# Описание Job
+kubectl describe job <job-name>
+
+# Описание CronJob
+kubectl describe cronjob <cronjob-name>
+
+# Создать Job из образа
+kubectl create job <job-name> --image=busybox -- echo "Hello"
+
+# Создать Job из существующего CronJob (вручную запустить)
+kubectl create job <job-name> --from=cronjob/<cronjob-name>
+
+# Создать CronJob (каждые 5 минут)
+kubectl create cronjob <name> --image=busybox --schedule="*/5 * * * *" -- echo "tick"
+
+# Создать CronJob (каждый день в 02:00)
+kubectl create cronjob <name> --image=busybox --schedule="0 2 * * *" -- /bin/sh -c "backup.sh"
+
+# Посмотреть логи Job (через поды)
+kubectl logs -l job-name=<job-name>
+
+# Дождаться завершения Job
+kubectl wait --for=condition=Complete job/<job-name> --timeout=120s
+
+# Удалить завершённые Jobs
+kubectl delete jobs --field-selector status.successful=1
+
+# Приостановить CronJob
+kubectl patch cronjob <cronjob-name> -p '{"spec":{"suspend":true}}'
+
+# Возобновить CronJob
+kubectl patch cronjob <cronjob-name> -p '{"spec":{"suspend":false}}'
+
+# Удалить CronJob (и все связанные Jobs)
+kubectl delete cronjob <cronjob-name>
+```

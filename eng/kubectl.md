@@ -980,3 +980,50 @@ kubectl create token <sa-name>
 # Create token with custom TTL
 kubectl create token <sa-name> --duration=24h
 ```
+
+## Jobs and CronJobs
+
+```bash
+# List all Jobs
+kubectl get jobs
+
+# List all CronJobs
+kubectl get cronjobs
+kubectl get cj
+
+# Describe Job
+kubectl describe job <job-name>
+
+# Describe CronJob
+kubectl describe cronjob <cronjob-name>
+
+# Create Job from image
+kubectl create job <job-name> --image=busybox -- echo "Hello"
+
+# Create Job from existing CronJob (trigger manually)
+kubectl create job <job-name> --from=cronjob/<cronjob-name>
+
+# Create CronJob (every 5 minutes)
+kubectl create cronjob <name> --image=busybox --schedule="*/5 * * * *" -- echo "tick"
+
+# Create CronJob (every day at 02:00)
+kubectl create cronjob <name> --image=busybox --schedule="0 2 * * *" -- /bin/sh -c "backup.sh"
+
+# View Job logs (via pods)
+kubectl logs -l job-name=<job-name>
+
+# Wait for Job completion
+kubectl wait --for=condition=Complete job/<job-name> --timeout=120s
+
+# Delete completed Jobs
+kubectl delete jobs --field-selector status.successful=1
+
+# Suspend CronJob
+kubectl patch cronjob <cronjob-name> -p '{"spec":{"suspend":true}}'
+
+# Resume CronJob
+kubectl patch cronjob <cronjob-name> -p '{"spec":{"suspend":false}}'
+
+# Delete CronJob (and all related Jobs)
+kubectl delete cronjob <cronjob-name>
+```
