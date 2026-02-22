@@ -1027,3 +1027,73 @@ kubectl patch cronjob <cronjob-name> -p '{"spec":{"suspend":false}}'
 # Delete CronJob (and all related Jobs)
 kubectl delete cronjob <cronjob-name>
 ```
+
+## Network Policies (networkpolicy)
+
+```bash
+# List all NetworkPolicies
+kubectl get networkpolicy
+kubectl get netpol
+
+# List NetworkPolicies in all namespaces
+kubectl get netpol -A
+
+# Describe NetworkPolicy
+kubectl describe netpol <policy-name>
+
+# View NetworkPolicy as YAML
+kubectl get netpol <policy-name> -o yaml
+
+# Create NetworkPolicy from file
+kubectl apply -f netpol.yaml
+
+# Delete NetworkPolicy
+kubectl delete netpol <policy-name>
+
+# Example: deny all ingress traffic to pods with app=myapp
+# apiVersion: networking.k8s.io/v1
+# kind: NetworkPolicy
+# metadata:
+#   name: deny-all-ingress
+# spec:
+#   podSelector:
+#     matchLabels:
+#       app: myapp
+#   policyTypes:
+#   - Ingress
+
+# Example: allow ingress only from pods with app=frontend
+# spec:
+#   podSelector:
+#     matchLabels:
+#       app: backend
+#   policyTypes:
+#   - Ingress
+#   ingress:
+#   - from:
+#     - podSelector:
+#         matchLabels:
+#           app: frontend
+#     ports:
+#     - protocol: TCP
+#       port: 8080
+
+# Example: allow egress only to port 5432 (postgres)
+# spec:
+#   podSelector:
+#     matchLabels:
+#       app: backend
+#   policyTypes:
+#   - Egress
+#   egress:
+#   - to:
+#     - podSelector:
+#         matchLabels:
+#           app: database
+#     ports:
+#     - protocol: TCP
+#       port: 5432
+
+# Check which pods are affected by NetworkPolicy
+kubectl get pods -l <selector-from-policy>
+```

@@ -1027,3 +1027,73 @@ kubectl patch cronjob <cronjob-name> -p '{"spec":{"suspend":false}}'
 # Удалить CronJob (и все связанные Jobs)
 kubectl delete cronjob <cronjob-name>
 ```
+
+## Сетевые политики (networkpolicy)
+
+```bash
+# Список NetworkPolicy
+kubectl get networkpolicy
+kubectl get netpol
+
+# NetworkPolicy во всех namespace
+kubectl get netpol -A
+
+# Описание NetworkPolicy
+kubectl describe netpol <policy-name>
+
+# Просмотр NetworkPolicy в формате YAML
+kubectl get netpol <policy-name> -o yaml
+
+# Создать NetworkPolicy из файла
+kubectl apply -f netpol.yaml
+
+# Удалить NetworkPolicy
+kubectl delete netpol <policy-name>
+
+# Пример: запретить весь входящий трафик к подам с app=myapp
+# apiVersion: networking.k8s.io/v1
+# kind: NetworkPolicy
+# metadata:
+#   name: deny-all-ingress
+# spec:
+#   podSelector:
+#     matchLabels:
+#       app: myapp
+#   policyTypes:
+#   - Ingress
+
+# Пример: разрешить ingress только от подов с app=frontend
+# spec:
+#   podSelector:
+#     matchLabels:
+#       app: backend
+#   policyTypes:
+#   - Ingress
+#   ingress:
+#   - from:
+#     - podSelector:
+#         matchLabels:
+#           app: frontend
+#     ports:
+#     - protocol: TCP
+#       port: 8080
+
+# Пример: разрешить egress только на порт 5432 (postgres)
+# spec:
+#   podSelector:
+#     matchLabels:
+#       app: backend
+#   policyTypes:
+#   - Egress
+#   egress:
+#   - to:
+#     - podSelector:
+#         matchLabels:
+#           app: database
+#     ports:
+#     - protocol: TCP
+#       port: 5432
+
+# Проверить какие поды попадают под NetworkPolicy
+kubectl get pods -l <selector-from-policy>
+```
