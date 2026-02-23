@@ -1097,3 +1097,71 @@ kubectl delete netpol <policy-name>
 # Проверить какие поды попадают под NetworkPolicy
 kubectl get pods -l <selector-from-policy>
 ```
+
+## Ingress
+
+```bash
+# Список всех Ingress ресурсов
+kubectl get ingress
+kubectl get ing
+
+# Ingress во всех namespace
+kubectl get ing -A
+
+# Описание Ingress
+kubectl describe ing <ingress-name>
+
+# Просмотр Ingress в формате YAML
+kubectl get ing <ingress-name> -o yaml
+
+# Создать Ingress из файла
+kubectl apply -f ingress.yaml
+
+# Удалить Ingress
+kubectl delete ing <ingress-name>
+
+# Показать Ingress с хостами и адресами
+kubectl get ing -o custom-columns=NAME:.metadata.name,HOSTS:.spec.rules[*].host,ADDRESS:.status.loadBalancer.ingress[*].ip
+
+# Пример: базовый Ingress с роутингом по хосту
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: my-ingress
+#   annotations:
+#     nginx.ingress.kubernetes.io/rewrite-target: /
+# spec:
+#   ingressClassName: nginx
+#   rules:
+#   - host: myapp.example.com
+#     http:
+#       paths:
+#       - path: /
+#         pathType: Prefix
+#         backend:
+#           service:
+#             name: my-service
+#             port:
+#               number: 80
+
+# Пример: Ingress с TLS
+# spec:
+#   tls:
+#   - hosts:
+#     - myapp.example.com
+#     secretName: myapp-tls-secret
+#   rules:
+#   - host: myapp.example.com
+#     http:
+#       paths:
+#       - path: /
+#         pathType: Prefix
+#         backend:
+#           service:
+#             name: my-service
+#             port:
+#               number: 80
+
+# Список IngressClass
+kubectl get ingressclass
+```
