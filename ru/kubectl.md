@@ -1165,3 +1165,56 @@ kubectl get ing -o custom-columns=NAME:.metadata.name,HOSTS:.spec.rules[*].host,
 # Список IngressClass
 kubectl get ingressclass
 ```
+
+## StatefulSets
+
+```bash
+# Список всех StatefulSet
+kubectl get statefulsets
+kubectl get sts
+
+# Список во всех namespace
+kubectl get sts -A
+
+# Описание StatefulSet
+kubectl describe sts <sts-name>
+
+# StatefulSet в формате YAML
+kubectl get sts <sts-name> -o yaml
+
+# Масштабировать StatefulSet
+kubectl scale sts <sts-name> --replicas=3
+
+# Роллинг-рестарт StatefulSet
+kubectl rollout restart sts/<sts-name>
+
+# Статус обновления StatefulSet
+kubectl rollout status sts/<sts-name>
+
+# История обновлений StatefulSet
+kubectl rollout history sts/<sts-name>
+
+# Откатить StatefulSet на предыдущую ревизию
+kubectl rollout undo sts/<sts-name>
+
+# Откатить на конкретную ревизию
+kubectl rollout undo sts/<sts-name> --to-revision=2
+
+# Обновить image в StatefulSet
+kubectl set image sts/<sts-name> <container-name>=<image>:<tag>
+
+# Удалить StatefulSet (поды остаются по умолчанию)
+kubectl delete sts <sts-name>
+
+# Удалить StatefulSet вместе с подами (foreground)
+kubectl delete sts <sts-name> --cascade=foreground
+
+# Удалить StatefulSet без удаления подов (orphan)
+kubectl delete sts <sts-name> --cascade=orphan
+
+# Список подов StatefulSet (по label)
+kubectl get pods -l app=<sts-name>
+
+# Показать StatefulSet с количеством реплик
+kubectl get sts -o custom-columns=NAME:.metadata.name,READY:.status.readyReplicas,REPLICAS:.status.replicas
+```
