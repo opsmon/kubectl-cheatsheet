@@ -1218,3 +1218,47 @@ kubectl get pods -l app=<sts-name>
 # Show StatefulSet with replica count
 kubectl get sts -o custom-columns=NAME:.metadata.name,READY:.status.readyReplicas,REPLICAS:.status.replicas
 ```
+
+## DaemonSets
+
+```bash
+# List all DaemonSets
+kubectl get daemonsets
+kubectl get ds
+
+# List in all namespaces
+kubectl get ds -A
+
+# Describe DaemonSet
+kubectl describe ds <ds-name>
+
+# View DaemonSet as YAML
+kubectl get ds <ds-name> -o yaml
+
+# Rollout restart DaemonSet (rolling restart on all nodes)
+kubectl rollout restart ds/<ds-name>
+
+# Rollout status of DaemonSet
+kubectl rollout status ds/<ds-name>
+
+# Rollout history of DaemonSet
+kubectl rollout history ds/<ds-name>
+
+# Rollback DaemonSet to previous revision
+kubectl rollout undo ds/<ds-name>
+
+# Update image in DaemonSet
+kubectl set image ds/<ds-name> <container-name>=<image>:<tag>
+
+# Delete DaemonSet (and its pods)
+kubectl delete ds <ds-name>
+
+# Delete DaemonSet without deleting pods (orphan)
+kubectl delete ds <ds-name> --cascade=orphan
+
+# Show DaemonSet with node coverage
+kubectl get ds -o custom-columns=NAME:.metadata.name,DESIRED:.status.desiredNumberScheduled,READY:.status.numberReady,AVAILABLE:.status.numberAvailable
+
+# List pods belonging to DaemonSet (by label)
+kubectl get pods -l app=<ds-name> -o wide
+```
