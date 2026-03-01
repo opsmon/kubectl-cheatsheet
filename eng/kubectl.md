@@ -1262,3 +1262,53 @@ kubectl get ds -o custom-columns=NAME:.metadata.name,DESIRED:.status.desiredNumb
 # List pods belonging to DaemonSet (by label)
 kubectl get pods -l app=<ds-name> -o wide
 ```
+
+## ConfigMaps
+
+```bash
+# List all ConfigMaps in current namespace
+kubectl get configmaps
+kubectl get cm
+
+# List in all namespaces
+kubectl get cm -A
+
+# Describe ConfigMap
+kubectl describe cm <configmap-name>
+
+# View ConfigMap as YAML
+kubectl get cm <configmap-name> -o yaml
+
+# Create ConfigMap from literal values
+kubectl create configmap <name> --from-literal=key1=value1 --from-literal=key2=value2
+
+# Create ConfigMap from file (filename becomes the key)
+kubectl create configmap <name> --from-file=config.txt
+
+# Create ConfigMap from file with custom key
+kubectl create configmap <name> --from-file=mykey=config.txt
+
+# Create ConfigMap from directory (all files become keys)
+kubectl create configmap <name> --from-file=./configs/
+
+# Create ConfigMap from env file (.env format)
+kubectl create configmap <name> --from-env-file=.env
+
+# Edit ConfigMap
+kubectl edit cm <configmap-name>
+
+# Delete ConfigMap
+kubectl delete cm <configmap-name>
+
+# Get value of a specific key
+kubectl get cm <configmap-name> -o jsonpath='{.data.key}'
+
+# List all keys in ConfigMap
+kubectl get cm <configmap-name> -o go-template='{{range $k,$v := .data}}{{$k}}{{"\n"}}{{end}}'
+
+# Update ConfigMap idempotently (dry-run + apply)
+kubectl create configmap <name> --from-file=config.txt --dry-run=client -o yaml | kubectl apply -f -
+
+# Show all ConfigMaps with key count
+kubectl get cm -o custom-columns=NAME:.metadata.name,KEYS:.data
+```

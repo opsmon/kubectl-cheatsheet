@@ -1262,3 +1262,53 @@ kubectl get ds -o custom-columns=NAME:.metadata.name,DESIRED:.status.desiredNumb
 # Список подов DaemonSet (по label)
 kubectl get pods -l app=<ds-name> -o wide
 ```
+
+## ConfigMaps
+
+```bash
+# Список всех ConfigMap в текущем namespace
+kubectl get configmaps
+kubectl get cm
+
+# Список во всех namespace
+kubectl get cm -A
+
+# Описание ConfigMap
+kubectl describe cm <configmap-name>
+
+# ConfigMap в формате YAML
+kubectl get cm <configmap-name> -o yaml
+
+# Создать ConfigMap из literal значений
+kubectl create configmap <name> --from-literal=key1=value1 --from-literal=key2=value2
+
+# Создать ConfigMap из файла (имя файла становится ключом)
+kubectl create configmap <name> --from-file=config.txt
+
+# Создать ConfigMap из файла с кастомным ключом
+kubectl create configmap <name> --from-file=mykey=config.txt
+
+# Создать ConfigMap из директории (все файлы становятся ключами)
+kubectl create configmap <name> --from-file=./configs/
+
+# Создать ConfigMap из env-файла (формат .env)
+kubectl create configmap <name> --from-env-file=.env
+
+# Редактировать ConfigMap
+kubectl edit cm <configmap-name>
+
+# Удалить ConfigMap
+kubectl delete cm <configmap-name>
+
+# Получить значение конкретного ключа
+kubectl get cm <configmap-name> -o jsonpath='{.data.key}'
+
+# Список всех ключей ConfigMap
+kubectl get cm <configmap-name> -o go-template='{{range $k,$v := .data}}{{$k}}{{"\n"}}{{end}}'
+
+# Обновить ConfigMap идемпотентно (dry-run + apply)
+kubectl create configmap <name> --from-file=config.txt --dry-run=client -o yaml | kubectl apply -f -
+
+# Показать все ConfigMap с ключами
+kubectl get cm -o custom-columns=NAME:.metadata.name,KEYS:.data
+```
