@@ -724,7 +724,7 @@ kubectl proxy --port=8080
 # Прокси доступный со всех интерфейсов
 kubectl proxy --address=0.0.0.0 --accept-hosts='.*'
 
-# После запуска прокси — доступ к API через curl
+# После запуска прокси - доступ к API через curl
 # curl http://localhost:8001/api/v1/namespaces
 # curl http://localhost:8001/api/v1/pods
 
@@ -914,7 +914,7 @@ kubectl create secret generic <secret-name> --from-file=./config.env --dry-run=c
 kubectl delete secret <secret-name>
 ```
 
-## RBAC — Роли и управление доступом
+## RBAC - Роли и управление доступом
 
 ```bash
 # Список ролей в namespace
@@ -1311,4 +1311,391 @@ kubectl create configmap <name> --from-file=config.txt --dry-run=client -o yaml 
 
 # Показать все ConfigMap с ключами
 kubectl get cm -o custom-columns=NAME:.metadata.name,KEYS:.data
+```
+
+## HorizontalPodAutoscaler (HPA)
+
+```bash
+# Список всех HPA
+kubectl get hpa
+kubectl get hpa -A
+
+# Подробная информация об HPA
+kubectl describe hpa <hpa-name>
+
+# Просмотр HPA в формате YAML
+kubectl get hpa <hpa-name> -o yaml
+
+# Создать HPA для деплоя (по CPU)
+kubectl autoscale deployment <deployment-name> --min=2 --max=10 --cpu-percent=70
+
+# Создать HPA из файла
+kubectl apply -f hpa.yaml
+
+# Удалить HPA
+kubectl delete hpa <hpa-name>
+
+# Показать HPA с текущим/целевым кол-вом реплик и метриками
+kubectl get hpa -o custom-columns=NAME:.metadata.name,MINPODS:.spec.minReplicas,MAXPODS:.spec.maxReplicas,REPLICAS:.status.currentReplicas
+
+# Редактировать HPA (изменить пороги или кол-во реплик)
+kubectl edit hpa <hpa-name>
+
+# Пример HPA YAML (по CPU + Memory):
+# apiVersion: autoscaling/v2
+# kind: HorizontalPodAutoscaler
+# metadata:
+#   name: my-hpa
+# spec:
+#   scaleTargetRef:
+#     apiVersion: apps/v1
+#     kind: Deployment
+#     name: my-deployment
+#   minReplicas: 2
+#   maxReplicas: 10
+#   metrics:
+#   - type: Resource
+#     resource:
+#       name: cpu
+#       target:
+#         type: Utilization
+#         averageUtilization: 70
+#   - type: Resource
+#     resource:
+#       name: memory
+#       target:
+#         type: Utilization
+#         averageUtilization: 80
+```
+
+## ResourceQuota и LimitRange
+
+```bash
+# Список ResourceQuota в неймспейсе
+kubectl get resourcequota
+kubectl get quota
+
+# Список во всех неймспейсах
+kubectl get quota -A
+
+# Подробно о ResourceQuota (показывает использованное vs лимит)
+kubectl describe quota <quota-name>
+
+# Создать ResourceQuota из файла
+kubectl apply -f quota.yaml
+
+# Удалить ResourceQuota
+kubectl delete quota <quota-name>
+
+# Список LimitRange
+kubectl get limitrange
+kubectl get limits
+
+# Подробно о LimitRange
+kubectl describe limits <limitrange-name>
+
+# Создать LimitRange из файла
+kubectl apply -f limitrange.yaml
+
+# Пример ResourceQuota YAML:
+# apiVersion: v1
+# kind: ResourceQuota
+# metadata:
+#   name: namespace-quota
+# spec:
+#   hard:
+#     requests.cpu: "4"
+#     requests.memory: 8Gi
+#     limits.cpu: "8"
+#     limits.memory: 16Gi
+#     pods: "20"
+#     services: "10"
+#     persistentvolumeclaims: "5"
+
+# Пример LimitRange YAML (лимиты по умолчанию для контейнеров):
+# apiVersion: v1
+# kind: LimitRange
+# metadata:
+#   name: container-limits
+# spec:
+#   limits:
+#   - type: Container
+#     default:
+#       cpu: 500m
+#       memory: 256Mi
+#     defaultRequest:
+#       cpu: 100m
+#       memory: 128Mi
+#     max:
+#       cpu: "2"
+#       memory: 2Gi
+```
+
+## PodDisruptionBudget (PDB)
+
+```bash
+# Список всех PDB
+kubectl get poddisruptionbudget
+kubectl get pdb
+
+# Список во всех неймспейсах
+kubectl get pdb -A
+
+# Подробная информация о PDB
+kubectl describe pdb <pdb-name>
+
+# Просмотр PDB в формате YAML
+kubectl get pdb <pdb-name> -o yaml
+
+# Создать PDB из файла
+kubectl apply -f pdb.yaml
+
+# Удалить PDB
+kubectl delete pdb <pdb-name>
+
+# Показать PDB со статусом допустимых прерываний
+kubectl get pdb -o custom-columns=NAME:.metadata.name,MIN-AVAILABLE:.spec.minAvailable,MAX-UNAVAILABLE:.spec.maxUnavailable,ALLOWED:.status.disruptionsAllowed
+
+# Пример PDB YAML (минимум 2 пода должны быть доступны):
+# apiVersion: policy/v1
+# kind: PodDisruptionBudget
+# metadata:
+#   name: my-pdb
+# spec:
+#   minAvailable: 2
+#   selector:
+#     matchLabels:
+#       app: my-app
+
+# Пример PDB YAML (максимум 1 под недоступен одновременно):
+# spec:
+#   maxUnavailable: 1
+#   selector:
+#     matchLabels:
+#       app: my-app
+```
+
+## Custom Resource Definitions (CRD)
+
+```bash
+# Список всех CRD в кластере
+kubectl get crds
+kubectl get customresourcedefinitions
+
+# Подробная информация о CRD
+kubectl describe crd <crd-name>
+
+# Просмотр CRD в формате YAML
+kubectl get crd <crd-name> -o yaml
+
+# Удалить CRD (удаляет все экземпляры этого ресурса тоже)
+kubectl delete crd <crd-name>
+
+# Список экземпляров кастомного ресурса
+kubectl get <custom-resource-kind>
+kubectl get <custom-resource-kind> -A
+
+# Подробная информация об экземпляре кастомного ресурса
+kubectl describe <custom-resource-kind> <name>
+
+# Фильтр CRD по группе
+kubectl get crds | grep <group-name>
+
+# Показать CRD с группой и областью видимости
+kubectl get crds -o custom-columns=NAME:.metadata.name,GROUP:.spec.group,SCOPE:.spec.scope,VERSION:.spec.versions[0].name
+
+# Объяснение полей кастомного ресурса
+kubectl explain <custom-resource-kind>
+kubectl explain <custom-resource-kind>.spec
+
+# Применить кастомный ресурс из файла
+kubectl apply -f my-resource.yaml
+
+# Удалить все экземпляры кастомного ресурса
+kubectl delete <custom-resource-kind> --all -n <namespace>
+```
+
+## Управление неймспейсами
+
+```bash
+# Список всех неймспейсов
+kubectl get namespaces
+kubectl get ns
+
+# Подробная информация о неймспейсе (квоты, лимиты)
+kubectl describe ns <namespace>
+
+# Создать неймспейс
+kubectl create namespace <namespace>
+kubectl create ns <namespace>
+
+# Удалить неймспейс (удаляет все ресурсы внутри)
+kubectl delete ns <namespace>
+
+# Установить дефолтный неймспейс для текущего контекста
+kubectl config set-context --current --namespace=<namespace>
+
+# Показать текущий дефолтный неймспейс
+kubectl config view --minify | grep namespace
+
+# Получить все ресурсы в неймспейсе
+kubectl get all -n <namespace>
+
+# Получить все ресурсы во всех неймспейсах
+kubectl get all -A
+
+# Список неймспейсов со статусом и датой создания
+kubectl get ns -o custom-columns=NAME:.metadata.name,STATUS:.status.phase,AGE:.metadata.creationTimestamp
+
+# Добавить метку к неймспейсу
+kubectl label namespace <namespace> env=production
+
+# Показать неймспейсы с метками
+kubectl get ns --show-labels
+
+# Подсчёт подов по неймспейсам
+kubectl get pods -A --no-headers | awk '{print $1}' | sort | uniq -c | sort -rn
+```
+
+## Селекторы полей и фильтрация
+
+```bash
+# Получить поды по статусу (Running, Pending, Failed)
+kubectl get pods --field-selector=status.phase=Running
+kubectl get pods --field-selector=status.phase=Failed -A
+
+# Получить поды на конкретной ноде
+kubectl get pods --field-selector=spec.nodeName=<node-name> -A
+
+# Получить поды НЕ в статусе Running
+kubectl get pods --field-selector='status.phase!=Running' -A
+
+# Объединить несколько селекторов полей
+kubectl get pods --field-selector=status.phase=Running,spec.nodeName=<node-name>
+
+# Получить сервисы определённого типа
+kubectl get services --field-selector=spec.type=LoadBalancer -A
+
+# Получить события определённого типа (Warning/Normal)
+kubectl get events --field-selector=type=Warning -A
+
+# Получить события для конкретного объекта
+kubectl get events --field-selector=involvedObject.name=<pod-name>,involvedObject.kind=Pod
+
+# Следить за ресурсами в реальном времени (--watch)
+kubectl get pods --watch
+kubectl get pods -w
+
+# Следить с конкретным селектором полей
+kubectl get pods --field-selector=status.phase=Pending -w
+
+# Фильтрация по меткам (несколько вариантов)
+kubectl get pods -l 'app=myapp,tier=backend'
+kubectl get pods -l 'app in (frontend,backend)'
+kubectl get pods -l 'app notin (legacy)'
+kubectl get pods -l '!deprecated'
+```
+
+## Советы и полезные паттерны
+
+```bash
+# Сгенерировать YAML-шаблон без создания ресурса (dry-run)
+kubectl create deployment my-deploy --image=nginx --dry-run=client -o yaml
+kubectl run my-pod --image=nginx --dry-run=client -o yaml
+
+# Apply с удалением ресурсов, которых нет в файлах (prune)
+kubectl apply -f ./configs/ --prune -l app=myapp
+
+# Принудительно перетянуть образ - перезапустить деплой
+kubectl rollout restart deployment/<deployment-name>
+
+# Быстрое переключение неймспейса (паттерн с алиасом)
+# alias kns='kubectl config set-context --current --namespace'
+# kns production
+
+# Следить за прогрессом rollout
+kubectl rollout status deployment/<deployment-name> --watch
+
+# Получить resourceVersion (нужен для оптимистичной блокировки)
+kubectl get pod <pod-name> -o jsonpath='{.metadata.resourceVersion}'
+
+# Получить все образы контейнеров, запущенных в кластере
+kubectl get pods -A -o jsonpath='{range .items[*]}{range .spec.containers[*]}{.image}{"\n"}{end}{end}' | sort -u
+
+# Найти поды, которые не готовы (NOT ready)
+kubectl get pods -A --no-headers | awk '$3 != $4 || $5 != "Running"'
+
+# Удалить все упавшие поды во всех неймспейсах
+kubectl delete pods --field-selector=status.phase=Failed -A
+
+# Получить поды с кол-вом рестартов больше N
+kubectl get pods -A --no-headers | awk '$5 > 5'
+
+# Объединить несколько kubeconfig в один файл
+KUBECONFIG=~/.kube/config:~/.kube/other-config kubectl config view --flatten > ~/.kube/merged-config
+
+# Войти в первый под, найденный по метке
+kubectl exec -it $(kubectl get pod -l app=myapp -o jsonpath='{.items[0].metadata.name}') -- /bin/sh
+
+# Логи со всех подов деплоя
+kubectl logs -l app=<label-value> --all-containers=true --prefix=true
+
+# Сортировка подов по кол-ву рестартов
+kubectl get pods -A --sort-by='.status.containerStatuses[0].restartCount'
+
+# Сортировка подов по времени создания (новые первые)
+kubectl get pods --sort-by=.metadata.creationTimestamp
+
+# Проверить, на каких нодах больше всего подов
+kubectl get pods -A -o wide --no-headers | awk '{print $8}' | sort | uniq -c | sort -rn
+
+# Применить несколько файлов через stdin
+cat deployment.yaml service.yaml | kubectl apply -f -
+```
+
+## Плагины kubectl (krew)
+
+```bash
+# Установить krew (менеджер плагинов kubectl)
+# https://krew.sigs.k8s.io/docs/user-guide/setup/install/
+
+# Список установленных плагинов
+kubectl krew list
+
+# Поиск плагинов
+kubectl krew search <keyword>
+
+# Установить плагин
+kubectl krew install <plugin-name>
+
+# Обновить все установленные плагины
+kubectl krew upgrade
+
+# Удалить плагин
+kubectl krew uninstall <plugin-name>
+
+# Полезные плагины сообщества:
+# kubectl ctx      - быстрое переключение контекстов (kubectx)
+kubectl ctx
+kubectl ctx <context-name>
+
+# kubectl ns       - быстрое переключение неймспейсов (kubens)
+kubectl ns
+kubectl ns <namespace>
+
+# kubectl neat     - очищает вывод YAML от служебных полей
+kubectl neat get pod <pod-name> -o yaml
+
+# kubectl tree     - показывает иерархию владельцев ресурса
+kubectl tree deployment <deployment-name>
+
+# kubectl stern    - просмотр логов нескольких подов одновременно
+kubectl stern <pod-pattern>
+kubectl stern -l app=myapp
+
+# kubectl df-pv    - показывает использование диска для PersistentVolumes
+kubectl df-pv
+
+# kubectl whoami   - текущий пользователь / сервис-аккаунт
+kubectl whoami
 ```

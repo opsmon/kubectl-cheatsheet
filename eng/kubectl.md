@@ -724,7 +724,7 @@ kubectl proxy --port=8080
 # Proxy accessible from all interfaces
 kubectl proxy --address=0.0.0.0 --accept-hosts='.*'
 
-# After starting proxy — access API via curl
+# After starting proxy - access API via curl
 # curl http://localhost:8001/api/v1/namespaces
 # curl http://localhost:8001/api/v1/pods
 
@@ -914,7 +914,7 @@ kubectl create secret generic <secret-name> --from-file=./config.env --dry-run=c
 kubectl delete secret <secret-name>
 ```
 
-## RBAC — Roles and Access Control
+## RBAC - Roles and Access Control
 
 ```bash
 # List all roles in namespace
@@ -1311,4 +1311,391 @@ kubectl create configmap <name> --from-file=config.txt --dry-run=client -o yaml 
 
 # Show all ConfigMaps with key count
 kubectl get cm -o custom-columns=NAME:.metadata.name,KEYS:.data
+```
+
+## HorizontalPodAutoscaler (HPA)
+
+```bash
+# List all HPAs
+kubectl get hpa
+kubectl get hpa -A
+
+# Describe HPA
+kubectl describe hpa <hpa-name>
+
+# View HPA as YAML
+kubectl get hpa <hpa-name> -o yaml
+
+# Create HPA for a deployment (CPU-based)
+kubectl autoscale deployment <deployment-name> --min=2 --max=10 --cpu-percent=70
+
+# Create HPA from file
+kubectl apply -f hpa.yaml
+
+# Delete HPA
+kubectl delete hpa <hpa-name>
+
+# Show HPA with current/target replicas and metrics
+kubectl get hpa -o custom-columns=NAME:.metadata.name,MINPODS:.spec.minReplicas,MAXPODS:.spec.maxReplicas,REPLICAS:.status.currentReplicas
+
+# Edit HPA (change thresholds or replicas)
+kubectl edit hpa <hpa-name>
+
+# Example HPA YAML (CPU + Memory):
+# apiVersion: autoscaling/v2
+# kind: HorizontalPodAutoscaler
+# metadata:
+#   name: my-hpa
+# spec:
+#   scaleTargetRef:
+#     apiVersion: apps/v1
+#     kind: Deployment
+#     name: my-deployment
+#   minReplicas: 2
+#   maxReplicas: 10
+#   metrics:
+#   - type: Resource
+#     resource:
+#       name: cpu
+#       target:
+#         type: Utilization
+#         averageUtilization: 70
+#   - type: Resource
+#     resource:
+#       name: memory
+#       target:
+#         type: Utilization
+#         averageUtilization: 80
+```
+
+## ResourceQuota and LimitRange
+
+```bash
+# List ResourceQuotas in namespace
+kubectl get resourcequota
+kubectl get quota
+
+# List in all namespaces
+kubectl get quota -A
+
+# Describe ResourceQuota (shows used vs limit)
+kubectl describe quota <quota-name>
+
+# Create ResourceQuota from file
+kubectl apply -f quota.yaml
+
+# Delete ResourceQuota
+kubectl delete quota <quota-name>
+
+# List LimitRanges
+kubectl get limitrange
+kubectl get limits
+
+# Describe LimitRange
+kubectl describe limits <limitrange-name>
+
+# Create LimitRange from file
+kubectl apply -f limitrange.yaml
+
+# Example ResourceQuota YAML:
+# apiVersion: v1
+# kind: ResourceQuota
+# metadata:
+#   name: namespace-quota
+# spec:
+#   hard:
+#     requests.cpu: "4"
+#     requests.memory: 8Gi
+#     limits.cpu: "8"
+#     limits.memory: 16Gi
+#     pods: "20"
+#     services: "10"
+#     persistentvolumeclaims: "5"
+
+# Example LimitRange YAML (default limits for containers):
+# apiVersion: v1
+# kind: LimitRange
+# metadata:
+#   name: container-limits
+# spec:
+#   limits:
+#   - type: Container
+#     default:
+#       cpu: 500m
+#       memory: 256Mi
+#     defaultRequest:
+#       cpu: 100m
+#       memory: 128Mi
+#     max:
+#       cpu: "2"
+#       memory: 2Gi
+```
+
+## PodDisruptionBudget (PDB)
+
+```bash
+# List all PDBs
+kubectl get poddisruptionbudget
+kubectl get pdb
+
+# List in all namespaces
+kubectl get pdb -A
+
+# Describe PDB
+kubectl describe pdb <pdb-name>
+
+# View PDB as YAML
+kubectl get pdb <pdb-name> -o yaml
+
+# Create PDB from file
+kubectl apply -f pdb.yaml
+
+# Delete PDB
+kubectl delete pdb <pdb-name>
+
+# Show PDB with disruption allowed status
+kubectl get pdb -o custom-columns=NAME:.metadata.name,MIN-AVAILABLE:.spec.minAvailable,MAX-UNAVAILABLE:.spec.maxUnavailable,ALLOWED:.status.disruptionsAllowed
+
+# Example PDB YAML (at least 2 pods must be available):
+# apiVersion: policy/v1
+# kind: PodDisruptionBudget
+# metadata:
+#   name: my-pdb
+# spec:
+#   minAvailable: 2
+#   selector:
+#     matchLabels:
+#       app: my-app
+
+# Example PDB YAML (max 1 pod unavailable at a time):
+# spec:
+#   maxUnavailable: 1
+#   selector:
+#     matchLabels:
+#       app: my-app
+```
+
+## Custom Resource Definitions (CRD)
+
+```bash
+# List all CRDs in cluster
+kubectl get crds
+kubectl get customresourcedefinitions
+
+# Describe CRD
+kubectl describe crd <crd-name>
+
+# View CRD as YAML
+kubectl get crd <crd-name> -o yaml
+
+# Delete CRD (removes all instances of that resource too)
+kubectl delete crd <crd-name>
+
+# List instances of a custom resource
+kubectl get <custom-resource-kind>
+kubectl get <custom-resource-kind> -A
+
+# Describe a custom resource instance
+kubectl describe <custom-resource-kind> <name>
+
+# Filter CRDs by group
+kubectl get crds | grep <group-name>
+
+# Show CRD with group and scope
+kubectl get crds -o custom-columns=NAME:.metadata.name,GROUP:.spec.group,SCOPE:.spec.scope,VERSION:.spec.versions[0].name
+
+# Explain a custom resource fields
+kubectl explain <custom-resource-kind>
+kubectl explain <custom-resource-kind>.spec
+
+# Apply custom resource from file
+kubectl apply -f my-resource.yaml
+
+# Delete all instances of a custom resource
+kubectl delete <custom-resource-kind> --all -n <namespace>
+```
+
+## Namespace management
+
+```bash
+# List all namespaces
+kubectl get namespaces
+kubectl get ns
+
+# Describe namespace (shows resource quotas, limits)
+kubectl describe ns <namespace>
+
+# Create namespace
+kubectl create namespace <namespace>
+kubectl create ns <namespace>
+
+# Delete namespace (removes all resources inside)
+kubectl delete ns <namespace>
+
+# Set default namespace for current context
+kubectl config set-context --current --namespace=<namespace>
+
+# Show current default namespace
+kubectl config view --minify | grep namespace
+
+# Get all resources in a namespace
+kubectl get all -n <namespace>
+
+# Get all resources across all namespaces
+kubectl get all -A
+
+# List namespaces with status and age
+kubectl get ns -o custom-columns=NAME:.metadata.name,STATUS:.status.phase,AGE:.metadata.creationTimestamp
+
+# Add label to namespace
+kubectl label namespace <namespace> env=production
+
+# Show namespaces with labels
+kubectl get ns --show-labels
+
+# Get resource count per namespace
+kubectl get pods -A --no-headers | awk '{print $1}' | sort | uniq -c | sort -rn
+```
+
+## Field selectors and filtering
+
+```bash
+# Get pods by status (Running, Pending, Failed)
+kubectl get pods --field-selector=status.phase=Running
+kubectl get pods --field-selector=status.phase=Failed -A
+
+# Get pods on a specific node
+kubectl get pods --field-selector=spec.nodeName=<node-name> -A
+
+# Get pods NOT in Running state
+kubectl get pods --field-selector='status.phase!=Running' -A
+
+# Combine multiple field selectors
+kubectl get pods --field-selector=status.phase=Running,spec.nodeName=<node-name>
+
+# Get services of specific type
+kubectl get services --field-selector=spec.type=LoadBalancer -A
+
+# Get events of specific type (Warning/Normal)
+kubectl get events --field-selector=type=Warning -A
+
+# Get events for specific object
+kubectl get events --field-selector=involvedObject.name=<pod-name>,involvedObject.kind=Pod
+
+# Watch resources in real-time (--watch)
+kubectl get pods --watch
+kubectl get pods -w
+
+# Watch with specific field selector
+kubectl get pods --field-selector=status.phase=Pending -w
+
+# Get with label selector (multiple labels)
+kubectl get pods -l 'app=myapp,tier=backend'
+kubectl get pods -l 'app in (frontend,backend)'
+kubectl get pods -l 'app notin (legacy)'
+kubectl get pods -l '!deprecated'
+```
+
+## Tips and useful patterns
+
+```bash
+# Generate YAML template without creating resource (dry-run)
+kubectl create deployment my-deploy --image=nginx --dry-run=client -o yaml
+kubectl run my-pod --image=nginx --dry-run=client -o yaml
+
+# Apply with prune (delete resources not in files)
+kubectl apply -f ./configs/ --prune -l app=myapp
+
+# Force re-pull of image by restarting deployment
+kubectl rollout restart deployment/<deployment-name>
+
+# Quick namespace switch (alias pattern)
+# alias kns='kubectl config set-context --current --namespace'
+# kns production
+
+# Watch rollout progress
+kubectl rollout status deployment/<deployment-name> --watch
+
+# Get resource version (useful for optimistic locking)
+kubectl get pod <pod-name> -o jsonpath='{.metadata.resourceVersion}'
+
+# Get all container images running in cluster
+kubectl get pods -A -o jsonpath='{range .items[*]}{range .spec.containers[*]}{.image}{"\n"}{end}{end}' | sort -u
+
+# Find pods that are NOT ready
+kubectl get pods -A --no-headers | awk '$3 != $4 || $5 != "Running"'
+
+# Delete all failed pods across all namespaces
+kubectl delete pods --field-selector=status.phase=Failed -A
+
+# Get pods restarted more than N times
+kubectl get pods -A --no-headers | awk '$5 > 5'
+
+# Copy kubeconfig context to another file
+KUBECONFIG=~/.kube/config:~/.kube/other-config kubectl config view --flatten > ~/.kube/merged-config
+
+# Exec one-liner into first pod matching a label
+kubectl exec -it $(kubectl get pod -l app=myapp -o jsonpath='{.items[0].metadata.name}') -- /bin/sh
+
+# Get logs from all pods of a deployment
+kubectl logs -l app=<label-value> --all-containers=true --prefix=true
+
+# Sort pods by restart count
+kubectl get pods -A --sort-by='.status.containerStatuses[0].restartCount'
+
+# Sort pods by age (newest first)
+kubectl get pods --sort-by=.metadata.creationTimestamp
+
+# Check which nodes have the most pods
+kubectl get pods -A -o wide --no-headers | awk '{print $8}' | sort | uniq -c | sort -rn
+
+# Apply multiple files at once using stdin
+cat deployment.yaml service.yaml | kubectl apply -f -
+```
+
+## kubectl plugins (krew)
+
+```bash
+# Install krew (kubectl plugin manager)
+# https://krew.sigs.k8s.io/docs/user-guide/setup/install/
+
+# List installed plugins
+kubectl krew list
+
+# Search for plugins
+kubectl krew search <keyword>
+
+# Install a plugin
+kubectl krew install <plugin-name>
+
+# Update all installed plugins
+kubectl krew upgrade
+
+# Uninstall a plugin
+kubectl krew uninstall <plugin-name>
+
+# Useful community plugins:
+# kubectl ctx      - fast context switching (kubectx)
+kubectl ctx
+kubectl ctx <context-name>
+
+# kubectl ns       - fast namespace switching (kubens)
+kubectl ns
+kubectl ns <namespace>
+
+# kubectl neat     - clean up verbose YAML output
+kubectl neat get pod <pod-name> -o yaml
+
+# kubectl tree     - show resource owner hierarchy
+kubectl tree deployment <deployment-name>
+
+# kubectl stern    - multi-pod log tailing
+kubectl stern <pod-pattern>
+kubectl stern -l app=myapp
+
+# kubectl df-pv    - show disk usage for PersistentVolumes
+kubectl df-pv
+
+# kubectl whoami   - show current user/service account identity
+kubectl whoami
 ```
