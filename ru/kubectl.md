@@ -1,5 +1,22 @@
 # kubectl команды
 
+> Быстрая навигация: используйте `Ctrl/Cmd + F` по ключу раздела в скобках (`get`, `logs`, `exec`, `rollout`, `debug`, `kustomize`).
+
+## Быстрые ссылки
+
+- [get](#получение-информации-get)
+- [describe](#детальная-информация-describe)
+- [logs](#просмотр-логов-logs)
+- [exec](#выполнение-команд-в-контейнере-exec)
+- [apply/create](#создание-и-применение-ресурсов-applycreate)
+- [delete](#удаление-ресурсов-delete)
+- [scale](#масштабирование-scale)
+- [rollout](#управление-обновлениями-rollout)
+- [config](#контексты-и-конфигурация-config)
+- [debug](#отладка-и-диагностика-debug)
+- [kustomize](#работа-с-kustomize-kustomize)
+- [krew](#плагины-kubectl-krew)
+
 ## Получение информации (get)
 
 ```bash

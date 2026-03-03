@@ -1,37 +1,60 @@
 # kubectl Cheatsheet
 
-Шпаргалка по командам kubectl / kubectl commands cheatsheet
+Практичная шпаргалка по `kubectl` для ежедневной работы с Kubernetes.
 
-## 🎯 О проекте / About
+Practical `kubectl` commands cheatsheet for day-to-day Kubernetes work.
 
-**RU:** Этот репозиторий - коллекция практических команд kubectl для ежедневной работы с Kubernetes. Создан для быстрого поиска нужной команды без гугления. Пополняется постепенно по мере изучения и использования.
+## Language
 
-**EN:** This repository is a collection of practical kubectl commands for daily Kubernetes work. Created for quick command lookup without googling. Updated gradually as we learn and use new commands.
+- [RU version](ru/kubectl.md)
+- [EN version](eng/kubectl.md)
 
-## 🤝 Контрибьютинг / Contributing
+## Quick Navigation
 
-**RU:** Приветствую любые дополнения! Если знаете полезную команду - добавляйте:
-1. Форкните репозиторий
-2. Добавьте команду в соответствующий файл (`ru/` или `eng/`)
-3. Создайте Pull Request
+### RU (основные разделы)
 
-**EN:** Contributions are welcome! If you know a useful command - add it:
-1. Fork the repository
-2. Add command to the appropriate file (`ru/` or `eng/`)
-3. Create a Pull Request
+- [Получение информации](ru/kubectl.md#получение-информации-get)
+- [Логи](ru/kubectl.md#просмотр-логов-logs)
+- [Exec в контейнер](ru/kubectl.md#выполнение-команд-в-контейнере-exec)
+- [Apply/Create](ru/kubectl.md#создание-и-применение-ресурсов-applycreate)
+- [Удаление ресурсов](ru/kubectl.md#удаление-ресурсов-delete)
+- [Scale](ru/kubectl.md#масштабирование-scale)
+- [Rollout](ru/kubectl.md#управление-обновлениями-rollout)
+- [Config и контексты](ru/kubectl.md#контексты-и-конфигурация-config)
+- [Debug и диагностика](ru/kubectl.md#отладка-и-диагностика-debug)
+- [Kustomize](ru/kubectl.md#работа-с-kustomize-kustomize)
+- [RBAC](ru/kubectl.md#rbac---роли-и-управление-доступом)
+- [Полезные паттерны](ru/kubectl.md#советы-и-полезные-паттерны)
 
-## 📁 Структура / Structure
+### EN (main sections)
 
-```
-├── ru/                 # Русская версия
+- [Getting information](eng/kubectl.md#getting-information-get)
+- [Viewing logs](eng/kubectl.md#viewing-logs-logs)
+- [Exec in container](eng/kubectl.md#execute-commands-in-container-exec)
+- [Apply/Create](eng/kubectl.md#creating-and-applying-resources-applycreate)
+- [Deleting resources](eng/kubectl.md#deleting-resources-delete)
+- [Scaling](eng/kubectl.md#scaling-scale)
+- [Rollout](eng/kubectl.md#managing-updates-rollout)
+- [Config and contexts](eng/kubectl.md#contexts-and-configuration-config)
+- [Debugging](eng/kubectl.md#debugging-and-diagnostics-debug)
+- [Kustomize](eng/kubectl.md#working-with-kustomize-kustomize)
+- [RBAC](eng/kubectl.md#rbac---roles-and-access-control)
+- [Tips and patterns](eng/kubectl.md#tips-and-useful-patterns)
+
+## Repository Structure
+
+```text
+.
+├── ru/
 │   └── kubectl.md
-├── eng/                # English version
+├── eng/
 │   └── kubectl.md
 └── README.md
 ```
 
-## 🌍 Выбор языка / Choose Language
+## Contributing
 
-| 🇷🇺 Русский | 🇬🇧 English |
-|-------------|-------------|
-| [ru/kubectl.md](ru/kubectl.md) | [eng/kubectl.md](eng/kubectl.md) |
+1. Fork repository.
+2. Add/update commands in both language files when possible.
+3. Keep the same section order in `ru/kubectl.md` and `eng/kubectl.md`.
+4. Open Pull Request with a short description of what was added.

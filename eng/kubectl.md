@@ -1,5 +1,22 @@
 # kubectl commands
 
+> Quick navigation tip: use `Ctrl/Cmd + F` with section keys in parentheses (`get`, `logs`, `exec`, `rollout`, `debug`, `kustomize`).
+
+## Quick Links
+
+- [get](#getting-information-get)
+- [describe](#detailed-information-describe)
+- [logs](#viewing-logs-logs)
+- [exec](#execute-commands-in-container-exec)
+- [apply/create](#creating-and-applying-resources-applycreate)
+- [delete](#deleting-resources-delete)
+- [scale](#scaling-scale)
+- [rollout](#managing-updates-rollout)
+- [config](#contexts-and-configuration-config)
+- [debug](#debugging-and-diagnostics-debug)
+- [kustomize](#working-with-kustomize-kustomize)
+- [krew](#kubectl-plugins-krew)
+
 ## Getting information (get)
 
 ```bash
