@@ -15,6 +15,7 @@
 - [config](#контексты-и-конфигурация-config)
 - [debug](#отладка-и-диагностика-debug)
 - [kustomize](#работа-с-kustomize-kustomize)
+- [troubleshooting](#диагностика-типичных-проблем-подов-troubleshooting)
 - [krew](#плагины-kubectl-krew)
 
 ## Получение информации (get)
@@ -1611,6 +1612,41 @@ kubectl get pods -l 'app=myapp,tier=backend'
 kubectl get pods -l 'app in (frontend,backend)'
 kubectl get pods -l 'app notin (legacy)'
 kubectl get pods -l '!deprecated'
+```
+
+## Диагностика типичных проблем подов (troubleshooting)
+
+```bash
+# Найти все не-running поды во всех неймспейсах
+kubectl get pods -A --field-selector='status.phase!=Running'
+
+# Быстро показать рестарты и текущее состояние контейнера
+kubectl get pods -A -o custom-columns=NS:.metadata.namespace,POD:.metadata.name,PHASE:.status.phase,RESTARTS:.status.containerStatuses[0].restartCount,STATE:.status.containerStatuses[0].state.waiting.reason
+
+# Проверить события конкретного пода (image pull, scheduling, probes)
+kubectl describe pod <pod-name> -n <namespace>
+kubectl get events -n <namespace> --field-selector involvedObject.name=<pod-name> --sort-by=.lastTimestamp
+
+# CrashLoopBackOff: посмотреть логи предыдущего запуска контейнера
+kubectl logs <pod-name> -n <namespace> --previous
+kubectl logs <pod-name> -n <namespace> -c <container-name> --previous
+
+# Pending: проверить ошибки scheduler и запрошенные ресурсы
+kubectl describe pod <pod-name> -n <namespace> | grep -A 20 -E 'Events|Requests|Limits|node(s)'
+
+# ImagePullBackOff / ErrImagePull: проверить image и pull secret
+kubectl describe pod <pod-name> -n <namespace> | grep -A 30 -E 'Failed|ErrImagePull|ImagePullBackOff|pull'
+kubectl get secret -n <namespace>
+
+# Ошибки liveness/readiness/startup probes
+kubectl describe pod <pod-name> -n <namespace> | grep -A 30 -E 'Liveness|Readiness|Startup|probe'
+
+# Проверить env и смонтированные config/secret внутри контейнера
+kubectl exec -it <pod-name> -n <namespace> -- env
+kubectl exec -it <pod-name> -n <namespace> -- ls -la /etc/config /etc/secrets
+
+# Временный debug-контейнер в сетевом namespace целевого пода
+kubectl debug <pod-name> -n <namespace> -it --image=busybox
 ```
 
 ## Советы и полезные паттерны

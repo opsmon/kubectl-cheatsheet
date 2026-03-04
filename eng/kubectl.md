@@ -15,6 +15,7 @@
 - [config](#contexts-and-configuration-config)
 - [debug](#debugging-and-diagnostics-debug)
 - [kustomize](#working-with-kustomize-kustomize)
+- [troubleshooting](#troubleshooting-common-pod-issues-troubleshooting)
 - [krew](#kubectl-plugins-krew)
 
 ## Getting information (get)
@@ -1611,6 +1612,41 @@ kubectl get pods -l 'app=myapp,tier=backend'
 kubectl get pods -l 'app in (frontend,backend)'
 kubectl get pods -l 'app notin (legacy)'
 kubectl get pods -l '!deprecated'
+```
+
+## Troubleshooting common pod issues (troubleshooting)
+
+```bash
+# Find non-running pods in all namespaces
+kubectl get pods -A --field-selector='status.phase!=Running'
+
+# Show restarts and current state quickly
+kubectl get pods -A -o custom-columns=NS:.metadata.namespace,POD:.metadata.name,PHASE:.status.phase,RESTARTS:.status.containerStatuses[0].restartCount,STATE:.status.containerStatuses[0].state.waiting.reason
+
+# Inspect events for a specific pod (image pulls, scheduling, probes)
+kubectl describe pod <pod-name> -n <namespace>
+kubectl get events -n <namespace> --field-selector involvedObject.name=<pod-name> --sort-by=.lastTimestamp
+
+# CrashLoopBackOff: read previous container logs
+kubectl logs <pod-name> -n <namespace> --previous
+kubectl logs <pod-name> -n <namespace> -c <container-name> --previous
+
+# Pending pod: check scheduling errors and requested resources
+kubectl describe pod <pod-name> -n <namespace> | grep -A 20 -E 'Events|Requests|Limits|node(s)'
+
+# ImagePullBackOff / ErrImagePull: verify image and pull secret
+kubectl describe pod <pod-name> -n <namespace> | grep -A 30 -E 'Failed|ErrImagePull|ImagePullBackOff|pull'
+kubectl get secret -n <namespace>
+
+# Probe failures (liveness/readiness/startup)
+kubectl describe pod <pod-name> -n <namespace> | grep -A 30 -E 'Liveness|Readiness|Startup|probe'
+
+# Check effective environment and mounted config/secret inside container
+kubectl exec -it <pod-name> -n <namespace> -- env
+kubectl exec -it <pod-name> -n <namespace> -- ls -la /etc/config /etc/secrets
+
+# Temporary debug container in target pod network namespace
+kubectl debug <pod-name> -n <namespace> -it --image=busybox
 ```
 
 ## Tips and useful patterns
