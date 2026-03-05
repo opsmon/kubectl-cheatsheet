@@ -15,6 +15,7 @@
 - [config](#контексты-и-конфигурация-config)
 - [debug](#отладка-и-диагностика-debug)
 - [kustomize](#работа-с-kustomize-kustomize)
+- [pss](#pod-security-standards-pss)
 - [troubleshooting](#диагностика-типичных-проблем-подов-troubleshooting)
 - [krew](#плагины-kubectl-krew)
 
@@ -997,6 +998,40 @@ kubectl create token <sa-name>
 
 # Создать токен с кастомным TTL
 kubectl create token <sa-name> --duration=24h
+```
+
+## Pod Security Standards (PSS)
+
+```bash
+# Проверить текущие Pod Security labels у namespace
+kubectl get ns <namespace> --show-labels
+kubectl get ns <namespace> -o jsonpath='{.metadata.labels.pod-security\.kubernetes\.io/enforce}'
+
+# Включить режим enforce=baseline
+kubectl label ns <namespace> pod-security.kubernetes.io/enforce=baseline --overwrite
+
+# Включить режим enforce=restricted (более строгий)
+kubectl label ns <namespace> pod-security.kubernetes.io/enforce=restricted --overwrite
+
+# Добавить warn/audit режимы для мягкой проверки
+kubectl label ns <namespace> pod-security.kubernetes.io/warn=restricted --overwrite
+kubectl label ns <namespace> pod-security.kubernetes.io/audit=restricted --overwrite
+
+# Зафиксировать версию политики (рекомендуется)
+kubectl label ns <namespace> pod-security.kubernetes.io/enforce-version=v1.30 --overwrite
+kubectl label ns <namespace> pod-security.kubernetes.io/warn-version=v1.30 --overwrite
+kubectl label ns <namespace> pod-security.kubernetes.io/audit-version=v1.30 --overwrite
+
+# Удалить PSS labels из namespace
+kubectl label ns <namespace> pod-security.kubernetes.io/enforce-
+kubectl label ns <namespace> pod-security.kubernetes.io/warn-
+kubectl label ns <namespace> pod-security.kubernetes.io/audit-
+
+# Проверить предупреждения при apply (если нарушены политики)
+kubectl apply -f pod.yaml -n <namespace>
+
+# Проверить securityContext у подов
+kubectl get pod <pod-name> -n <namespace> -o yaml | grep -A 40 -E 'securityContext|runAsNonRoot|privileged|allowPrivilegeEscalation|capabilities'
 ```
 
 ## Jobs и CronJobs
