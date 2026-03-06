@@ -11,6 +11,7 @@
 - [apply/create](#creating-and-applying-resources-applycreate)
 - [delete](#deleting-resources-delete)
 - [scale](#scaling-scale)
+- [port-forward](#port-forwarding-port-forward)
 - [rollout](#managing-updates-rollout)
 - [config](#contexts-and-configuration-config)
 - [debug](#debugging-and-diagnostics-debug)
@@ -257,6 +258,12 @@ kubectl port-forward <pod-name> 8080:80 -n <namespace>
 
 # Forward deployment port
 kubectl port-forward deployment/<deployment-name> 8080:80
+
+# Let kubectl choose free local port
+kubectl port-forward <pod-name> :80
+
+# Forward StatefulSet port
+kubectl port-forward statefulset/<statefulset-name> 8080:80
 ```
 
 ## Managing updates (rollout)

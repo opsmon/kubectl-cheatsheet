@@ -19,11 +19,13 @@ Practical `kubectl` commands cheatsheet for day-to-day Kubernetes work.
 - [Apply/Create](ru/kubectl.md#создание-и-применение-ресурсов-applycreate)
 - [Удаление ресурсов](ru/kubectl.md#удаление-ресурсов-delete)
 - [Scale](ru/kubectl.md#масштабирование-scale)
+- [Port-forward](ru/kubectl.md#проброс-портов-port-forward)
 - [Rollout](ru/kubectl.md#управление-обновлениями-rollout)
 - [Config и контексты](ru/kubectl.md#контексты-и-конфигурация-config)
 - [Debug и диагностика](ru/kubectl.md#отладка-и-диагностика-debug)
 - [Kustomize](ru/kubectl.md#работа-с-kustomize-kustomize)
 - [RBAC](ru/kubectl.md#rbac---роли-и-управление-доступом)
+- [PSS](ru/kubectl.md#pod-security-standards-pss)
 - [Полезные паттерны](ru/kubectl.md#советы-и-полезные-паттерны)
 
 ### EN (main sections)
@@ -34,11 +36,13 @@ Practical `kubectl` commands cheatsheet for day-to-day Kubernetes work.
 - [Apply/Create](eng/kubectl.md#creating-and-applying-resources-applycreate)
 - [Deleting resources](eng/kubectl.md#deleting-resources-delete)
 - [Scaling](eng/kubectl.md#scaling-scale)
+- [Port-forward](eng/kubectl.md#port-forwarding-port-forward)
 - [Rollout](eng/kubectl.md#managing-updates-rollout)
 - [Config and contexts](eng/kubectl.md#contexts-and-configuration-config)
 - [Debugging](eng/kubectl.md#debugging-and-diagnostics-debug)
 - [Kustomize](eng/kubectl.md#working-with-kustomize-kustomize)
 - [RBAC](eng/kubectl.md#rbac---roles-and-access-control)
+- [PSS](eng/kubectl.md#pod-security-standards-pss)
 - [Tips and patterns](eng/kubectl.md#tips-and-useful-patterns)
 
 ## Repository Structure

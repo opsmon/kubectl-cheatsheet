@@ -11,6 +11,7 @@
 - [apply/create](#создание-и-применение-ресурсов-applycreate)
 - [delete](#удаление-ресурсов-delete)
 - [scale](#масштабирование-scale)
+- [port-forward](#проброс-портов-port-forward)
 - [rollout](#управление-обновлениями-rollout)
 - [config](#контексты-и-конфигурация-config)
 - [debug](#отладка-и-диагностика-debug)
@@ -257,6 +258,12 @@ kubectl port-forward <pod-name> 8080:80 -n <namespace>
 
 # Пробросить порт deployment
 kubectl port-forward deployment/<deployment-name> 8080:80
+
+# Дать kubectl выбрать свободный локальный порт
+kubectl port-forward <pod-name> :80
+
+# Пробросить порт StatefulSet
+kubectl port-forward statefulset/<statefulset-name> 8080:80
 ```
 
 ## Управление обновлениями (rollout)
