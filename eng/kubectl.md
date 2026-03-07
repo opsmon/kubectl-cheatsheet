@@ -18,6 +18,9 @@
 - [kustomize](#working-with-kustomize-kustomize)
 - [pss](#pod-security-standards-pss)
 - [troubleshooting](#troubleshooting-common-pod-issues-troubleshooting)
+- [scheduling](#pod-scheduling-affinity--tolerations--nodeselector)
+- [security-context](#security-context)
+- [helm](#helm)
 - [krew](#kubectl-plugins-krew)
 
 ## Getting information (get)
@@ -1746,6 +1749,242 @@ kubectl get pods -A -o wide --no-headers | awk '{print $8}' | sort | uniq -c | s
 
 # Apply multiple files at once using stdin
 cat deployment.yaml service.yaml | kubectl apply -f -
+```
+
+## Pod Scheduling (affinity / tolerations / nodeSelector)
+
+```bash
+# List nodes with their labels (to find scheduling targets)
+kubectl get nodes --show-labels
+kubectl get nodes -l disktype=ssd
+
+# Add label to node for scheduling
+kubectl label node <node-name> disktype=ssd
+
+# Show taints on all nodes
+kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints
+
+# Check why pod is Pending / not scheduled
+kubectl describe pod <pod-name> | grep -A 20 Events
+
+# nodeSelector - schedule pod only on nodes with matching label:
+# spec:
+#   nodeSelector:
+#     disktype: ssd
+
+# Node affinity - require node with label (hard rule):
+# spec:
+#   affinity:
+#     nodeAffinity:
+#       requiredDuringSchedulingIgnoredDuringExecution:
+#         nodeSelectorTerms:
+#         - matchExpressions:
+#           - key: disktype
+#             operator: In
+#             values:
+#             - ssd
+
+# Node affinity - prefer node with label (soft rule):
+# spec:
+#   affinity:
+#     nodeAffinity:
+#       preferredDuringSchedulingIgnoredDuringExecution:
+#       - weight: 1
+#         preference:
+#           matchExpressions:
+#           - key: disktype
+#             operator: In
+#             values:
+#             - ssd
+
+# Pod anti-affinity - never schedule 2 pods on same node (hard):
+# spec:
+#   affinity:
+#     podAntiAffinity:
+#       requiredDuringSchedulingIgnoredDuringExecution:
+#       - labelSelector:
+#           matchLabels:
+#             app: my-app
+#         topologyKey: kubernetes.io/hostname
+
+# Pod anti-affinity - prefer spreading pods across nodes (soft):
+# spec:
+#   affinity:
+#     podAntiAffinity:
+#       preferredDuringSchedulingIgnoredDuringExecution:
+#       - weight: 100
+#         podAffinityTerm:
+#           labelSelector:
+#             matchLabels:
+#               app: my-app
+#           topologyKey: kubernetes.io/hostname
+
+# Toleration - allow pod to run on tainted node:
+# spec:
+#   tolerations:
+#   - key: "key"
+#     operator: "Equal"
+#     value: "value"
+#     effect: "NoSchedule"
+
+# Tolerate all taints (run on any node including master):
+# spec:
+#   tolerations:
+#   - operator: "Exists"
+
+# topologySpreadConstraints - evenly spread pods across zones:
+# spec:
+#   topologySpreadConstraints:
+#   - maxSkew: 1
+#     topologyKey: topology.kubernetes.io/zone
+#     whenUnsatisfiable: DoNotSchedule
+#     labelSelector:
+#       matchLabels:
+#         app: my-app
+```
+
+## Security Context
+
+```bash
+# View securityContext of a running pod
+kubectl get pod <pod-name> -o yaml | grep -A 20 securityContext
+
+# Check if pods run as root across all namespaces
+kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}{" "}{.metadata.name}{" runAsUser:"}{.spec.securityContext.runAsUser}{"\n"}{end}'
+
+# Show uid / non-root flag per pod
+kubectl get pods -n <namespace> -o custom-columns=NAME:.metadata.name,UID:.spec.securityContext.runAsUser,NON_ROOT:.spec.securityContext.runAsNonRoot
+
+# Find privileged containers in cluster
+kubectl get pods -A -o json | jq '.items[] | select(.spec.containers[].securityContext.privileged == true) | "\(.metadata.namespace)/\(.metadata.name)"'
+
+# Check hostNetwork / hostPID usage
+kubectl get pods -A -o custom-columns=NS:.metadata.namespace,NAME:.metadata.name,HOST_NET:.spec.hostNetwork,HOST_PID:.spec.hostPID | grep -v '<none>'
+
+# Pod-level securityContext example (applied to all containers):
+# spec:
+#   securityContext:
+#     runAsNonRoot: true
+#     runAsUser: 1000
+#     runAsGroup: 3000
+#     fsGroup: 2000
+#     seccompProfile:
+#       type: RuntimeDefault
+
+# Container-level securityContext example (most restrictive):
+# spec:
+#   containers:
+#   - name: app
+#     securityContext:
+#       allowPrivilegeEscalation: false
+#       readOnlyRootFilesystem: true
+#       runAsNonRoot: true
+#       runAsUser: 1000
+#       capabilities:
+#         drop:
+#         - ALL
+#         add:
+#         - NET_BIND_SERVICE   # only if port < 1024 needed
+
+# Verify readOnlyRootFilesystem is set (write attempt will fail):
+kubectl exec <pod-name> -- touch /test-write
+```
+
+## Helm
+
+```bash
+# Add a chart repository
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo add stable https://charts.helm.sh/stable
+
+# Update all repositories
+helm repo update
+
+# List added repositories
+helm repo list
+
+# Search for a chart in repos
+helm search repo nginx
+helm search repo nginx --versions
+
+# Search in Artifact Hub
+helm search hub nginx
+
+# Show default values for a chart
+helm show values bitnami/nginx
+
+# Install a release
+helm install <release-name> bitnami/nginx
+
+# Install with custom values file
+helm install <release-name> bitnami/nginx -f values.yaml
+
+# Install with inline value overrides
+helm install <release-name> bitnami/nginx --set replicaCount=2 --set service.type=NodePort
+
+# Install in specific namespace (create if missing)
+helm install <release-name> bitnami/nginx -n <namespace> --create-namespace
+
+# Preview manifests without installing (dry-run)
+helm install <release-name> bitnami/nginx --dry-run --debug
+
+# List all releases
+helm list
+helm list -A
+helm list -n <namespace>
+
+# Show status of a release
+helm status <release-name>
+
+# Get current values of a deployed release
+helm get values <release-name>
+
+# Get all rendered manifests of a release
+helm get manifest <release-name>
+
+# Upgrade a release
+helm upgrade <release-name> bitnami/nginx
+helm upgrade <release-name> bitnami/nginx -f values.yaml
+
+# Install if not exists, upgrade if exists
+helm upgrade --install <release-name> bitnami/nginx -f values.yaml
+
+# View release history
+helm history <release-name>
+
+# Rollback to previous revision
+helm rollback <release-name>
+
+# Rollback to specific revision
+helm rollback <release-name> 2
+
+# Uninstall a release
+helm uninstall <release-name>
+helm uninstall <release-name> -n <namespace>
+
+# Keep history after uninstall
+helm uninstall <release-name> --keep-history
+
+# Render templates locally without a cluster
+helm template <release-name> bitnami/nginx -f values.yaml
+
+# Render and save to file
+helm template <release-name> bitnami/nginx -f values.yaml > rendered.yaml
+
+# Lint a chart for errors
+helm lint ./my-chart
+
+# Create a new chart scaffold
+helm create my-chart
+
+# Package a chart into .tgz
+helm package ./my-chart
+
+# Download chart source to local directory
+helm pull bitnami/nginx --untar
+
+# Run chart tests (test hooks)
+helm test <release-name>
 ```
 
 ## kubectl plugins (krew)

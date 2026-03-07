@@ -18,6 +18,9 @@
 - [kustomize](#работа-с-kustomize-kustomize)
 - [pss](#pod-security-standards-pss)
 - [troubleshooting](#диагностика-типичных-проблем-подов-troubleshooting)
+- [scheduling](#планирование-подов-affinity--tolerations--nodeselector)
+- [security-context](#security-context)
+- [helm](#helm)
 - [krew](#плагины-kubectl-krew)
 
 ## Получение информации (get)
@@ -1746,6 +1749,242 @@ kubectl get pods -A -o wide --no-headers | awk '{print $8}' | sort | uniq -c | s
 
 # Применить несколько файлов через stdin
 cat deployment.yaml service.yaml | kubectl apply -f -
+```
+
+## Планирование подов (affinity / tolerations / nodeSelector)
+
+```bash
+# Список нод с метками (для выбора целевых нод)
+kubectl get nodes --show-labels
+kubectl get nodes -l disktype=ssd
+
+# Добавить метку на ноду для управления планированием
+kubectl label node <node-name> disktype=ssd
+
+# Показать taint'ы всех нод
+kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints
+
+# Проверить почему под в статусе Pending / не планируется
+kubectl describe pod <pod-name> | grep -A 20 Events
+
+# nodeSelector - запускать под только на нодах с меткой:
+# spec:
+#   nodeSelector:
+#     disktype: ssd
+
+# Node affinity - требовать ноду с меткой (жёсткое правило):
+# spec:
+#   affinity:
+#     nodeAffinity:
+#       requiredDuringSchedulingIgnoredDuringExecution:
+#         nodeSelectorTerms:
+#         - matchExpressions:
+#           - key: disktype
+#             operator: In
+#             values:
+#             - ssd
+
+# Node affinity - предпочитать ноду с меткой (мягкое правило):
+# spec:
+#   affinity:
+#     nodeAffinity:
+#       preferredDuringSchedulingIgnoredDuringExecution:
+#       - weight: 1
+#         preference:
+#           matchExpressions:
+#           - key: disktype
+#             operator: In
+#             values:
+#             - ssd
+
+# Pod anti-affinity - запретить 2 пода на одной ноде (жёстко):
+# spec:
+#   affinity:
+#     podAntiAffinity:
+#       requiredDuringSchedulingIgnoredDuringExecution:
+#       - labelSelector:
+#           matchLabels:
+#             app: my-app
+#         topologyKey: kubernetes.io/hostname
+
+# Pod anti-affinity - предпочитать разные ноды (мягко):
+# spec:
+#   affinity:
+#     podAntiAffinity:
+#       preferredDuringSchedulingIgnoredDuringExecution:
+#       - weight: 100
+#         podAffinityTerm:
+#           labelSelector:
+#             matchLabels:
+#               app: my-app
+#           topologyKey: kubernetes.io/hostname
+
+# Toleration - разрешить поду запускаться на ноде с taint:
+# spec:
+#   tolerations:
+#   - key: "key"
+#     operator: "Equal"
+#     value: "value"
+#     effect: "NoSchedule"
+
+# Допустить все taint'ы (запускаться на любой ноде, включая master):
+# spec:
+#   tolerations:
+#   - operator: "Exists"
+
+# topologySpreadConstraints - равномерно распределить поды по зонам:
+# spec:
+#   topologySpreadConstraints:
+#   - maxSkew: 1
+#     topologyKey: topology.kubernetes.io/zone
+#     whenUnsatisfiable: DoNotSchedule
+#     labelSelector:
+#       matchLabels:
+#         app: my-app
+```
+
+## Security Context
+
+```bash
+# Просмотр securityContext запущенного пода
+kubectl get pod <pod-name> -o yaml | grep -A 20 securityContext
+
+# Проверить запущены ли поды от root во всех неймспейсах
+kubectl get pods -A -o jsonpath='{range .items[*]}{.metadata.namespace}{" "}{.metadata.name}{" runAsUser:"}{.spec.securityContext.runAsUser}{"\n"}{end}'
+
+# Показать UID и non-root флаг для подов
+kubectl get pods -n <namespace> -o custom-columns=NAME:.metadata.name,UID:.spec.securityContext.runAsUser,NON_ROOT:.spec.securityContext.runAsNonRoot
+
+# Найти привилегированные контейнеры в кластере
+kubectl get pods -A -o json | jq '.items[] | select(.spec.containers[].securityContext.privileged == true) | "\(.metadata.namespace)/\(.metadata.name)"'
+
+# Проверить использование hostNetwork / hostPID
+kubectl get pods -A -o custom-columns=NS:.metadata.namespace,NAME:.metadata.name,HOST_NET:.spec.hostNetwork,HOST_PID:.spec.hostPID | grep -v '<none>'
+
+# Пример securityContext на уровне пода (применяется ко всем контейнерам):
+# spec:
+#   securityContext:
+#     runAsNonRoot: true
+#     runAsUser: 1000
+#     runAsGroup: 3000
+#     fsGroup: 2000
+#     seccompProfile:
+#       type: RuntimeDefault
+
+# Пример securityContext на уровне контейнера (максимально ограниченный):
+# spec:
+#   containers:
+#   - name: app
+#     securityContext:
+#       allowPrivilegeEscalation: false
+#       readOnlyRootFilesystem: true
+#       runAsNonRoot: true
+#       runAsUser: 1000
+#       capabilities:
+#         drop:
+#         - ALL
+#         add:
+#         - NET_BIND_SERVICE   # только если нужен порт < 1024
+
+# Проверить readOnlyRootFilesystem (попытка записи завершится ошибкой):
+kubectl exec <pod-name> -- touch /test-write
+```
+
+## Helm
+
+```bash
+# Добавить репозиторий чартов
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo add stable https://charts.helm.sh/stable
+
+# Обновить все репозитории
+helm repo update
+
+# Список добавленных репозиториев
+helm repo list
+
+# Поиск чарта в репозиториях
+helm search repo nginx
+helm search repo nginx --versions
+
+# Поиск в Artifact Hub
+helm search hub nginx
+
+# Показать дефолтные values чарта
+helm show values bitnami/nginx
+
+# Установить релиз
+helm install <release-name> bitnami/nginx
+
+# Установить с файлом values
+helm install <release-name> bitnami/nginx -f values.yaml
+
+# Установить с переопределением значений
+helm install <release-name> bitnami/nginx --set replicaCount=2 --set service.type=NodePort
+
+# Установить в конкретный неймспейс (создать если не существует)
+helm install <release-name> bitnami/nginx -n <namespace> --create-namespace
+
+# Предварительный просмотр манифестов без установки (dry-run)
+helm install <release-name> bitnami/nginx --dry-run --debug
+
+# Список всех релизов
+helm list
+helm list -A
+helm list -n <namespace>
+
+# Статус релиза
+helm status <release-name>
+
+# Получить текущие values развёрнутого релиза
+helm get values <release-name>
+
+# Получить все манифесты релиза
+helm get manifest <release-name>
+
+# Обновить релиз
+helm upgrade <release-name> bitnami/nginx
+helm upgrade <release-name> bitnami/nginx -f values.yaml
+
+# Установить если нет, обновить если есть
+helm upgrade --install <release-name> bitnami/nginx -f values.yaml
+
+# История ревизий релиза
+helm history <release-name>
+
+# Откатить к предыдущей ревизии
+helm rollback <release-name>
+
+# Откатить к конкретной ревизии
+helm rollback <release-name> 2
+
+# Удалить релиз
+helm uninstall <release-name>
+helm uninstall <release-name> -n <namespace>
+
+# Удалить релиз, сохранив историю
+helm uninstall <release-name> --keep-history
+
+# Отрендерить шаблоны локально без кластера
+helm template <release-name> bitnami/nginx -f values.yaml
+
+# Отрендерить и сохранить в файл
+helm template <release-name> bitnami/nginx -f values.yaml > rendered.yaml
+
+# Проверить чарт на ошибки (lint)
+helm lint ./my-chart
+
+# Создать scaffold нового чарта
+helm create my-chart
+
+# Упаковать чарт в .tgz
+helm package ./my-chart
+
+# Скачать исходник чарта локально
+helm pull bitnami/nginx --untar
+
+# Запустить тесты чарта (test hooks)
+helm test <release-name>
 ```
 
 ## Плагины kubectl (krew)
