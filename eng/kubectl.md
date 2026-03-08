@@ -4,24 +4,29 @@
 
 ## Quick Links
 
-- [get](#getting-information-get)
-- [describe](#detailed-information-describe)
-- [logs](#viewing-logs-logs)
-- [exec](#execute-commands-in-container-exec)
-- [apply/create](#creating-and-applying-resources-applycreate)
-- [delete](#deleting-resources-delete)
-- [scale](#scaling-scale)
-- [port-forward](#port-forwarding-port-forward)
-- [rollout](#managing-updates-rollout)
-- [config](#contexts-and-configuration-config)
-- [debug](#debugging-and-diagnostics-debug)
-- [kustomize](#working-with-kustomize-kustomize)
-- [pss](#pod-security-standards-pss)
-- [troubleshooting](#troubleshooting-common-pod-issues-troubleshooting)
-- [scheduling](#pod-scheduling-affinity--tolerations--nodeselector)
-- [security-context](#security-context)
-- [helm](#helm)
-- [krew](#kubectl-plugins-krew)
+**Viewing & Diagnostics:**
+[get](#getting-information-get) · [describe](#detailed-information-describe) · [logs](#viewing-logs-logs) · [top](#resource-monitoring-top) · [debug](#debugging-and-diagnostics-debug) · [events](#debugging-and-diagnostics-debug) · [troubleshooting](#troubleshooting-common-pod-issues-troubleshooting)
+
+**Resource Management:**
+[apply/create](#creating-and-applying-resources-applycreate) · [edit](#editing-resources-edit) · [patch](#patching-resources-patch) · [set](#quick-resource-modification-set) · [delete](#deleting-resources-delete) · [replace](#replace-and-attach-to-resources-replaceattach) · [diff](#comparing-configurations-diff)
+
+**Workloads:**
+[run](#running-pods-and-jobs-run) · [rollout](#managing-updates-rollout) · [scale](#scaling-scale) · [hpa](#horizontalpodautoscaler-hpa) · [statefulsets](#statefulsets) · [daemonsets](#daemonsets) · [jobs](#jobs-and-cronjobs)
+
+**Network:**
+[port-forward](#port-forwarding-port-forward) · [expose](#creating-services-expose) · [ingress](#ingress) · [networkpolicy](#network-policies-networkpolicy) · [proxy](#proxy-and-api-access-proxy)
+
+**Storage & Config:**
+[configmaps](#configmaps) · [secrets](#secrets-management-secret) · [pv/pvc](#persistent-volumes-pvpvc) · [kustomize](#working-with-kustomize-kustomize)
+
+**Security:**
+[rbac](#rbac---roles-and-access-control) · [pss](#pod-security-standards-pss) · [security-context](#security-context) · [pdb](#poddisruptionbudget-pdb) · [quota](#resourcequota-and-limitrange)
+
+**Cluster & Infrastructure:**
+[config](#contexts-and-configuration-config) · [namespaces](#namespace-management) · [nodes](#node-management-taintcordondrain) · [crd](#custom-resource-definitions-crd) · [api-resources](#working-with-api-resources-api-resources)
+
+**Utilities & Tools:**
+[exec](#execute-commands-in-container-exec) · [cp](#copying-files-cp) · [label](#working-with-labels-labelannotate) · [wait](#waiting-for-conditions-wait) · [jsonpath](#advanced-output-jsonpathcustom-columns) · [field-selectors](#field-selectors-and-filtering) · [scheduling](#pod-scheduling-affinity--tolerations--nodeselector) · [tips](#tips-and-useful-patterns) · [helm](#helm) · [krew](#kubectl-plugins-krew)
 
 ## Getting information (get)
 

@@ -4,24 +4,29 @@
 
 ## Быстрые ссылки
 
-- [get](#получение-информации-get)
-- [describe](#детальная-информация-describe)
-- [logs](#просмотр-логов-logs)
-- [exec](#выполнение-команд-в-контейнере-exec)
-- [apply/create](#создание-и-применение-ресурсов-applycreate)
-- [delete](#удаление-ресурсов-delete)
-- [scale](#масштабирование-scale)
-- [port-forward](#проброс-портов-port-forward)
-- [rollout](#управление-обновлениями-rollout)
-- [config](#контексты-и-конфигурация-config)
-- [debug](#отладка-и-диагностика-debug)
-- [kustomize](#работа-с-kustomize-kustomize)
-- [pss](#pod-security-standards-pss)
-- [troubleshooting](#диагностика-типичных-проблем-подов-troubleshooting)
-- [scheduling](#планирование-подов-affinity--tolerations--nodeselector)
-- [security-context](#security-context)
-- [helm](#helm)
-- [krew](#плагины-kubectl-krew)
+**Просмотр и диагностика:**
+[get](#получение-информации-get) · [describe](#детальная-информация-describe) · [logs](#просмотр-логов-logs) · [top](#мониторинг-ресурсов-top) · [debug](#отладка-и-диагностика-debug) · [events](#отладка-и-диагностика-debug) · [troubleshooting](#диагностика-типичных-проблем-подов-troubleshooting)
+
+**Управление ресурсами:**
+[apply/create](#создание-и-применение-ресурсов-applycreate) · [edit](#редактирование-ресурсов-edit) · [patch](#патчинг-ресурсов-patch) · [set](#быстрое-изменение-ресурсов-set) · [delete](#удаление-ресурсов-delete) · [replace](#замена-и-подключение-к-ресурсам-replaceattach) · [diff](#сравнение-конфигураций-diff)
+
+**Рабочие нагрузки:**
+[run](#запуск-подов-и-задач-run) · [rollout](#управление-обновлениями-rollout) · [scale](#масштабирование-scale) · [hpa](#horizontalpodautoscaler-hpa) · [statefulsets](#statefulsets) · [daemonsets](#daemonsets) · [jobs](#jobs-и-cronjobs)
+
+**Сеть:**
+[port-forward](#проброс-портов-port-forward) · [expose](#создание-сервисов-expose) · [ingress](#ingress) · [networkpolicy](#сетевые-политики-networkpolicy) · [proxy](#прокси-и-доступ-к-api-proxy)
+
+**Хранилище и конфигурация:**
+[configmaps](#configmaps) · [secrets](#управление-secret-secret) · [pv/pvc](#постоянные-тома-pvpvc) · [kustomize](#работа-с-kustomize-kustomize)
+
+**Безопасность:**
+[rbac](#rbac---роли-и-управление-доступом) · [pss](#pod-security-standards-pss) · [security-context](#security-context) · [pdb](#poddisruptionbudget-pdb) · [quota](#resourcequota-и-limitrange)
+
+**Кластер и инфраструктура:**
+[config](#контексты-и-конфигурация-config) · [namespaces](#управление-неймспейсами) · [nodes](#управление-нодами-taintcordondrain) · [crd](#custom-resource-definitions-crd) · [api-resources](#работа-с-api-ресурсами-api-resources)
+
+**Утилиты и инструменты:**
+[exec](#выполнение-команд-в-контейнере-exec) · [cp](#копирование-файлов-cp) · [label](#работа-с-метками-labelannotate) · [wait](#ожидание-состояния-wait) · [jsonpath](#продвинутый-вывод-данных-jsonpathcustom-columns) · [field-selectors](#селекторы-полей-и-фильтрация) · [scheduling](#планирование-подов-affinity--tolerations--nodeselector) · [tips](#советы-и-полезные-паттерны) · [helm](#helm) · [krew](#плагины-kubectl-krew)
 
 ## Получение информации (get)
 
