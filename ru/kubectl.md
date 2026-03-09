@@ -20,7 +20,7 @@
 [configmaps](#configmaps) · [secrets](#управление-secret-secret) · [pv/pvc](#постоянные-тома-pvpvc) · [kustomize](#работа-с-kustomize-kustomize)
 
 **Безопасность:**
-[rbac](#rbac---роли-и-управление-доступом) · [pss](#pod-security-standards-pss) · [security-context](#security-context) · [pdb](#poddisruptionbudget-pdb) · [quota](#resourcequota-и-limitrange)
+[rbac](#rbac---роли-и-управление-доступом) · [auth](#проверка-прав-доступа-auth) · [pss](#pod-security-standards-pss) · [security-context](#security-context) · [pdb](#poddisruptionbudget-pdb) · [quota](#resourcequota-и-limitrange)
 
 **Кластер и инфраструктура:**
 [config](#контексты-и-конфигурация-config) · [namespaces](#управление-неймспейсами) · [nodes](#управление-нодами-taintcordondrain) · [crd](#custom-resource-definitions-crd) · [api-resources](#работа-с-api-ресурсами-api-resources)
@@ -2037,4 +2037,43 @@ kubectl df-pv
 
 # kubectl whoami   - текущий пользователь / сервис-аккаунт
 kubectl whoami
+```
+
+## Проверка прав доступа (auth)
+
+```bash
+# Проверить, можно ли выполнить действие в текущем неймспейсе
+kubectl auth can-i get pods
+kubectl auth can-i create deployments
+kubectl auth can-i delete secrets
+
+# Проверить в конкретном неймспейсе
+kubectl auth can-i get pods -n kube-system
+
+# Проверить во всех неймспейсах
+kubectl auth can-i get pods --all-namespaces
+
+# Список всех разрешённых действий в текущем неймспейсе
+kubectl auth can-i --list
+kubectl auth can-i --list -n staging
+
+# Проверить права от имени другого пользователя
+kubectl auth can-i get pods --as dev-user
+kubectl auth can-i get pods --as system:serviceaccount:default:mysa
+
+# Проверить права от имени группы
+kubectl auth can-i get pods --as-group system:masters --as fake-user
+
+# Проверить права ServiceAccount (полезно при отладке рабочих нагрузок)
+kubectl auth can-i list pods \
+  --as system:serviceaccount:<namespace>:<serviceaccount-name>
+
+# Показать текущую идентичность (пользователь, группы, extra)
+kubectl auth whoami
+
+# Применить RBAC-объекты из файла (добирает недостающие правила, не разрушает существующие)
+kubectl auth reconcile -f rbac-manifest.yaml
+
+# Пробный запуск reconcile — просмотр изменений без применения
+kubectl auth reconcile -f rbac-manifest.yaml --dry-run=client
 ```

@@ -20,7 +20,7 @@
 [configmaps](#configmaps) · [secrets](#secrets-management-secret) · [pv/pvc](#persistent-volumes-pvpvc) · [kustomize](#working-with-kustomize-kustomize)
 
 **Security:**
-[rbac](#rbac---roles-and-access-control) · [pss](#pod-security-standards-pss) · [security-context](#security-context) · [pdb](#poddisruptionbudget-pdb) · [quota](#resourcequota-and-limitrange)
+[rbac](#rbac---roles-and-access-control) · [auth](#checking-permissions-auth) · [pss](#pod-security-standards-pss) · [security-context](#security-context) · [pdb](#poddisruptionbudget-pdb) · [quota](#resourcequota-and-limitrange)
 
 **Cluster & Infrastructure:**
 [config](#contexts-and-configuration-config) · [namespaces](#namespace-management) · [nodes](#node-management-taintcordondrain) · [crd](#custom-resource-definitions-crd) · [api-resources](#working-with-api-resources-api-resources)
@@ -2037,4 +2037,43 @@ kubectl df-pv
 
 # kubectl whoami   - show current user/service account identity
 kubectl whoami
+```
+
+## Checking permissions (auth)
+
+```bash
+# Check if you can perform an action in the current namespace
+kubectl auth can-i get pods
+kubectl auth can-i create deployments
+kubectl auth can-i delete secrets
+
+# Check in a specific namespace
+kubectl auth can-i get pods -n kube-system
+
+# Check in all namespaces
+kubectl auth can-i get pods --all-namespaces
+
+# List all actions you are allowed to perform in current namespace
+kubectl auth can-i --list
+kubectl auth can-i --list -n staging
+
+# Impersonate another user to check their permissions
+kubectl auth can-i get pods --as dev-user
+kubectl auth can-i get pods --as system:serviceaccount:default:mysa
+
+# Impersonate a group
+kubectl auth can-i get pods --as-group system:masters --as fake-user
+
+# Check if a ServiceAccount can do something (useful for debugging workloads)
+kubectl auth can-i list pods \
+  --as system:serviceaccount:<namespace>:<serviceaccount-name>
+
+# Show current identity (user, groups, extra)
+kubectl auth whoami
+
+# Reconcile RBAC objects from a file (applies missing rules, non-destructive)
+kubectl auth reconcile -f rbac-manifest.yaml
+
+# Dry-run reconcile to preview changes
+kubectl auth reconcile -f rbac-manifest.yaml --dry-run=client
 ```
