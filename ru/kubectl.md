@@ -11,7 +11,7 @@
 [apply/create](#создание-и-применение-ресурсов-applycreate) · [edit](#редактирование-ресурсов-edit) · [patch](#патчинг-ресурсов-patch) · [set](#быстрое-изменение-ресурсов-set) · [delete](#удаление-ресурсов-delete) · [replace](#замена-и-подключение-к-ресурсам-replaceattach) · [diff](#сравнение-конфигураций-diff)
 
 **Рабочие нагрузки:**
-[run](#запуск-подов-и-задач-run) · [rollout](#управление-обновлениями-rollout) · [scale](#масштабирование-scale) · [hpa](#horizontalpodautoscaler-hpa) · [statefulsets](#statefulsets) · [daemonsets](#daemonsets) · [jobs](#jobs-и-cronjobs)
+[run](#запуск-подов-и-задач-run) · [rollout](#управление-обновлениями-rollout) · [scale](#масштабирование-scale) · [hpa](#horizontalpodautoscaler-hpa) · [vpa](#verticalpodautoscaler-vpa) · [statefulsets](#statefulsets) · [daemonsets](#daemonsets) · [jobs](#jobs-и-cronjobs)
 
 **Сеть:**
 [port-forward](#проброс-портов-port-forward) · [expose](#создание-сервисов-expose) · [ingress](#ingress) · [networkpolicy](#сетевые-политики-networkpolicy) · [proxy](#прокси-и-доступ-к-api-proxy)
@@ -2076,4 +2076,70 @@ kubectl auth reconcile -f rbac-manifest.yaml
 
 # Пробный запуск reconcile — просмотр изменений без применения
 kubectl auth reconcile -f rbac-manifest.yaml --dry-run=client
+```
+
+## VerticalPodAutoscaler (VPA)
+
+```bash
+# VPA не входит в стандартный Kubernetes — устанавливается отдельно:
+# https://github.com/kubernetes/autoscaler/tree/master/vertical-pod-autoscaler
+
+# Список всех VPA
+kubectl get vpa
+kubectl get vpa -A
+
+# Детальная информация о VPA (включая рекомендации)
+kubectl describe vpa <vpa-name>
+
+# Просмотр VPA в формате YAML
+kubectl get vpa <vpa-name> -o yaml
+
+# Создать VPA из файла
+kubectl apply -f vpa.yaml
+
+# Удалить VPA
+kubectl delete vpa <vpa-name>
+
+# Показать рекомендации для всех VPA
+kubectl get vpa -o custom-columns=NAME:.metadata.name,MODE:.spec.updatePolicy.updateMode,CPU_REQ:.status.recommendation.containerRecommendations[0].target.cpu,MEM_REQ:.status.recommendation.containerRecommendations[0].target.memory
+
+# Пример VPA YAML — режим Off (только рекомендации, без автоизменений):
+# apiVersion: autoscaling.k8s.io/v1
+# kind: VerticalPodAutoscaler
+# metadata:
+#   name: my-vpa
+# spec:
+#   targetRef:
+#     apiVersion: apps/v1
+#     kind: Deployment
+#     name: my-deployment
+#   updatePolicy:
+#     updateMode: "Off"
+
+# Пример VPA YAML — режим Auto (рестарт подов с новыми лимитами):
+# spec:
+#   targetRef:
+#     apiVersion: apps/v1
+#     kind: Deployment
+#     name: my-deployment
+#   updatePolicy:
+#     updateMode: "Auto"
+#   resourcePolicy:
+#     containerPolicies:
+#     - containerName: app
+#       minAllowed:
+#         cpu: 50m
+#         memory: 64Mi
+#       maxAllowed:
+#         cpu: "2"
+#         memory: 2Gi
+
+# Режимы updateMode:
+#   Off        — только вычисляет рекомендации, ничего не меняет
+#   Initial    — устанавливает ресурсы только при создании пода
+#   Recreate   — вытесняет и пересоздаёт поды при изменении рекомендаций
+#   Auto       — аналогично Recreate (поведение по умолчанию)
+
+# Проверить, запущен ли admission controller VPA
+kubectl get pods -n kube-system | grep vpa
 ```

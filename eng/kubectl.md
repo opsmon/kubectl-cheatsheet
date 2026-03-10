@@ -11,7 +11,7 @@
 [apply/create](#creating-and-applying-resources-applycreate) · [edit](#editing-resources-edit) · [patch](#patching-resources-patch) · [set](#quick-resource-modification-set) · [delete](#deleting-resources-delete) · [replace](#replace-and-attach-to-resources-replaceattach) · [diff](#comparing-configurations-diff)
 
 **Workloads:**
-[run](#running-pods-and-jobs-run) · [rollout](#managing-updates-rollout) · [scale](#scaling-scale) · [hpa](#horizontalpodautoscaler-hpa) · [statefulsets](#statefulsets) · [daemonsets](#daemonsets) · [jobs](#jobs-and-cronjobs)
+[run](#running-pods-and-jobs-run) · [rollout](#managing-updates-rollout) · [scale](#scaling-scale) · [hpa](#horizontalpodautoscaler-hpa) · [vpa](#verticalpodautoscaler-vpa) · [statefulsets](#statefulsets) · [daemonsets](#daemonsets) · [jobs](#jobs-and-cronjobs)
 
 **Network:**
 [port-forward](#port-forwarding-port-forward) · [expose](#creating-services-expose) · [ingress](#ingress) · [networkpolicy](#network-policies-networkpolicy) · [proxy](#proxy-and-api-access-proxy)
@@ -2076,4 +2076,70 @@ kubectl auth reconcile -f rbac-manifest.yaml
 
 # Dry-run reconcile to preview changes
 kubectl auth reconcile -f rbac-manifest.yaml --dry-run=client
+```
+
+## VerticalPodAutoscaler (VPA)
+
+```bash
+# VPA is not built into Kubernetes — install the component first:
+# https://github.com/kubernetes/autoscaler/tree/master/vertical-pod-autoscaler
+
+# List all VPAs
+kubectl get vpa
+kubectl get vpa -A
+
+# Describe VPA (shows recommended resources)
+kubectl describe vpa <vpa-name>
+
+# View VPA as YAML
+kubectl get vpa <vpa-name> -o yaml
+
+# Create VPA from file
+kubectl apply -f vpa.yaml
+
+# Delete VPA
+kubectl delete vpa <vpa-name>
+
+# Show VPA recommendations for all VPAs
+kubectl get vpa -o custom-columns=NAME:.metadata.name,MODE:.spec.updatePolicy.updateMode,CPU_REQ:.status.recommendation.containerRecommendations[0].target.cpu,MEM_REQ:.status.recommendation.containerRecommendations[0].target.memory
+
+# Example VPA YAML — Off mode (only shows recommendations, no auto-update):
+# apiVersion: autoscaling.k8s.io/v1
+# kind: VerticalPodAutoscaler
+# metadata:
+#   name: my-vpa
+# spec:
+#   targetRef:
+#     apiVersion: apps/v1
+#     kind: Deployment
+#     name: my-deployment
+#   updatePolicy:
+#     updateMode: "Off"
+
+# Example VPA YAML — Auto mode (restarts pods with new resource values):
+# spec:
+#   targetRef:
+#     apiVersion: apps/v1
+#     kind: Deployment
+#     name: my-deployment
+#   updatePolicy:
+#     updateMode: "Auto"
+#   resourcePolicy:
+#     containerPolicies:
+#     - containerName: app
+#       minAllowed:
+#         cpu: 50m
+#         memory: 64Mi
+#       maxAllowed:
+#         cpu: "2"
+#         memory: 2Gi
+
+# updateMode options:
+#   Off        — only compute recommendations, no changes applied
+#   Initial    — set resources only at pod creation
+#   Recreate   — evict and recreate pods when recommendations change
+#   Auto       — same as Recreate (default behaviour)
+
+# Check VPA admission controller is running
+kubectl get pods -n kube-system | grep vpa
 ```
