@@ -20,7 +20,7 @@
 [configmaps](#configmaps) · [secrets](#управление-secret-secret) · [pv/pvc](#постоянные-тома-pvpvc) · [kustomize](#работа-с-kustomize-kustomize)
 
 **Безопасность:**
-[rbac](#rbac---роли-и-управление-доступом) · [auth](#проверка-прав-доступа-auth) · [pss](#pod-security-standards-pss) · [security-context](#security-context) · [pdb](#poddisruptionbudget-pdb) · [quota](#resourcequota-и-limitrange)
+[rbac](#rbac---роли-и-управление-доступом) · [auth](#проверка-прав-доступа-auth) · [csr](#запросы-на-подпись-сертификата-csr) · [pss](#pod-security-standards-pss) · [security-context](#security-context) · [pdb](#poddisruptionbudget-pdb) · [quota](#resourcequota-и-limitrange)
 
 **Кластер и инфраструктура:**
 [config](#контексты-и-конфигурация-config) · [namespaces](#управление-неймспейсами) · [nodes](#управление-нодами-taintcordondrain) · [crd](#custom-resource-definitions-crd) · [api-resources](#работа-с-api-ресурсами-api-resources)
@@ -2142,4 +2142,61 @@ kubectl get vpa -o custom-columns=NAME:.metadata.name,MODE:.spec.updatePolicy.up
 
 # Проверить, запущен ли admission controller VPA
 kubectl get pods -n kube-system | grep vpa
+```
+
+## Запросы на подпись сертификата (CSR)
+
+```bash
+# Список всех CSR в кластере
+kubectl get csr
+kubectl get certificatesigningrequests
+
+# Показать CSR со статусом и подписантом
+kubectl get csr -o custom-columns=NAME:.metadata.name,AGE:.metadata.creationTimestamp,SIGNERNAME:.spec.signerName,REQUESTOR:.spec.username,CONDITION:.status.conditions[0].type
+
+# Детальная информация о CSR (subject, usages, events)
+kubectl describe csr <csr-name>
+
+# Одобрить CSR
+kubectl certificate approve <csr-name>
+
+# Отклонить CSR
+kubectl certificate deny <csr-name>
+
+# Удалить CSR
+kubectl delete csr <csr-name>
+
+# Создать объект CSR из PEM-файла (k8s >= 1.18)
+cat <<EOF | kubectl apply -f -
+apiVersion: certificates.k8s.io/v1
+kind: CertificateSigningRequest
+metadata:
+  name: my-user
+spec:
+  request: $(cat my-user.csr | base64 | tr -d '\n')
+  signerName: kubernetes.io/kube-apiserver-client
+  expirationSeconds: 86400   # 1 день
+  usages:
+  - client auth
+EOF
+
+# Получить подписанный сертификат после одобрения
+kubectl get csr <csr-name> -o jsonpath='{.status.certificate}' | base64 -d > my-user.crt
+
+# Полный воркфлоу: сгенерировать ключ + CSR, отправить, одобрить, забрать сертификат
+# 1. Сгенерировать приватный ключ и CSR через openssl
+openssl genrsa -out my-user.key 2048
+openssl req -new -key my-user.key -out my-user.csr -subj "/CN=my-user/O=my-group"
+
+# 2. Отправить CSR в Kubernetes (см. выше)
+
+# 3. Одобрить
+kubectl certificate approve my-user
+
+# 4. Забрать подписанный сертификат
+kubectl get csr my-user -o jsonpath='{.status.certificate}' | base64 -d > my-user.crt
+
+# 5. Добавить пользователя в kubeconfig
+kubectl config set-credentials my-user --client-key=my-user.key --client-certificate=my-user.crt --embed-certs=true
+kubectl config set-context my-user-context --cluster=<cluster-name> --user=my-user
 ```

@@ -20,7 +20,7 @@
 [configmaps](#configmaps) · [secrets](#secrets-management-secret) · [pv/pvc](#persistent-volumes-pvpvc) · [kustomize](#working-with-kustomize-kustomize)
 
 **Security:**
-[rbac](#rbac---roles-and-access-control) · [auth](#checking-permissions-auth) · [pss](#pod-security-standards-pss) · [security-context](#security-context) · [pdb](#poddisruptionbudget-pdb) · [quota](#resourcequota-and-limitrange)
+[rbac](#rbac---roles-and-access-control) · [auth](#checking-permissions-auth) · [csr](#certificate-signing-requests-csr) · [pss](#pod-security-standards-pss) · [security-context](#security-context) · [pdb](#poddisruptionbudget-pdb) · [quota](#resourcequota-and-limitrange)
 
 **Cluster & Infrastructure:**
 [config](#contexts-and-configuration-config) · [namespaces](#namespace-management) · [nodes](#node-management-taintcordondrain) · [crd](#custom-resource-definitions-crd) · [api-resources](#working-with-api-resources-api-resources)
@@ -2142,4 +2142,61 @@ kubectl get vpa -o custom-columns=NAME:.metadata.name,MODE:.spec.updatePolicy.up
 
 # Check VPA admission controller is running
 kubectl get pods -n kube-system | grep vpa
+```
+
+## Certificate Signing Requests (CSR)
+
+```bash
+# List all CSRs in cluster
+kubectl get csr
+kubectl get certificatesigningrequests
+
+# Show CSR with status and signer
+kubectl get csr -o custom-columns=NAME:.metadata.name,AGE:.metadata.creationTimestamp,SIGNERNAME:.spec.signerName,REQUESTOR:.spec.username,CONDITION:.status.conditions[0].type
+
+# Describe CSR (shows subject, usages, events)
+kubectl describe csr <csr-name>
+
+# Approve a CSR
+kubectl certificate approve <csr-name>
+
+# Deny a CSR
+kubectl certificate deny <csr-name>
+
+# Delete a CSR
+kubectl delete csr <csr-name>
+
+# Create a CSR object from a PEM file (k8s >= 1.18)
+cat <<EOF | kubectl apply -f -
+apiVersion: certificates.k8s.io/v1
+kind: CertificateSigningRequest
+metadata:
+  name: my-user
+spec:
+  request: $(cat my-user.csr | base64 | tr -d '\n')
+  signerName: kubernetes.io/kube-apiserver-client
+  expirationSeconds: 86400   # 1 day
+  usages:
+  - client auth
+EOF
+
+# Retrieve the signed certificate after approval
+kubectl get csr <csr-name> -o jsonpath='{.status.certificate}' | base64 -d > my-user.crt
+
+# Full workflow: generate key + CSR, submit, approve, fetch cert
+# 1. Generate private key and CSR with openssl
+openssl genrsa -out my-user.key 2048
+openssl req -new -key my-user.key -out my-user.csr -subj "/CN=my-user/O=my-group"
+
+# 2. Submit CSR to Kubernetes (see above)
+
+# 3. Approve
+kubectl certificate approve my-user
+
+# 4. Fetch signed cert
+kubectl get csr my-user -o jsonpath='{.status.certificate}' | base64 -d > my-user.crt
+
+# 5. Add user to kubeconfig
+kubectl config set-credentials my-user --client-key=my-user.key --client-certificate=my-user.crt --embed-certs=true
+kubectl config set-context my-user-context --cluster=<cluster-name> --user=my-user
 ```
