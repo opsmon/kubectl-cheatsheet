@@ -523,26 +523,74 @@ kubectl patch svc <service-name> -p '{"spec":{"type":"NodePort"}}'
 ## Waiting for conditions (wait)
 
 ```bash
-# Wait for pod to be ready
-kubectl wait --for=condition=Ready pod/<pod-name>
+# Wait for pod to become Ready
+kubectl wait pod/<pod-name> --for=condition=Ready
 
-# Wait with timeout
-kubectl wait --for=condition=Ready pod/<pod-name> --timeout=60s
+# Wait for pod with timeout (default is 30s)
+kubectl wait pod/<pod-name> --for=condition=Ready --timeout=120s
 
-# Wait for all pods by label
-kubectl wait --for=condition=Ready pods -l app=myapp
+# Wait for all pods with a label to be ready
+kubectl wait pods -l app=myapp --for=condition=Ready --timeout=60s
 
-# Wait for deployment rollout
-kubectl wait --for=condition=Available deployment/<deployment-name>
+# Wait for deployment to finish rollout (all replicas available)
+kubectl wait deployment/<deploy-name> --for=condition=Available --timeout=300s
+
+# Wait for job to complete
+kubectl wait job/<job-name> --for=condition=Complete --timeout=120s
+
+# Wait for job to fail
+kubectl wait job/<job-name> --for=condition=Failed --timeout=60s
 
 # Wait for resource deletion
-kubectl wait --for=delete pod/<pod-name> --timeout=30s
+kubectl wait pod/<pod-name> --for=delete --timeout=60s
 
-# Wait for job completion
-kubectl wait --for=condition=Complete job/<job-name>
+# Wait for all pods with a label to be deleted
+kubectl wait pods -l app=myapp --for=delete --timeout=120s
 
-# Wait in specific namespace
-kubectl wait --for=condition=Ready pod/<pod-name> -n <namespace>
+# Wait for node to become Ready
+kubectl wait node/<node-name> --for=condition=Ready --timeout=300s
+
+# Wait for all nodes to become Ready
+kubectl wait nodes --all --for=condition=Ready --timeout=300s
+
+# Wait for CRD to be established
+kubectl wait crd/<crd-name> --for=condition=Established --timeout=60s
+
+# Wait in a specific namespace
+kubectl wait pod/<pod-name> -n <namespace> --for=condition=Ready --timeout=60s
+
+# Wait for multiple resources of the same type (by label, all namespaces)
+kubectl wait pods -l tier=backend --for=condition=Ready --all-namespaces --timeout=120s
+
+# Wait for PVC to be Bound
+kubectl wait pvc/<pvc-name> --for=jsonpath='{.status.phase}'=Bound --timeout=60s
+
+# Wait on arbitrary field via jsonpath (k8s >= 1.23)
+kubectl wait deployment/<deploy-name> \
+  --for=jsonpath='{.status.readyReplicas}'=3 --timeout=120s
+
+# CI/CD usage example
+kubectl apply -f deployment.yaml
+kubectl wait deployment/myapp --for=condition=Available --timeout=300s
+echo "Deploy successful"
+
+# Check multiple conditions sequentially
+kubectl wait pod/<pod-name> --for=condition=Initialized --timeout=30s
+kubectl wait pod/<pod-name> --for=condition=Ready --timeout=120s
+kubectl wait pod/<pod-name> --for=condition=ContainersReady --timeout=120s
+
+# Available pod conditions:
+#   Initialized       — all init containers have completed
+#   Ready             — pod is ready to serve traffic
+#   ContainersReady   — all containers in the pod are ready
+#   PodScheduled      — pod has been scheduled to a node
+
+# Available node conditions:
+#   Ready             — node is healthy and ready
+#   MemoryPressure    — node is under memory pressure
+#   DiskPressure      — node is under disk pressure
+#   PIDPressure       — node is under PID pressure
+#   NetworkUnavailable — node network is not configured
 ```
 
 ## Working with API resources (api-resources)
