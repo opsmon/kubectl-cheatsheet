@@ -5,7 +5,7 @@
 ## Quick Links
 
 **Viewing & Diagnostics:**
-[get](#getting-information-get) · [describe](#detailed-information-describe) · [logs](#viewing-logs-logs) · [top](#resource-monitoring-top) · [debug](#debugging-and-diagnostics-debug) · [events](#debugging-and-diagnostics-debug) · [troubleshooting](#troubleshooting-common-pod-issues-troubleshooting)
+[get](#getting-information-get) · [describe](#detailed-information-describe) · [logs](#viewing-logs-logs) · [top](#resource-monitoring-top) · [debug](#debugging-and-diagnostics-debug) · [events](#events-events) · [troubleshooting](#troubleshooting-common-pod-issues-troubleshooting)
 
 **Resource Management:**
 [apply/create](#creating-and-applying-resources-applycreate) · [edit](#editing-resources-edit) · [patch](#patching-resources-patch) · [set](#quick-resource-modification-set) · [delete](#deleting-resources-delete) · [replace](#replace-and-attach-to-resources-replaceattach) · [diff](#comparing-configurations-diff)
@@ -2247,4 +2247,55 @@ kubectl get csr my-user -o jsonpath='{.status.certificate}' | base64 -d > my-use
 # 5. Add user to kubeconfig
 kubectl config set-credentials my-user --client-key=my-user.key --client-certificate=my-user.crt --embed-certs=true
 kubectl config set-context my-user-context --cluster=<cluster-name> --user=my-user
+```
+
+## Events (events)
+
+> `kubectl events` is a dedicated subcommand available since kubectl 1.26. More convenient and flexible than `kubectl get events`.
+
+```bash
+# Show all events in the current namespace
+kubectl events
+
+# Events across all namespaces
+kubectl events -A
+kubectl events --all-namespaces
+
+# Events for a specific resource
+kubectl events --for pod/<pod-name>
+kubectl events --for deployment/<deploy-name>
+kubectl events --for node/<node-name>
+
+# Filter by event type (Normal, Warning)
+kubectl events --types=Warning
+kubectl events --types=Normal
+kubectl events --types=Warning,Normal
+
+# Watch events in real time
+kubectl events --watch
+kubectl events -w
+
+# Watch events for a specific resource in real time
+kubectl events --for pod/<pod-name> --watch
+
+# Output as JSON / YAML
+kubectl events -o json
+kubectl events -o yaml
+
+# Get Warning events across the cluster and analyze with jq
+kubectl events -A -o json | \
+  jq '.items[] | select(.type=="Warning") | {reason: .reason, message: .message, object: .involvedObject.name}'
+
+# Diagnose a pod in CrashLoopBackOff
+kubectl events --for pod/<pod-name> --types=Warning
+
+# Comparing approaches:
+# Classic (deprecated):
+kubectl get events --field-selector involvedObject.name=<pod-name>
+# New (preferred):
+kubectl events --for pod/<pod-name>
+
+# All Warning events in a namespace sorted by time
+kubectl events --types=Warning -o json | \
+  jq -r '.items | sort_by(.lastTimestamp) | .[] | "\(.lastTimestamp) \(.reason) \(.involvedObject.name): \(.message)"'
 ```

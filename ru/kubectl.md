@@ -5,7 +5,7 @@
 ## Быстрые ссылки
 
 **Просмотр и диагностика:**
-[get](#получение-информации-get) · [describe](#детальная-информация-describe) · [logs](#просмотр-логов-logs) · [top](#мониторинг-ресурсов-top) · [debug](#отладка-и-диагностика-debug) · [events](#отладка-и-диагностика-debug) · [troubleshooting](#диагностика-типичных-проблем-подов-troubleshooting) · [wait](#ожидание-готовности-ресурсов-wait)
+[get](#получение-информации-get) · [describe](#детальная-информация-describe) · [logs](#просмотр-логов-logs) · [top](#мониторинг-ресурсов-top) · [debug](#отладка-и-диагностика-debug) · [events](#события-events) · [troubleshooting](#диагностика-типичных-проблем-подов-troubleshooting) · [wait](#ожидание-готовности-ресурсов-wait)
 
 **Управление ресурсами:**
 [apply/create](#создание-и-применение-ресурсов-applycreate) · [edit](#редактирование-ресурсов-edit) · [patch](#патчинг-ресурсов-patch) · [set](#быстрое-изменение-ресурсов-set) · [delete](#удаление-ресурсов-delete) · [replace](#замена-и-подключение-к-ресурсам-replaceattach) · [diff](#сравнение-конфигураций-diff)
@@ -2272,4 +2272,55 @@ kubectl wait pod/<pod-name> --for=condition=ContainersReady --timeout=120s
 #   DiskPressure      — нехватка дискового пространства
 #   PIDPressure       — нехватка PID
 #   NetworkUnavailable — сеть не настроена
+```
+
+## События (events)
+
+> `kubectl events` — самостоятельная команда, доступна с kubectl 1.26. Удобнее и гибче, чем `kubectl get events`.
+
+```bash
+# Показать все события в текущем неймспейсе
+kubectl events
+
+# События во всех неймспейсах
+kubectl events -A
+kubectl events --all-namespaces
+
+# События для конкретного ресурса
+kubectl events --for pod/<pod-name>
+kubectl events --for deployment/<deploy-name>
+kubectl events --for node/<node-name>
+
+# Фильтрация по типу события (Normal, Warning)
+kubectl events --types=Warning
+kubectl events --types=Normal
+kubectl events --types=Warning,Normal
+
+# Следить за событиями в реальном времени
+kubectl events --watch
+kubectl events -w
+
+# Мониторинг событий конкретного ресурса в реальном времени
+kubectl events --for pod/<pod-name> --watch
+
+# Вывод в JSON / YAML
+kubectl events -o json
+kubectl events -o yaml
+
+# Получить только Warning-события по всему кластеру с анализом через jq
+kubectl events -A -o json | \
+  jq '.items[] | select(.type=="Warning") | {reason: .reason, message: .message, object: .involvedObject.name}'
+
+# Диагностика пода в CrashLoopBackOff
+kubectl events --for pod/<pod-name> --types=Warning
+
+# Сравнение подходов:
+# Классический (устаревший):
+kubectl get events --field-selector involvedObject.name=<pod-name>
+# Новый (предпочтительный):
+kubectl events --for pod/<pod-name>
+
+# Все Warning-события в неймспейсе, отсортированные по времени
+kubectl events --types=Warning -o json | \
+  jq -r '.items | sort_by(.lastTimestamp) | .[] | "\(.lastTimestamp) \(.reason) \(.involvedObject.name): \(.message)"'
 ```
