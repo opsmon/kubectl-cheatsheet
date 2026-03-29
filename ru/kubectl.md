@@ -5,7 +5,7 @@
 ## Быстрые ссылки
 
 **Просмотр и диагностика:**
-[get](#получение-информации-get) · [describe](#детальная-информация-describe) · [logs](#просмотр-логов-logs) · [top](#мониторинг-ресурсов-top) · [debug](#отладка-и-диагностика-debug) · [events](#события-events) · [troubleshooting](#диагностика-типичных-проблем-подов-troubleshooting) · [wait](#ожидание-готовности-ресурсов-wait)
+[get](#получение-информации-get) · [describe](#детальная-информация-describe) · [logs](#просмотр-логов-logs) · [top](#мониторинг-ресурсов-top) · [debug](#отладка-и-диагностика-debug) · [events](#события-events) · [troubleshooting](#диагностика-типичных-проблем-подов-troubleshooting)
 
 **Управление ресурсами:**
 [apply/create](#создание-и-применение-ресурсов-applycreate) · [edit](#редактирование-ресурсов-edit) · [patch](#патчинг-ресурсов-patch) · [set](#быстрое-изменение-ресурсов-set) · [delete](#удаление-ресурсов-delete) · [replace](#замена-и-подключение-к-ресурсам-replaceattach) · [diff](#сравнение-конфигураций-diff)
@@ -26,7 +26,7 @@
 [config](#контексты-и-конфигурация-config) · [namespaces](#управление-неймспейсами) · [nodes](#управление-нодами-taintcordondrain) · [crd](#custom-resource-definitions-crd) · [api-resources](#работа-с-api-ресурсами-api-resources)
 
 **Утилиты и инструменты:**
-[exec](#выполнение-команд-в-контейнере-exec) · [cp](#копирование-файлов-cp) · [label](#работа-с-метками-labelannotate) · [wait](#ожидание-состояния-wait) · [jsonpath](#продвинутый-вывод-данных-jsonpathcustom-columns) · [field-selectors](#селекторы-полей-и-фильтрация) · [scheduling](#планирование-подов-affinity--tolerations--nodeselector) · [tips](#советы-и-полезные-паттерны) · [helm](#helm) · [krew](#плагины-kubectl-krew)
+[exec](#выполнение-команд-в-контейнере-exec) · [cp](#копирование-файлов-cp) · [label](#работа-с-метками-labelannotate) · [wait](#ожидание-готовности-ресурсов-wait) · [jsonpath](#продвинутый-вывод-данных-jsonpathcustom-columns) · [field-selectors](#селекторы-полей-и-фильтрация) · [scheduling](#планирование-подов-affinity--tolerations--nodeselector) · [tips](#советы-и-полезные-паттерны) · [helm](#helm) · [krew](#плагины-kubectl-krew)
 
 ## Получение информации (get)
 
@@ -520,29 +520,77 @@ kubectl patch deployment <deployment-name> --type=json -p='[{"op":"add","path":"
 kubectl patch svc <service-name> -p '{"spec":{"type":"NodePort"}}'
 ```
 
-## Ожидание состояния (wait)
+## Ожидание готовности ресурсов (wait)
 
 ```bash
-# Ждать пока под будет готов
-kubectl wait --for=condition=Ready pod/<pod-name>
+# Дождаться, пока под перейдёт в состояние Ready
+kubectl wait pod/<pod-name> --for=condition=Ready
 
-# Ждать с таймаутом
-kubectl wait --for=condition=Ready pod/<pod-name> --timeout=60s
+# Дождаться готовности пода с таймаутом (по умолчанию 30s)
+kubectl wait pod/<pod-name> --for=condition=Ready --timeout=120s
 
-# Ждать готовности всех подов по label
-kubectl wait --for=condition=Ready pods -l app=myapp
+# Дождаться готовности всех подов с меткой
+kubectl wait pods -l app=myapp --for=condition=Ready --timeout=60s
 
-# Ждать пока deployment завершит rollout
-kubectl wait --for=condition=Available deployment/<deployment-name>
+# Дождаться завершения деплоймента (все реплики готовы)
+kubectl wait deployment/<deploy-name> --for=condition=Available --timeout=300s
 
-# Ждать удаления ресурса
-kubectl wait --for=delete pod/<pod-name> --timeout=30s
+# Дождаться завершения Job (условие Complete)
+kubectl wait job/<job-name> --for=condition=Complete --timeout=120s
 
-# Ждать готовности job
-kubectl wait --for=condition=Complete job/<job-name>
+# Дождаться, пока Job не провалится (условие Failed)
+kubectl wait job/<job-name> --for=condition=Failed --timeout=60s
 
-# Ждать в конкретном namespace
-kubectl wait --for=condition=Ready pod/<pod-name> -n <namespace>
+# Дождаться удаления ресурса
+kubectl wait pod/<pod-name> --for=delete --timeout=60s
+
+# Дождаться удаления всех подов с меткой
+kubectl wait pods -l app=myapp --for=delete --timeout=120s
+
+# Дождаться готовности ноды
+kubectl wait node/<node-name> --for=condition=Ready --timeout=300s
+
+# Дождаться готовности всех нод
+kubectl wait nodes --all --for=condition=Ready --timeout=300s
+
+# Дождаться установки CRD (Custom Resource Definition)
+kubectl wait crd/<crd-name> --for=condition=Established --timeout=60s
+
+# Дождаться в конкретном неймспейсе
+kubectl wait pod/<pod-name> -n <namespace> --for=condition=Ready --timeout=60s
+
+# Дождаться готовности нескольких ресурсов одного типа
+kubectl wait pods -l tier=backend --for=condition=Ready --all-namespaces --timeout=120s
+
+# Дождаться PVC в состоянии Bound
+kubectl wait pvc/<pvc-name> --for=jsonpath='{.status.phase}'=Bound --timeout=60s
+
+# Дождаться произвольного поля через jsonpath (k8s >= 1.23)
+kubectl wait deployment/<deploy-name> \
+  --for=jsonpath='{.status.readyReplicas}'=3 --timeout=120s
+
+# Пример использования в CI/CD пайплайне
+kubectl apply -f deployment.yaml
+kubectl wait deployment/myapp --for=condition=Available --timeout=300s
+echo "Деплой завершён успешно"
+
+# Проверить сразу несколько условий (через несколько вызовов)
+kubectl wait pod/<pod-name> --for=condition=Initialized --timeout=30s
+kubectl wait pod/<pod-name> --for=condition=Ready --timeout=120s
+kubectl wait pod/<pod-name> --for=condition=ContainersReady --timeout=120s
+
+# Доступные условия для подов:
+#   Initialized       — все init-контейнеры завершились
+#   Ready             — под готов принимать трафик
+#   ContainersReady   — все контейнеры пода готовы
+#   PodScheduled      — под назначен на ноду
+
+# Доступные условия для нод:
+#   Ready             — нода в рабочем состоянии
+#   MemoryPressure    — нехватка памяти
+#   DiskPressure      — нехватка дискового пространства
+#   PIDPressure       — нехватка PID
+#   NetworkUnavailable — сеть не настроена
 ```
 
 ## Работа с API ресурсами (api-resources)
@@ -2199,79 +2247,6 @@ kubectl get csr my-user -o jsonpath='{.status.certificate}' | base64 -d > my-use
 # 5. Добавить пользователя в kubeconfig
 kubectl config set-credentials my-user --client-key=my-user.key --client-certificate=my-user.crt --embed-certs=true
 kubectl config set-context my-user-context --cluster=<cluster-name> --user=my-user
-```
-
-## Ожидание готовности ресурсов (wait)
-
-```bash
-# Дождаться, пока под перейдёт в состояние Ready
-kubectl wait pod/<pod-name> --for=condition=Ready
-
-# Дождаться готовности пода с таймаутом (по умолчанию 30s)
-kubectl wait pod/<pod-name> --for=condition=Ready --timeout=120s
-
-# Дождаться готовности всех подов с меткой
-kubectl wait pods -l app=myapp --for=condition=Ready --timeout=60s
-
-# Дождаться завершения деплоймента (все реплики готовы)
-kubectl wait deployment/<deploy-name> --for=condition=Available --timeout=300s
-
-# Дождаться завершения Job (условие Complete)
-kubectl wait job/<job-name> --for=condition=Complete --timeout=120s
-
-# Дождаться, пока Job не провалится (условие Failed)
-kubectl wait job/<job-name> --for=condition=Failed --timeout=60s
-
-# Дождаться удаления ресурса
-kubectl wait pod/<pod-name> --for=delete --timeout=60s
-
-# Дождаться удаления всех подов с меткой
-kubectl wait pods -l app=myapp --for=delete --timeout=120s
-
-# Дождаться готовности ноды
-kubectl wait node/<node-name> --for=condition=Ready --timeout=300s
-
-# Дождаться готовности всех нод
-kubectl wait nodes --all --for=condition=Ready --timeout=300s
-
-# Дождаться установки CRD (Custom Resource Definition)
-kubectl wait crd/<crd-name> --for=condition=Established --timeout=60s
-
-# Дождаться в конкретном неймспейсе
-kubectl wait pod/<pod-name> -n <namespace> --for=condition=Ready --timeout=60s
-
-# Дождаться готовности нескольких ресурсов одного типа
-kubectl wait pods -l tier=backend --for=condition=Ready --all-namespaces --timeout=120s
-
-# Дождаться PVC в состоянии Bound
-kubectl wait pvc/<pvc-name> --for=jsonpath='{.status.phase}'=Bound --timeout=60s
-
-# Дождаться произвольного поля через jsonpath (k8s >= 1.23)
-kubectl wait deployment/<deploy-name> \
-  --for=jsonpath='{.status.readyReplicas}'=3 --timeout=120s
-
-# Пример использования в CI/CD пайплайне
-kubectl apply -f deployment.yaml
-kubectl wait deployment/myapp --for=condition=Available --timeout=300s
-echo "Деплой завершён успешно"
-
-# Проверить сразу несколько условий (через несколько вызовов)
-kubectl wait pod/<pod-name> --for=condition=Initialized --timeout=30s
-kubectl wait pod/<pod-name> --for=condition=Ready --timeout=120s
-kubectl wait pod/<pod-name> --for=condition=ContainersReady --timeout=120s
-
-# Доступные условия для подов:
-#   Initialized       — все init-контейнеры завершились
-#   Ready             — под готов принимать трафик
-#   ContainersReady   — все контейнеры пода готовы
-#   PodScheduled      — под назначен на ноду
-
-# Доступные условия для нод:
-#   Ready             — нода в рабочем состоянии
-#   MemoryPressure    — нехватка памяти
-#   DiskPressure      — нехватка дискового пространства
-#   PIDPressure       — нехватка PID
-#   NetworkUnavailable — сеть не настроена
 ```
 
 ## События (events)
