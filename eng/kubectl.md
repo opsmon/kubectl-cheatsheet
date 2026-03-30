@@ -2299,3 +2299,129 @@ kubectl events --for pod/<pod-name>
 kubectl events --types=Warning -o json | \
   jq -r '.items | sort_by(.lastTimestamp) | .[] | "\(.lastTimestamp) \(.reason) \(.involvedObject.name): \(.message)"'
 ```
+
+## Shell aliases & autocompletion
+
+```bash
+# Enable kubectl autocompletion — bash
+source <(kubectl completion bash)
+echo 'source <(kubectl completion bash)' >> ~/.bashrc
+
+# Enable kubectl autocompletion — zsh
+source <(kubectl completion zsh)
+echo '[[ $commands[kubectl] ]] && source <(kubectl completion zsh)' >> ~/.zshrc
+
+# Alias k=kubectl and keep completion working
+alias k=kubectl
+complete -o default -F __start_kubectl k   # bash
+compdef k=kubectl                           # zsh
+
+# Common daily-use aliases
+alias kgp='kubectl get pods'
+alias kgpa='kubectl get pods -A'
+alias kgpw='kubectl get pods -w'
+alias kgs='kubectl get svc'
+alias kgn='kubectl get nodes'
+alias kgd='kubectl get deploy'
+alias kge='kubectl get events --sort-by=.lastTimestamp'
+alias kdp='kubectl describe pod'
+alias kdd='kubectl describe deployment'
+alias kl='kubectl logs'
+alias klf='kubectl logs -f'
+alias kex='kubectl exec -it'
+alias kaf='kubectl apply -f'
+alias kdf='kubectl delete -f'
+
+# Switch namespace without kubens
+alias kns='kubectl config set-context --current --namespace'
+
+# Switch context without kubectx
+alias kctx='kubectl config use-context'
+
+# Show current context + namespace at a glance
+alias kwhere='echo "context: $(kubectl config current-context)" && echo "namespace: $(kubectl config view --minify -o jsonpath={.contexts[0].context.namespace})"'
+
+# Prompt integration — show current context/namespace in shell prompt
+# kube-ps1: https://github.com/jonmosco/kube-ps1
+# starship prompt has built-in kubernetes module: https://starship.rs/config/#kubernetes
+```
+
+## Cluster capacity & resource planning
+
+```bash
+# Show allocatable resources per node
+kubectl get nodes -o custom-columns=\
+'NAME:.metadata.name,CPU:.status.allocatable.cpu,MEMORY:.status.allocatable.memory,PODS:.status.allocatable.pods'
+
+# Allocated (requested) vs allocatable per node
+kubectl describe nodes | grep -A 6 "Allocated resources"
+
+# Real-time usage per node (requires metrics-server)
+kubectl top nodes --sort-by=cpu
+kubectl top nodes --sort-by=memory
+
+# Real-time usage per pod across all namespaces
+kubectl top pods -A --sort-by=cpu
+kubectl top pods -A --sort-by=memory
+
+# Top 20 most memory-hungry pods
+kubectl top pods -A --sort-by=memory --no-headers | head -20
+
+# Show resource requests/limits for all pods in a namespace
+kubectl get pods -o custom-columns=\
+'NAME:.metadata.name,CPU_REQ:.spec.containers[0].resources.requests.cpu,MEM_REQ:.spec.containers[0].resources.requests.memory,CPU_LIM:.spec.containers[0].resources.limits.cpu,MEM_LIM:.spec.containers[0].resources.limits.memory'
+
+# Find pods with NO resource requests set (risk: can starve other workloads)
+kubectl get pods -A -o json | \
+  jq -r '.items[] | select(.spec.containers[].resources.requests == null) | [.metadata.namespace, .metadata.name] | @tsv'
+
+# Count pods per node (scheduling spread check)
+kubectl get pods -A -o wide --no-headers | awk '{print $8}' | sort | uniq -c | sort -rn
+
+# Check ResourceQuotas and current consumption
+kubectl describe resourcequota -A
+
+# Check LimitRanges in effect
+kubectl get limitrange -A
+
+# Per-node deep capacity summary (requested vs allocatable)
+kubectl describe node <node-name> | grep -E "cpu|memory|Allocated|requests|limits" | head -30
+```
+
+## Server-side apply (SSA)
+
+```bash
+# Apply using server-side apply — preferred for GitOps and multi-actor environments
+kubectl apply -f deployment.yaml --server-side
+
+# SSA with a named field manager (label who owns each field)
+kubectl apply -f deployment.yaml --server-side --field-manager=argocd
+
+# Force-take ownership of conflicting fields from another field manager
+kubectl apply -f deployment.yaml --server-side --force-conflicts
+
+# Dry-run with server-side logic (validated by the API server)
+kubectl apply -f deployment.yaml --server-side --dry-run=server
+
+# Diff current cluster state vs local file using server-side logic
+kubectl diff -f deployment.yaml --server-side
+
+# Inspect field managers on a resource
+kubectl get deployment my-deploy -o json | jq '.metadata.managedFields'
+
+# Clean up managedFields from output for readability
+kubectl get deployment my-deploy -o json | jq 'del(.metadata.managedFields)'
+# or with the neat plugin:
+kubectl neat get deployment my-deploy -o yaml
+
+# Remove the legacy last-applied-configuration annotation after migrating to SSA
+kubectl annotate deployment my-deploy kubectl.kubernetes.io/last-applied-configuration-
+
+# Apply a whole directory with SSA
+kubectl apply -f ./manifests/ --server-side --field-manager=platform-team
+
+# SSA vs client-side apply:
+# Client-side: tracks changes via kubectl.kubernetes.io/last-applied-configuration annotation
+# Server-side: tracks ownership via .metadata.managedFields — safe for concurrent managers
+# SSA is recommended when multiple tools (ArgoCD, Helm, kubectl) touch the same object
+```

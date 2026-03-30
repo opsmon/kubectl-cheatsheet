@@ -2299,3 +2299,129 @@ kubectl events --for pod/<pod-name>
 kubectl events --types=Warning -o json | \
   jq -r '.items | sort_by(.lastTimestamp) | .[] | "\(.lastTimestamp) \(.reason) \(.involvedObject.name): \(.message)"'
 ```
+
+## Алиасы и автодополнение в shell
+
+```bash
+# Включить автодополнение kubectl — bash
+source <(kubectl completion bash)
+echo 'source <(kubectl completion bash)' >> ~/.bashrc
+
+# Включить автодополнение kubectl — zsh
+source <(kubectl completion zsh)
+echo '[[ $commands[kubectl] ]] && source <(kubectl completion zsh)' >> ~/.zshrc
+
+# Алиас k=kubectl с сохранением автодополнения
+alias k=kubectl
+complete -o default -F __start_kubectl k   # bash
+compdef k=kubectl                           # zsh
+
+# Часто используемые алиасы
+alias kgp='kubectl get pods'
+alias kgpa='kubectl get pods -A'
+alias kgpw='kubectl get pods -w'
+alias kgs='kubectl get svc'
+alias kgn='kubectl get nodes'
+alias kgd='kubectl get deploy'
+alias kge='kubectl get events --sort-by=.lastTimestamp'
+alias kdp='kubectl describe pod'
+alias kdd='kubectl describe deployment'
+alias kl='kubectl logs'
+alias klf='kubectl logs -f'
+alias kex='kubectl exec -it'
+alias kaf='kubectl apply -f'
+alias kdf='kubectl delete -f'
+
+# Быстрая смена namespace без kubens
+alias kns='kubectl config set-context --current --namespace'
+
+# Быстрая смена контекста без kubectx
+alias kctx='kubectl config use-context'
+
+# Показать текущий контекст и namespace
+alias kwhere='echo "context: $(kubectl config current-context)" && echo "namespace: $(kubectl config view --minify -o jsonpath={.contexts[0].context.namespace})"'
+
+# Интеграция с prompt — показывать контекст/namespace в строке приглашения
+# kube-ps1: https://github.com/jonmosco/kube-ps1
+# starship имеет встроенный модуль kubernetes: https://starship.rs/config/#kubernetes
+```
+
+## Планирование ёмкости кластера (capacity planning)
+
+```bash
+# Показать выделяемые ресурсы по каждой ноде
+kubectl get nodes -o custom-columns=\
+'NAME:.metadata.name,CPU:.status.allocatable.cpu,MEMORY:.status.allocatable.memory,PODS:.status.allocatable.pods'
+
+# Запрошенные (requests) ресурсы vs выделяемые по нодам
+kubectl describe nodes | grep -A 6 "Allocated resources"
+
+# Реальное потребление ресурсов по нодам (требует metrics-server)
+kubectl top nodes --sort-by=cpu
+kubectl top nodes --sort-by=memory
+
+# Реальное потребление по подам во всех неймспейсах
+kubectl top pods -A --sort-by=cpu
+kubectl top pods -A --sort-by=memory
+
+# 20 самых «прожорливых» по памяти подов
+kubectl top pods -A --sort-by=memory --no-headers | head -20
+
+# Запросы и лимиты ресурсов для всех подов в неймспейсе
+kubectl get pods -o custom-columns=\
+'NAME:.metadata.name,CPU_REQ:.spec.containers[0].resources.requests.cpu,MEM_REQ:.spec.containers[0].resources.requests.memory,CPU_LIM:.spec.containers[0].resources.limits.cpu,MEM_LIM:.spec.containers[0].resources.limits.memory'
+
+# Найти поды без resource requests (риск: могут вытеснять другие workload-ы)
+kubectl get pods -A -o json | \
+  jq -r '.items[] | select(.spec.containers[].resources.requests == null) | [.metadata.namespace, .metadata.name] | @tsv'
+
+# Количество подов на каждой ноде (проверка равномерности распределения)
+kubectl get pods -A -o wide --no-headers | awk '{print $8}' | sort | uniq -c | sort -rn
+
+# Проверить ResourceQuota и текущее потребление
+kubectl describe resourcequota -A
+
+# Проверить LimitRange в неймспейсе
+kubectl get limitrange -A
+
+# Детальная сводка по ноде: запрошено vs доступно
+kubectl describe node <node-name> | grep -E "cpu|memory|Allocated|requests|limits" | head -30
+```
+
+## Server-side apply (SSA)
+
+```bash
+# Применить манифест через server-side apply — рекомендуется для GitOps и мульти-акторных сред
+kubectl apply -f deployment.yaml --server-side
+
+# SSA с именованным field manager (фиксирует, кто владеет каждым полем)
+kubectl apply -f deployment.yaml --server-side --field-manager=argocd
+
+# Принудительно забрать ownership конфликтующих полей у другого менеджера
+kubectl apply -f deployment.yaml --server-side --force-conflicts
+
+# Dry-run с валидацией на стороне сервера
+kubectl apply -f deployment.yaml --server-side --dry-run=server
+
+# Diff текущего состояния в кластере vs локального файла (server-side логика)
+kubectl diff -f deployment.yaml --server-side
+
+# Посмотреть field manager-ы ресурса
+kubectl get deployment my-deploy -o json | jq '.metadata.managedFields'
+
+# Убрать managedFields из вывода для читаемости
+kubectl get deployment my-deploy -o json | jq 'del(.metadata.managedFields)'
+# или через плагин neat:
+kubectl neat get deployment my-deploy -o yaml
+
+# Удалить устаревшую аннотацию last-applied-configuration после перехода на SSA
+kubectl annotate deployment my-deploy kubectl.kubernetes.io/last-applied-configuration-
+
+# Применить целую директорию через SSA
+kubectl apply -f ./manifests/ --server-side --field-manager=platform-team
+
+# SSA vs client-side apply:
+# Client-side: отслеживает изменения через аннотацию kubectl.kubernetes.io/last-applied-configuration
+# Server-side: отслеживает ownership через .metadata.managedFields — безопасно при нескольких менеджерах
+# SSA рекомендуется, когда несколько инструментов (ArgoCD, Helm, kubectl) работают с одним объектом
+```
