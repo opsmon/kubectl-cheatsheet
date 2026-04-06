@@ -1,43 +1,70 @@
 # kubectl Cheatsheet
 
-> Шпаргалка по `kubectl` для ежедневной работы с Kubernetes.
 > Practical `kubectl` cheatsheet for day-to-day Kubernetes work.
 
 ---
 
-**Jump to full reference:**
-[🇷🇺 Русский](ru/kubectl.md) · [🇬🇧 English](eng/kubectl.md)
+## Topics
+
+| # | Topic | Description |
+|---|-------|-------------|
+| 1 | [Viewing & Diagnostics](eng/viewing.md) | get, describe, logs, top, events, debug, troubleshooting |
+| 2 | [Resource Management](eng/management.md) | apply, create, edit, patch, set, delete, diff, replace |
+| 3 | [Workloads](eng/workloads.md) | run, rollout, scale, HPA, VPA, StatefulSets, DaemonSets, Jobs |
+| 4 | [Network](eng/network.md) | port-forward, expose, ingress, networkpolicy, proxy |
+| 5 | [Storage & Config](eng/storage.md) | configmaps, secrets, pv/pvc, kustomize |
+| 6 | [Security](eng/security.md) | rbac, auth, csr, pss, security-context, pdb, quota |
+| 7 | [Cluster & Infrastructure](eng/cluster.md) | config, namespaces, nodes, crd, api-resources, field-selectors |
+| 8 | [Utilities & Tools](eng/utilities.md) | exec, cp, labels, wait, jsonpath, scheduling, tips, helm, krew, aliases |
 
 ---
 
-## Quick Navigation / Быстрая навигация
+## Quick Navigation
 
-| Category / Категория | 🇷🇺 RU | 🇬🇧 EN |
-|---|---|---|
-| **Viewing / Просмотр** | [get](ru/kubectl.md#получение-информации-get) · [describe](ru/kubectl.md#детальная-информация-describe) · [logs](ru/kubectl.md#просмотр-логов-logs) · [top](ru/kubectl.md#мониторинг-ресурсов-top) · [debug](ru/kubectl.md#отладка-и-диагностика-debug) · [events](ru/kubectl.md#события-events) · [troubleshooting](ru/kubectl.md#диагностика-типичных-проблем-подов-troubleshooting) | [get](eng/kubectl.md#getting-information-get) · [describe](eng/kubectl.md#detailed-information-describe) · [logs](eng/kubectl.md#viewing-logs-logs) · [top](eng/kubectl.md#resource-monitoring-top) · [debug](eng/kubectl.md#debugging-and-diagnostics-debug) · [events](eng/kubectl.md#events-events) · [troubleshooting](eng/kubectl.md#troubleshooting-common-pod-issues-troubleshooting) |
-| **Management / Управление** | [apply/create](ru/kubectl.md#создание-и-применение-ресурсов-applycreate) · [edit](ru/kubectl.md#редактирование-ресурсов-edit) · [patch](ru/kubectl.md#патчинг-ресурсов-patch) · [set](ru/kubectl.md#быстрое-изменение-ресурсов-set) · [delete](ru/kubectl.md#удаление-ресурсов-delete) · [diff](ru/kubectl.md#сравнение-конфигураций-diff) · [ssa](ru/kubectl.md#server-side-apply-ssa) | [apply/create](eng/kubectl.md#creating-and-applying-resources-applycreate) · [edit](eng/kubectl.md#editing-resources-edit) · [patch](eng/kubectl.md#patching-resources-patch) · [set](eng/kubectl.md#quick-resource-modification-set) · [delete](eng/kubectl.md#deleting-resources-delete) · [diff](eng/kubectl.md#comparing-configurations-diff) · [ssa](eng/kubectl.md#server-side-apply-ssa) |
-| **Workloads / Нагрузки** | [run](ru/kubectl.md#запуск-подов-и-задач-run) · [rollout](ru/kubectl.md#управление-обновлениями-rollout) · [scale](ru/kubectl.md#масштабирование-scale) · [hpa](ru/kubectl.md#horizontalpodautoscaler-hpa) · [vpa](ru/kubectl.md#verticalpodautoscaler-vpa) · [statefulsets](ru/kubectl.md#statefulsets) · [daemonsets](ru/kubectl.md#daemonsets) · [jobs](ru/kubectl.md#jobs-и-cronjobs) | [run](eng/kubectl.md#running-pods-and-jobs-run) · [rollout](eng/kubectl.md#managing-updates-rollout) · [scale](eng/kubectl.md#scaling-scale) · [hpa](eng/kubectl.md#horizontalpodautoscaler-hpa) · [vpa](eng/kubectl.md#verticalpodautoscaler-vpa) · [statefulsets](eng/kubectl.md#statefulsets) · [daemonsets](eng/kubectl.md#daemonsets) · [jobs](eng/kubectl.md#jobs-and-cronjobs) |
-| **Network / Сеть** | [port-forward](ru/kubectl.md#проброс-портов-port-forward) · [expose](ru/kubectl.md#создание-сервисов-expose) · [ingress](ru/kubectl.md#ingress) · [networkpolicy](ru/kubectl.md#сетевые-политики-networkpolicy) · [proxy](ru/kubectl.md#прокси-и-доступ-к-api-proxy) | [port-forward](eng/kubectl.md#port-forwarding-port-forward) · [expose](eng/kubectl.md#creating-services-expose) · [ingress](eng/kubectl.md#ingress) · [networkpolicy](eng/kubectl.md#network-policies-networkpolicy) · [proxy](eng/kubectl.md#proxy-and-api-access-proxy) |
-| **Storage / Хранилище** | [configmaps](ru/kubectl.md#configmaps) · [secrets](ru/kubectl.md#управление-secret-secret) · [pv/pvc](ru/kubectl.md#постоянные-тома-pvpvc) · [kustomize](ru/kubectl.md#работа-с-kustomize-kustomize) | [configmaps](eng/kubectl.md#configmaps) · [secrets](eng/kubectl.md#secrets-management-secret) · [pv/pvc](eng/kubectl.md#persistent-volumes-pvpvc) · [kustomize](eng/kubectl.md#working-with-kustomize-kustomize) |
-| **Security / Безопасность** | [rbac](ru/kubectl.md#rbac---роли-и-управление-доступом) · [auth](ru/kubectl.md#проверка-прав-доступа-auth) · [csr](ru/kubectl.md#запросы-на-подпись-сертификата-csr) · [pss](ru/kubectl.md#pod-security-standards-pss) · [security-context](ru/kubectl.md#security-context) · [pdb](ru/kubectl.md#poddisruptionbudget-pdb) · [quota](ru/kubectl.md#resourcequota-и-limitrange) | [rbac](eng/kubectl.md#rbac---roles-and-access-control) · [auth](eng/kubectl.md#checking-permissions-auth) · [csr](eng/kubectl.md#certificate-signing-requests-csr) · [pss](eng/kubectl.md#pod-security-standards-pss) · [security-context](eng/kubectl.md#security-context) · [pdb](eng/kubectl.md#poddisruptionbudget-pdb) · [quota](eng/kubectl.md#resourcequota-and-limitrange) |
-| **Cluster / Кластер** | [config](ru/kubectl.md#контексты-и-конфигурация-config) · [namespaces](ru/kubectl.md#управление-неймспейсами) · [nodes](ru/kubectl.md#управление-нодами-taintcordondrain) · [crd](ru/kubectl.md#custom-resource-definitions-crd) · [api-resources](ru/kubectl.md#работа-с-api-ресурсами-api-resources) · [capacity](ru/kubectl.md#планирование-ёмкости-кластера-capacity-planning) | [config](eng/kubectl.md#contexts-and-configuration-config) · [namespaces](eng/kubectl.md#namespace-management) · [nodes](eng/kubectl.md#node-management-taintcordondrain) · [crd](eng/kubectl.md#custom-resource-definitions-crd) · [api-resources](eng/kubectl.md#working-with-api-resources-api-resources) · [capacity](eng/kubectl.md#cluster-capacity--resource-planning) |
-| **Utilities / Утилиты** | [exec](ru/kubectl.md#выполнение-команд-в-контейнере-exec) · [cp](ru/kubectl.md#копирование-файлов-cp) · [label](ru/kubectl.md#работа-с-метками-labelannotate) · [jsonpath](ru/kubectl.md#продвинутый-вывод-данных-jsonpathcustom-columns) · [scheduling](ru/kubectl.md#планирование-подов-affinity--tolerations--nodeselector) · [tips](ru/kubectl.md#советы-и-полезные-паттерны) · [helm](ru/kubectl.md#helm) · [krew](ru/kubectl.md#плагины-kubectl-krew) · [aliases](ru/kubectl.md#алиасы-и-автодополнение-в-shell) | [exec](eng/kubectl.md#execute-commands-in-container-exec) · [cp](eng/kubectl.md#copying-files-cp) · [label](eng/kubectl.md#working-with-labels-labelannotate) · [jsonpath](eng/kubectl.md#advanced-output-jsonpathcustom-columns) · [scheduling](eng/kubectl.md#pod-scheduling-affinity--tolerations--nodeselector) · [tips](eng/kubectl.md#tips-and-useful-patterns) · [helm](eng/kubectl.md#helm) · [krew](eng/kubectl.md#kubectl-plugins-krew) · [aliases](eng/kubectl.md#shell-aliases--autocompletion) |
+### Viewing & Diagnostics
+[get](eng/viewing.md#getting-information-get) · [describe](eng/viewing.md#detailed-information-describe) · [logs](eng/viewing.md#viewing-logs-logs) · [top](eng/viewing.md#resource-monitoring-top) · [events](eng/viewing.md#events-events) · [debug](eng/viewing.md#debugging-and-diagnostics-debug) · [troubleshooting](eng/viewing.md#troubleshooting-common-pod-issues-troubleshooting)
 
+### Resource Management
+[apply/create](eng/management.md#creating-and-applying-resources-applycreate) · [edit](eng/management.md#editing-resources-edit) · [patch](eng/management.md#patching-resources-patch) · [set](eng/management.md#quick-resource-modification-set) · [delete](eng/management.md#deleting-resources-delete) · [diff](eng/management.md#comparing-configurations-diff) · [replace](eng/management.md#replace-and-attach-to-resources-replaceattach) · [ssa](eng/management.md#server-side-apply-ssa)
+
+### Workloads
+[run](eng/workloads.md#running-pods-and-jobs-run) · [rollout](eng/workloads.md#managing-updates-rollout) · [scale](eng/workloads.md#scaling-scale) · [hpa](eng/workloads.md#horizontalpodautoscaler-hpa) · [vpa](eng/workloads.md#verticalpodautoscaler-vpa) · [statefulsets](eng/workloads.md#statefulsets) · [daemonsets](eng/workloads.md#daemonsets) · [jobs](eng/workloads.md#jobs-and-cronjobs)
+
+### Network
+[port-forward](eng/network.md#port-forwarding-port-forward) · [expose](eng/network.md#creating-services-expose) · [ingress](eng/network.md#ingress) · [networkpolicy](eng/network.md#network-policies-networkpolicy) · [proxy](eng/network.md#proxy-and-api-access-proxy)
+
+### Storage & Config
+[configmaps](eng/storage.md#configmaps) · [secrets](eng/storage.md#secrets-management-secret) · [pv/pvc](eng/storage.md#persistent-volumes-pvpvc) · [kustomize](eng/storage.md#working-with-kustomize-kustomize)
+
+### Security
+[rbac](eng/security.md#rbac---roles-and-access-control) · [auth](eng/security.md#checking-permissions-auth) · [csr](eng/security.md#certificate-signing-requests-csr) · [pss](eng/security.md#pod-security-standards-pss) · [security-context](eng/security.md#security-context) · [pdb](eng/security.md#poddisruptionbudget-pdb) · [quota](eng/security.md#resourcequota-and-limitrange)
+
+### Cluster & Infrastructure
+[config](eng/cluster.md#contexts-and-configuration-config) · [namespaces](eng/cluster.md#namespace-management) · [nodes](eng/cluster.md#node-management-taintcordondrain) · [crd](eng/cluster.md#custom-resource-definitions-crd) · [api-resources](eng/cluster.md#working-with-api-resources-api-resources) · [field-selectors](eng/cluster.md#field-selectors-and-filtering)
+
+### Utilities & Tools
+[exec](eng/utilities.md#execute-commands-in-container-exec) · [cp](eng/utilities.md#copying-files-cp) · [labels](eng/utilities.md#working-with-labels-labelannotate) · [wait](eng/utilities.md#waiting-for-conditions-wait) · [jsonpath](eng/utilities.md#advanced-output-jsonpathcustom-columns) · [scheduling](eng/utilities.md#pod-scheduling-affinity--tolerations--nodeselector) · [tips](eng/utilities.md#tips-and-useful-patterns) · [helm](eng/utilities.md#helm) · [krew](eng/utilities.md#kubectl-plugins-krew) · [aliases](eng/utilities.md#shell-aliases--autocompletion)
 
 ---
 
-## Structure / Структура
+## Structure
 
 ```
 .
-├── ru/kubectl.md      < полный справочник на русском
-├── eng/kubectl.md     < full reference in English
-└── README.md
+├── README.md
+└── eng/
+    ├── viewing.md       — get, describe, logs, top, events, debug, troubleshooting
+    ├── management.md    — apply, edit, patch, set, delete, diff, replace, SSA
+    ├── workloads.md     — run, rollout, scale, HPA, VPA, StatefulSets, DaemonSets, Jobs
+    ├── network.md       — port-forward, expose, ingress, networkpolicy, proxy
+    ├── storage.md       — configmaps, secrets, pv/pvc, kustomize
+    ├── security.md      — rbac, auth, csr, pss, security-context, pdb, quota
+    ├── cluster.md       — config, namespaces, nodes, crd, api-resources, field-selectors
+    └── utilities.md     — exec, cp, labels, wait, jsonpath, scheduling, tips, helm, krew, aliases
 ```
 
 ## Contributing
 
 1. Fork the repository.
-2. Update commands in **both** language files when possible.
-3. Keep the same section order in `ru/kubectl.md` and `eng/kubectl.md`.
-4. Open a Pull Request with a short description of what was added.
+2. Add or update commands in the relevant topic file under `eng/`.
+3. Open a Pull Request with a short description of what was changed.
