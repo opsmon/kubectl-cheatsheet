@@ -88,7 +88,7 @@
     └── utilities.md     — exec, cp, labels, wait, jsonpath, scheduling, tips, helm, krew, aliases
 ```
 
-## Contributing / Участие
+## Contributing / Поддержка
 
 1. Fork the repository / Сделайте форк.
 2. Add or update commands in the relevant topic file under `eng/` or `ru/` / Добавьте или обновите команды в нужном файле.
