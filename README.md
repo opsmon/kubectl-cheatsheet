@@ -1,7 +1,6 @@
 # kubectl Cheatsheet / Шпаргалка
 
-> Practical `kubectl` cheatsheet for day-to-day Kubernetes work.
-> Практическая шпаргалка по `kubectl` для повседневной работы с Kubernetes.
+> Practical `kubectl` cheatsheet for day-to-day Kubernetes work.<br>Практическая шпаргалка по `kubectl` для повседневной работы с Kubernetes.
 
 ---
 
