@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>kubectl Cheatsheet</title>
+    <link rel="stylesheet" href="assets/styles.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="README.md" aria-label="Open README">
+        <span class="brand-mark">k</span>
+        <span>
+          <strong>kubectl Cheatsheet</strong>
+          <small>daily Kubernetes commands</small>
+        </span>
+      </a>
+      <nav class="topnav" aria-label="Primary">
+        <a href="ru/viewing.md">RU docs</a>
+        <a href="eng/viewing.md">EN docs</a>
+        <a href="README.md">README</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="page-title">
+        <div class="hero-copy">
+          <p class="eyebrow" id="eyebrow">Быстрый поиск команд</p>
+          <h1 id="page-title">Найдите нужную команду <code>kubectl</code> без долгого чтения заметок.</h1>
+          <p class="lead" id="lead">
+            Ищите по задаче, команде или объекту Kubernetes. Затем переходите прямо в нужный Markdown-раздел.
+          </p>
+        </div>
+        <aside class="quick-panel" aria-label="Quick command examples">
+          <div class="terminal-title">
+            <span id="terminalFlow">типичный сценарий</span>
+            <span id="terminalHint">бери из docs</span>
+          </div>
+          <pre><code>kubectl get pods -A
+kubectl describe pod &lt;pod&gt; -n &lt;ns&gt;
+kubectl logs -f --tail=100 &lt;pod&gt;</code></pre>
+        </aside>
+      </section>
+
+      <section class="controls" aria-label="Search and language controls">
+        <label class="search">
+          <span id="searchLabel">Поиск</span>
+          <input id="searchInput" type="search" placeholder="logs, rollout, namespace, ingress..." autocomplete="off">
+        </label>
+        <div class="segments" role="group" aria-label="Language">
+          <button class="segment is-active" type="button" data-lang="ru">RU</button>
+          <button class="segment" type="button" data-lang="eng">EN</button>
+        </div>
+      </section>
+
+      <section class="layout">
+        <aside class="rail" aria-label="Common situations">
+          <h2 id="tasksTitle">Частые задачи</h2>
+          <a href="ru/viewing.md#диагностика-типичных-проблем-подов-troubleshooting" data-i18n-href="eng/viewing.md#troubleshooting-common-pod-issues-troubleshooting">
+            <span data-task="pod">Под не запускается</span>
+          </a>
+          <a href="ru/management.md#сравнение-конфигураций-diff" data-i18n-href="eng/management.md#comparing-configurations-diff">
+            <span data-task="diff">Проверить изменения перед apply</span>
+          </a>
+          <a href="ru/workloads.md#управление-обновлениями-rollout" data-i18n-href="eng/workloads.md#managing-updates-rollout">
+            <span data-task="rollback">Откатить deployment</span>
+          </a>
+          <a href="ru/security.md#проверка-прав-доступа-auth" data-i18n-href="eng/security.md#checking-permissions-auth">
+            <span data-task="auth">Проверить права доступа</span>
+          </a>
+          <a href="ru/utilities.md#продвинутый-вывод-данных-jsonpathcustom-columns" data-i18n-href="eng/utilities.md#advanced-output-jsonpathcustom-columns">
+            <span data-task="format">Настроить формат вывода</span>
+          </a>
+        </aside>
+
+        <section class="cards" id="cards" aria-live="polite"></section>
+      </section>
+    </main>
+
+    <script src="assets/app.js"></script>
+  </body>
+</html>
