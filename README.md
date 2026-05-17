@@ -23,7 +23,7 @@ Practical `kubectl` cheatsheet for day-to-day Kubernetes work.
 Для более удобной навигации откройте [`index.html`](index.html). Внутри есть:
 
 - переключатель RU / EN;
-- поиск по команде, теме или сценарию;
+- поиск по команде, теме или сценарию с прямыми ссылками на разделы;
 - компактные карточки категорий со ссылками на Markdown-разделы;
 - адаптивная верстка без сборки и зависимостей.
 
@@ -37,7 +37,7 @@ Practical `kubectl` cheatsheet for day-to-day Kubernetes work.
 | Network | `port-forward`, `expose`, `ingress`, `networkpolicy`, `proxy` |
 | Storage | `configmap`, `secret`, `pv`, `pvc`, `kustomize` |
 | Security | `auth can-i`, `rbac`, `csr`, `pss`, `pdb`, `quota` |
-| Cluster | `config`, `namespace`, `node`, `crd`, `api-resources` |
+| Cluster | `config`, `namespace`, `node`, `crd`, `api-resources`, `version skew`, `kuberc` |
 | Utilities | `exec`, `cp`, `label`, `annotate`, `jsonpath`, `helm`, `krew` |
 
 ## Структура / Structure
@@ -47,7 +47,11 @@ Practical `kubectl` cheatsheet for day-to-day Kubernetes work.
 ├── index.html
 ├── assets/
 │   ├── app.js
+│   ├── search-index.js
 │   └── styles.css
+├── scripts/
+│   ├── build_search_index.rb
+│   └── check_repo.rb
 ├── eng/
 │   ├── viewing.md
 │   ├── management.md
@@ -74,4 +78,6 @@ Practical `kubectl` cheatsheet for day-to-day Kubernetes work.
 1. По возможности обновляйте команды сразу в обеих языковых версиях.
 2. Сохраняйте одинаковый порядок разделов в `ru/` и `eng/`.
 3. Добавляйте новые темы в `index.html`, чтобы визуальная навигация оставалась полной.
-4. Открывайте pull request с коротким описанием изменений.
+4. После изменения Markdown обновляйте поисковый индекс: `ruby scripts/build_search_index.rb`.
+5. Перед pull request запускайте проверку: `ruby scripts/check_repo.rb`.
+6. Открывайте pull request с коротким описанием изменений.

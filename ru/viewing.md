@@ -170,9 +170,10 @@ kubectl auth can-i --list
 # Проверить почему под не запускается
 kubectl describe pod <pod-name> | grep -A 10 Events
 
-# Проверить состояние компонентов кластера
-kubectl get componentstatuses
-kubectl get cs
+# Проверить health endpoints API server
+kubectl get --raw='/readyz?verbose'
+kubectl get --raw='/livez?verbose'
+kubectl get --raw='/healthz'
 ```
 
 ## События (events)

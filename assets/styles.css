@@ -246,6 +246,78 @@ pre {
   align-items: start;
 }
 
+.results {
+  display: grid;
+  gap: 12px;
+  margin: 0 0 20px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.results[hidden] {
+  display: none;
+}
+
+.results-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.results-head h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.results-head span {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.result-list {
+  display: grid;
+  gap: 8px;
+}
+
+.result {
+  display: grid;
+  gap: 5px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-strong);
+  text-decoration: none;
+}
+
+.result:hover,
+.result:focus-visible {
+  border-color: var(--blue);
+  outline: 0;
+}
+
+.result span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.result strong {
+  font-size: 14px;
+}
+
+.result code {
+  overflow-x: auto;
+  color: #26374f;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
 .rail {
   position: sticky;
   top: 88px;

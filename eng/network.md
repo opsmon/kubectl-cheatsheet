@@ -15,7 +15,7 @@ kubectl port-forward svc/<service-name> 8080:80
 # Forward multiple ports
 kubectl port-forward <pod-name> 8080:80 8443:443
 
-# Forward to all interfaces (not just localhost)
+# Forward to all interfaces (dangerous on workstations: exposes access to the network)
 kubectl port-forward --address 0.0.0.0 <pod-name> 8080:80
 
 # Forward in specific namespace
@@ -212,7 +212,7 @@ kubectl proxy
 # Proxy on specific port
 kubectl proxy --port=8080
 
-# Proxy accessible from all interfaces
+# Proxy accessible from all interfaces (dangerous: can expose the Kubernetes API to the network)
 kubectl proxy --address=0.0.0.0 --accept-hosts='.*'
 
 # After starting proxy - access API via curl
@@ -227,6 +227,12 @@ kubectl get --raw /apis/apps/v1/deployments
 kubectl get --raw /healthz
 kubectl get --raw /readyz
 kubectl get --raw /livez
+kubectl get --raw '/readyz?verbose'
+kubectl get --raw '/livez?verbose'
+
+# Diagnostic API server endpoints (availability depends on permissions and cluster version)
+kubectl get --raw /version
+kubectl get --raw /openapi/v2
 
 # Get metrics (if metrics-server installed)
 kubectl get --raw /apis/metrics.k8s.io/v1beta1/nodes

@@ -1,6 +1,6 @@
 # kubectl - Cluster & Infrastructure
 
-> Quick navigation tip: use `Ctrl/Cmd + F` to jump to sections. Key terms: `config`, `namespaces`, `nodes`, `crd`, `api-resources`, `capacity`, `field-selectors`.
+> Quick navigation tip: use `Ctrl/Cmd + F` to jump to sections. Key terms: `config`, `namespaces`, `nodes`, `crd`, `api-resources`, `capacity`, `versions`, `field-selectors`.
 
 ## Contexts and configuration (config)
 
@@ -207,6 +207,29 @@ kubectl get limitrange -A
 
 # Per-node deep capacity summary (requested vs allocatable)
 kubectl describe node <node-name> | grep -E "cpu|memory|Allocated|requests|limits" | head -30
+```
+
+## Versions and compatibility (version skew)
+
+```bash
+# kubectl client and Kubernetes API server version
+kubectl version
+kubectl version --output=yaml
+
+# Short API server version via raw endpoint
+kubectl get --raw /version
+
+# Supported API groups and versions
+kubectl api-versions
+
+# Check whether deprecated APIs appear in existing objects
+kubectl get all -A -o yaml | grep -E 'apiVersion: (extensions/v1beta1|apps/v1beta1|apps/v1beta2)'
+
+# Compatibility rule: kubectl should be within +/-1 minor version of kube-apiserver
+# Example: for an API server at v1.35, use kubectl v1.34, v1.35, or v1.36.
+
+# kuberc: kubectl user preferences and aliases (if enabled in your kubectl version)
+kubectl options | grep -i kuberc
 ```
 
 ## Field selectors and filtering

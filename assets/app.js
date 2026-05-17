@@ -3,7 +3,8 @@ const categories = [
     id: "viewing",
     ruTitle: "Просмотр и диагностика",
     enTitle: "Viewing and diagnostics",
-    summary: "Pods, logs, events, resource usage, and first-line troubleshooting.",
+    ruSummary: "Поды, логи, события, потребление ресурсов и базовая диагностика.",
+    enSummary: "Pods, logs, events, resource usage, and first-line troubleshooting.",
     ruFile: "ru/viewing.md",
     enFile: "eng/viewing.md",
     topics: [
@@ -21,7 +22,8 @@ const categories = [
     id: "management",
     ruTitle: "Управление ресурсами",
     enTitle: "Resource management",
-    summary: "Apply, create, edit, patch, delete, diff, and wait for resource state.",
+    ruSummary: "Apply, create, edit, patch, delete, diff и ожидание состояния ресурсов.",
+    enSummary: "Apply, create, edit, patch, delete, diff, and wait for resource state.",
     ruFile: "ru/management.md",
     enFile: "eng/management.md",
     topics: [
@@ -40,7 +42,8 @@ const categories = [
     id: "workloads",
     ruTitle: "Нагрузки",
     enTitle: "Workloads",
-    summary: "Pods, deployments, rollouts, scaling, HPA/VPA, jobs, and cronjobs.",
+    ruSummary: "Поды, deployment-ы, rollout-ы, масштабирование, HPA/VPA, jobs и cronjobs.",
+    enSummary: "Pods, deployments, rollouts, scaling, HPA/VPA, jobs, and cronjobs.",
     ruFile: "ru/workloads.md",
     enFile: "eng/workloads.md",
     topics: [
@@ -58,7 +61,8 @@ const categories = [
     id: "network",
     ruTitle: "Сеть",
     enTitle: "Network",
-    summary: "Port-forwarding, services, ingress, network policies, and API proxy access.",
+    ruSummary: "Port-forwarding, сервисы, ingress, сетевые политики и доступ к API.",
+    enSummary: "Port-forwarding, services, ingress, network policies, and API proxy access.",
     ruFile: "ru/network.md",
     enFile: "eng/network.md",
     topics: [
@@ -73,7 +77,8 @@ const categories = [
     id: "storage",
     ruTitle: "Хранилище",
     enTitle: "Storage",
-    summary: "ConfigMaps, Secrets, persistent volumes, claims, and Kustomize workflows.",
+    ruSummary: "ConfigMaps, Secrets, постоянные тома, PVC и рабочие процессы Kustomize.",
+    enSummary: "ConfigMaps, Secrets, persistent volumes, claims, and Kustomize workflows.",
     ruFile: "ru/storage.md",
     enFile: "eng/storage.md",
     topics: [
@@ -87,7 +92,8 @@ const categories = [
     id: "security",
     ruTitle: "Безопасность",
     enTitle: "Security",
-    summary: "RBAC, permission checks, certificates, pod security, PDB, quotas, and limits.",
+    ruSummary: "RBAC, проверка прав, сертификаты, безопасность подов, PDB, квоты и лимиты.",
+    enSummary: "RBAC, permission checks, certificates, pod security, PDB, quotas, and limits.",
     ruFile: "ru/security.md",
     enFile: "eng/security.md",
     topics: [
@@ -104,7 +110,8 @@ const categories = [
     id: "cluster",
     ruTitle: "Кластер",
     enTitle: "Cluster",
-    summary: "Contexts, namespaces, nodes, CRDs, API resources, capacity, and selectors.",
+    ruSummary: "Контексты, namespaces, ноды, CRD, API-ресурсы, ёмкость, версии и селекторы.",
+    enSummary: "Contexts, namespaces, nodes, CRDs, API resources, capacity, versions, and selectors.",
     ruFile: "ru/cluster.md",
     enFile: "eng/cluster.md",
     topics: [
@@ -114,6 +121,7 @@ const categories = [
       ["crd", "custom-resource-definitions-crd", "custom-resource-definitions-crd"],
       ["api-resources", "работа-с-api-ресурсами-api-resources", "working-with-api-resources-api-resources"],
       ["capacity", "планирование-ёмкости-кластера-capacity-planning", "cluster-capacity--resource-planning"],
+      ["versions", "версии-и-совместимость-version-skew", "versions-and-compatibility-version-skew"],
       ["field-selectors", "селекторы-полей-и-фильтрация", "field-selectors-and-filtering"]
     ]
   },
@@ -121,7 +129,8 @@ const categories = [
     id: "utilities",
     ruTitle: "Утилиты",
     enTitle: "Utilities",
-    summary: "Exec, copy, labels, annotations, jsonpath, scheduling helpers, Helm, Krew, and aliases.",
+    ruSummary: "Exec, copy, labels, annotations, jsonpath, планирование, Helm, Krew и aliases.",
+    enSummary: "Exec, copy, labels, annotations, jsonpath, scheduling helpers, Helm, Krew, and aliases.",
     ruFile: "ru/utilities.md",
     enFile: "eng/utilities.md",
     topics: [
@@ -154,6 +163,8 @@ const ui = {
     searchPlaceholder: "logs, rollout, namespace, ingress...",
     tasksTitle: "Частые задачи",
     open: "Открыть",
+    resultsTitle: "Найденные команды",
+    resultsSuffix: " показано",
     empty: "Ничего не найдено. Попробуйте logs, patch, namespace, jsonpath или rollout.",
     tasks: {
       pod: "Под не запускается",
@@ -173,6 +184,8 @@ const ui = {
     searchPlaceholder: "logs, rollout, namespace, ingress...",
     tasksTitle: "Common Tasks",
     open: "Open",
+    resultsTitle: "Matching commands",
+    resultsSuffix: " shown",
     empty: "Nothing found. Try a command like logs, patch, namespace, jsonpath, or rollout.",
     tasks: {
       pod: "Pod will not start",
@@ -185,9 +198,11 @@ const ui = {
 };
 
 const cards = document.querySelector("#cards");
+const results = document.querySelector("#results");
 const searchInput = document.querySelector("#searchInput");
 const langButtons = document.querySelectorAll("[data-lang]");
 const taskLinks = document.querySelectorAll("[data-i18n-href]");
+const commandIndex = Array.isArray(window.commandIndex) ? window.commandIndex : [];
 
 function titleFor(category) {
   return state.lang === "ru" ? category.ruTitle : category.enTitle;
@@ -197,8 +212,21 @@ function fileFor(category) {
   return state.lang === "ru" ? category.ruFile : category.enFile;
 }
 
+function summaryFor(category) {
+  return state.lang === "ru" ? category.ruSummary : category.enSummary;
+}
+
 function hashFor(topic) {
   return state.lang === "ru" ? topic[1] : topic[2];
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
 }
 
 function matches(category) {
@@ -206,11 +234,25 @@ function matches(category) {
     category.id,
     category.ruTitle,
     category.enTitle,
-    category.summary,
+    category.ruSummary,
+    category.enSummary,
     ...category.topics.map((topic) => topic.join(" "))
   ].join(" ").toLowerCase();
 
-  return haystack.includes(state.query);
+  return haystack.includes(state.query) || matchingCommands(category.id).length > 0;
+}
+
+function matchingCommands(categoryId) {
+  if (!state.query) {
+    return [];
+  }
+
+  return commandIndex
+    .filter((item) => item.lang === state.lang && item.category === categoryId)
+    .filter((item) => {
+      const haystack = [item.section, item.comment, item.command].join(" ").toLowerCase();
+      return haystack.includes(state.query);
+    });
 }
 
 function render() {
@@ -232,6 +274,8 @@ function render() {
   cards.innerHTML = visible.length
     ? visible.map(renderCard).join("")
     : `<p class="empty">${copy.empty}</p>`;
+
+  renderResults();
 
   taskLinks.forEach((link) => {
     if (state.lang === "eng") {
@@ -255,7 +299,7 @@ function renderCard(category) {
       <div class="card-header">
         <span class="card-kicker">${category.id}</span>
         <h2>${titleFor(category)}</h2>
-        <p>${category.summary}</p>
+        <p>${summaryFor(category)}</p>
       </div>
       <div class="chips">${chips}</div>
       <div class="card-footer">
@@ -265,6 +309,45 @@ function renderCard(category) {
         </a>
       </div>
     </article>
+  `;
+}
+
+function renderResults() {
+  const copy = ui[state.lang];
+  const items = state.query
+    ? commandIndex.filter((item) => {
+        if (item.lang !== state.lang) {
+          return false;
+        }
+
+        const haystack = [item.category, item.section, item.comment, item.command].join(" ").toLowerCase();
+        return haystack.includes(state.query);
+      }).slice(0, 12)
+    : [];
+
+  results.hidden = items.length === 0;
+  results.innerHTML = items.length
+    ? `
+      <div class="results-head">
+        <h2>${copy.resultsTitle}</h2>
+        <span>${items.length}${copy.resultsSuffix}</span>
+      </div>
+      <div class="result-list">
+        ${items.map(renderResult).join("")}
+      </div>
+    `
+    : "";
+}
+
+function renderResult(item) {
+  const label = item.comment || item.section;
+
+  return `
+    <a class="result" href="${item.file}#${item.hash}">
+      <span>${escapeHtml(item.category)} / ${escapeHtml(item.section)}</span>
+      <strong>${escapeHtml(label)}</strong>
+      <code>${escapeHtml(item.command)}</code>
+    </a>
   `;
 }
 

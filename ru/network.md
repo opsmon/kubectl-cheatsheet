@@ -15,7 +15,7 @@ kubectl port-forward svc/<service-name> 8080:80
 # Пробросить несколько портов
 kubectl port-forward <pod-name> 8080:80 8443:443
 
-# Пробросить на все интерфейсы (не только localhost)
+# Пробросить на все интерфейсы (опасно на рабочей машине: открывает доступ из сети)
 kubectl port-forward --address 0.0.0.0 <pod-name> 8080:80
 
 # Пробросить в определённом namespace
@@ -212,7 +212,7 @@ kubectl proxy
 # Прокси на указанном порту
 kubectl proxy --port=8080
 
-# Прокси доступный со всех интерфейсов
+# Прокси доступный со всех интерфейсов (опасно: может открыть Kubernetes API в сеть)
 kubectl proxy --address=0.0.0.0 --accept-hosts='.*'
 
 # После запуска прокси - доступ к API через curl
@@ -227,6 +227,12 @@ kubectl get --raw /apis/apps/v1/deployments
 kubectl get --raw /healthz
 kubectl get --raw /readyz
 kubectl get --raw /livez
+kubectl get --raw '/readyz?verbose'
+kubectl get --raw '/livez?verbose'
+
+# Диагностические endpoints API server (доступность зависит от прав и версии кластера)
+kubectl get --raw /version
+kubectl get --raw /openapi/v2
 
 # Получить метрики (если metrics-server установлен)
 kubectl get --raw /apis/metrics.k8s.io/v1beta1/nodes

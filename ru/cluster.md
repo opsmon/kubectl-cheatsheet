@@ -1,6 +1,6 @@
 # kubectl - Кластер и инфраструктура
 
-> Быстрая навигация: используйте `Ctrl/Cmd + F` для перехода к разделам. Ключевые слова: `config`, `namespaces`, `nodes`, `crd`, `api-resources`, `capacity`, `field-selectors`.
+> Быстрая навигация: используйте `Ctrl/Cmd + F` для перехода к разделам. Ключевые слова: `config`, `namespaces`, `nodes`, `crd`, `api-resources`, `capacity`, `versions`, `field-selectors`.
 
 ## Контексты и конфигурация (config)
 
@@ -207,6 +207,29 @@ kubectl get limitrange -A
 
 # Детальная сводка по ноде: запрошено vs доступно
 kubectl describe node <node-name> | grep -E "cpu|memory|Allocated|requests|limits" | head -30
+```
+
+## Версии и совместимость (version skew)
+
+```bash
+# Версия kubectl client и Kubernetes API server
+kubectl version
+kubectl version --output=yaml
+
+# Короткая версия API server через raw endpoint
+kubectl get --raw /version
+
+# Поддерживаемые API группы и версии
+kubectl api-versions
+
+# Проверить, какие deprecated API реально используются объектами
+kubectl get all -A -o yaml | grep -E 'apiVersion: (extensions/v1beta1|apps/v1beta1|apps/v1beta2)'
+
+# Правило совместимости: kubectl должен быть в пределах +/-1 minor версии от kube-apiserver
+# Пример: для API server v1.35 используйте kubectl v1.34, v1.35 или v1.36.
+
+# kuberc: пользовательские preferences и aliases kubectl (если включено в вашей версии kubectl)
+kubectl options | grep -i kuberc
 ```
 
 ## Селекторы полей и фильтрация

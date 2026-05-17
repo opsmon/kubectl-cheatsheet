@@ -59,10 +59,10 @@ kubectl auth can-i create pods --as=<username>
 # Проверить права для ServiceAccount
 kubectl auth can-i create pods --as=system:serviceaccount:<namespace>:<sa-name>
 
-# Получить токен ServiceAccount (k8s < 1.24)
+# Legacy: получить токен ServiceAccount из Secret (только для кластеров k8s < 1.24)
 kubectl get secret $(kubectl get sa <sa-name> -o jsonpath='{.secrets[0].name}') -o jsonpath='{.data.token}' | base64 -d
 
-# Создать токен для ServiceAccount (k8s >= 1.24)
+# Предпочтительно: создать короткоживущий токен для ServiceAccount (k8s >= 1.24)
 kubectl create token <sa-name>
 
 # Создать токен с кастомным TTL
@@ -182,10 +182,10 @@ kubectl label ns <namespace> pod-security.kubernetes.io/enforce=restricted --ove
 kubectl label ns <namespace> pod-security.kubernetes.io/warn=restricted --overwrite
 kubectl label ns <namespace> pod-security.kubernetes.io/audit=restricted --overwrite
 
-# Зафиксировать версию политики (рекомендуется)
-kubectl label ns <namespace> pod-security.kubernetes.io/enforce-version=v1.30 --overwrite
-kubectl label ns <namespace> pod-security.kubernetes.io/warn-version=v1.30 --overwrite
-kubectl label ns <namespace> pod-security.kubernetes.io/audit-version=v1.30 --overwrite
+# Зафиксировать версию политики под minor-версию вашего кластера
+kubectl label ns <namespace> pod-security.kubernetes.io/enforce-version=v<cluster-minor> --overwrite
+kubectl label ns <namespace> pod-security.kubernetes.io/warn-version=v<cluster-minor> --overwrite
+kubectl label ns <namespace> pod-security.kubernetes.io/audit-version=v<cluster-minor> --overwrite
 
 # Удалить PSS labels из namespace
 kubectl label ns <namespace> pod-security.kubernetes.io/enforce-

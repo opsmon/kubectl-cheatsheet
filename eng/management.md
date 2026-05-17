@@ -87,8 +87,9 @@ kubectl set image deployment/<deployment-name> <container-name>=nginx:1.21
 # Change image for all containers
 kubectl set image deployment/<deployment-name> *=nginx:1.21
 
-# Change image and record in annotation
-kubectl set image deployment/<deployment-name> nginx=nginx:1.21 --record
+# Change image and explicitly record the change reason in an annotation
+kubectl set image deployment/<deployment-name> nginx=nginx:1.21
+kubectl annotate deployment/<deployment-name> kubernetes.io/change-cause="nginx=nginx:1.21" --overwrite
 
 # Add environment variable
 kubectl set env deployment/<deployment-name> ENV_VAR=value
@@ -139,7 +140,7 @@ kubectl delete pods -l app=myapp
 # Delete namespace (and all resources in it)
 kubectl delete namespace <namespace-name>
 
-# Force delete pod
+# Force delete pod: use only when normal deletion is stuck
 kubectl delete pod <pod-name> --force --grace-period=0
 
 # Delete all pods in namespace
@@ -240,7 +241,7 @@ kubectl attach <pod-name> -c <container-name>
 # Attach in specific namespace
 kubectl attach <pod-name> -n <namespace>
 
-# Convert config between API versions
+# Convert config between API versions (requires the separate kubectl-convert plugin)
 kubectl convert -f deployment.yaml --output-version apps/v1
 
 # View completion for bash/zsh
