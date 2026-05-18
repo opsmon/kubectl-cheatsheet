@@ -5286,6 +5286,195 @@ window.commandIndex = [
     "lang": "eng",
     "category": "viewing",
     "file": "eng/viewing.md",
+    "hash": "fast-incident-playbooks-incidents",
+    "section": "Fast incident playbooks (incidents)",
+    "comment": "Quick namespace snapshot: pods, services, events",
+    "command": "kubectl get pods,svc,ingress,pvc -n <namespace> -o wide"
+  },
+  {
+    "lang": "eng",
+    "category": "viewing",
+    "file": "eng/viewing.md",
+    "hash": "fast-incident-playbooks-incidents",
+    "section": "Fast incident playbooks (incidents)",
+    "comment": "Quick namespace snapshot: pods, services, events",
+    "command": "kubectl events -n <namespace> --types=Warning"
+  },
+  {
+    "lang": "eng",
+    "category": "viewing",
+    "file": "eng/viewing.md",
+    "hash": "fast-incident-playbooks-incidents",
+    "section": "Fast incident playbooks (incidents)",
+    "comment": "CrashLoopBackOff: what is restarting and why",
+    "command": "kubectl get pods -n <namespace> --sort-by='.status.containerStatuses[0].restartCount'"
+  },
+  {
+    "lang": "eng",
+    "category": "viewing",
+    "file": "eng/viewing.md",
+    "hash": "fast-incident-playbooks-incidents",
+    "section": "Fast incident playbooks (incidents)",
+    "comment": "CrashLoopBackOff: what is restarting and why",
+    "command": "kubectl describe pod <pod-name> -n <namespace>"
+  },
+  {
+    "lang": "eng",
+    "category": "viewing",
+    "file": "eng/viewing.md",
+    "hash": "fast-incident-playbooks-incidents",
+    "section": "Fast incident playbooks (incidents)",
+    "comment": "CrashLoopBackOff: what is restarting and why",
+    "command": "kubectl logs <pod-name> -n <namespace> --previous --all-containers=true"
+  },
+  {
+    "lang": "eng",
+    "category": "viewing",
+    "file": "eng/viewing.md",
+    "hash": "fast-incident-playbooks-incidents",
+    "section": "Fast incident playbooks (incidents)",
+    "comment": "Rollout stuck: Deployment and ReplicaSet state",
+    "command": "kubectl rollout status deployment/<deploy-name> -n <namespace> --timeout=60s"
+  },
+  {
+    "lang": "eng",
+    "category": "viewing",
+    "file": "eng/viewing.md",
+    "hash": "fast-incident-playbooks-incidents",
+    "section": "Fast incident playbooks (incidents)",
+    "comment": "Rollout stuck: Deployment and ReplicaSet state",
+    "command": "kubectl describe deployment/<deploy-name> -n <namespace>"
+  },
+  {
+    "lang": "eng",
+    "category": "viewing",
+    "file": "eng/viewing.md",
+    "hash": "fast-incident-playbooks-incidents",
+    "section": "Fast incident playbooks (incidents)",
+    "comment": "Rollout stuck: Deployment and ReplicaSet state",
+    "command": "kubectl get rs -n <namespace> -l app=<app-label> -o wide"
+  },
+  {
+    "lang": "eng",
+    "category": "viewing",
+    "file": "eng/viewing.md",
+    "hash": "fast-incident-playbooks-incidents",
+    "section": "Fast incident playbooks (incidents)",
+    "comment": "Pending pod: resources, PVC, taints, or node selector",
+    "command": "kubectl describe pod <pod-name> -n <namespace> | grep -A 40 Events"
+  },
+  {
+    "lang": "eng",
+    "category": "viewing",
+    "file": "eng/viewing.md",
+    "hash": "fast-incident-playbooks-incidents",
+    "section": "Fast incident playbooks (incidents)",
+    "comment": "Pending pod: resources, PVC, taints, or node selector",
+    "command": "kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints,CPU:.status.allocatable.cpu,MEM:.status.allocatable.memory"
+  },
+  {
+    "lang": "eng",
+    "category": "viewing",
+    "file": "eng/viewing.md",
+    "hash": "fast-incident-playbooks-incidents",
+    "section": "Fast incident playbooks (incidents)",
+    "comment": "Pending pod: resources, PVC, taints, or node selector",
+    "command": "kubectl get pvc -n <namespace>"
+  },
+  {
+    "lang": "eng",
+    "category": "viewing",
+    "file": "eng/viewing.md",
+    "hash": "fast-incident-playbooks-incidents",
+    "section": "Fast incident playbooks (incidents)",
+    "comment": "Service is not responding: check endpoints and selector",
+    "command": "kubectl get svc <service-name> -n <namespace> -o wide"
+  },
+  {
+    "lang": "eng",
+    "category": "viewing",
+    "file": "eng/viewing.md",
+    "hash": "fast-incident-playbooks-incidents",
+    "section": "Fast incident playbooks (incidents)",
+    "comment": "Service is not responding: check endpoints and selector",
+    "command": "kubectl get endpoints <service-name> -n <namespace> -o yaml"
+  },
+  {
+    "lang": "eng",
+    "category": "viewing",
+    "file": "eng/viewing.md",
+    "hash": "fast-incident-playbooks-incidents",
+    "section": "Fast incident playbooks (incidents)",
+    "comment": "Service is not responding: check endpoints and selector",
+    "command": "kubectl describe svc <service-name> -n <namespace>"
+  },
+  {
+    "lang": "eng",
+    "category": "viewing",
+    "file": "eng/viewing.md",
+    "hash": "fast-incident-playbooks-incidents",
+    "section": "Fast incident playbooks (incidents)",
+    "comment": "Cluster DNS: quick pod to test resolution",
+    "command": "kubectl run dnscheck --rm -it --restart=Never --image=busybox:1.36 -- nslookup <service-name>.<namespace>.svc.cluster.local"
+  },
+  {
+    "lang": "eng",
+    "category": "viewing",
+    "file": "eng/viewing.md",
+    "hash": "fast-incident-playbooks-incidents",
+    "section": "Fast incident playbooks (incidents)",
+    "comment": "PVC will not mount: pod, PVC, and storage class events",
+    "command": "kubectl describe pod <pod-name> -n <namespace> | grep -A 40 -E 'Mount|Volume|Events'"
+  },
+  {
+    "lang": "eng",
+    "category": "viewing",
+    "file": "eng/viewing.md",
+    "hash": "fast-incident-playbooks-incidents",
+    "section": "Fast incident playbooks (incidents)",
+    "comment": "PVC will not mount: pod, PVC, and storage class events",
+    "command": "kubectl describe pvc <pvc-name> -n <namespace>"
+  },
+  {
+    "lang": "eng",
+    "category": "viewing",
+    "file": "eng/viewing.md",
+    "hash": "fast-incident-playbooks-incidents",
+    "section": "Fast incident playbooks (incidents)",
+    "comment": "PVC will not mount: pod, PVC, and storage class events",
+    "command": "kubectl get storageclass"
+  },
+  {
+    "lang": "eng",
+    "category": "viewing",
+    "file": "eng/viewing.md",
+    "hash": "fast-incident-playbooks-incidents",
+    "section": "Fast incident playbooks (incidents)",
+    "comment": "Node pressure: find nodes and pods with high usage",
+    "command": "kubectl describe nodes | grep -E 'Name:|Pressure|Allocated resources' -A 8"
+  },
+  {
+    "lang": "eng",
+    "category": "viewing",
+    "file": "eng/viewing.md",
+    "hash": "fast-incident-playbooks-incidents",
+    "section": "Fast incident playbooks (incidents)",
+    "comment": "Node pressure: find nodes and pods with high usage",
+    "command": "kubectl top nodes"
+  },
+  {
+    "lang": "eng",
+    "category": "viewing",
+    "file": "eng/viewing.md",
+    "hash": "fast-incident-playbooks-incidents",
+    "section": "Fast incident playbooks (incidents)",
+    "comment": "Node pressure: find nodes and pods with high usage",
+    "command": "kubectl top pods -A --sort-by=memory | head -20"
+  },
+  {
+    "lang": "eng",
+    "category": "viewing",
+    "file": "eng/viewing.md",
     "hash": "ephemeral-containers",
     "section": "Ephemeral Containers",
     "comment": "Add an ephemeral debug container to a running pod (kubectl >= 1.23)",
@@ -11437,6 +11626,195 @@ window.commandIndex = [
     "section": "Диагностика типичных проблем подов (troubleshooting)",
     "comment": "Временный debug-контейнер в сетевом namespace целевого пода",
     "command": "kubectl debug <pod-name> -n <namespace> -it --image=busybox"
+  },
+  {
+    "lang": "ru",
+    "category": "viewing",
+    "file": "ru/viewing.md",
+    "hash": "быстрые-сценарии-инцидентов-incidents",
+    "section": "Быстрые сценарии инцидентов (incidents)",
+    "comment": "Быстрый снимок namespace: поды, сервисы, события",
+    "command": "kubectl get pods,svc,ingress,pvc -n <namespace> -o wide"
+  },
+  {
+    "lang": "ru",
+    "category": "viewing",
+    "file": "ru/viewing.md",
+    "hash": "быстрые-сценарии-инцидентов-incidents",
+    "section": "Быстрые сценарии инцидентов (incidents)",
+    "comment": "Быстрый снимок namespace: поды, сервисы, события",
+    "command": "kubectl events -n <namespace> --types=Warning"
+  },
+  {
+    "lang": "ru",
+    "category": "viewing",
+    "file": "ru/viewing.md",
+    "hash": "быстрые-сценарии-инцидентов-incidents",
+    "section": "Быстрые сценарии инцидентов (incidents)",
+    "comment": "CrashLoopBackOff: что рестартует и почему",
+    "command": "kubectl get pods -n <namespace> --sort-by='.status.containerStatuses[0].restartCount'"
+  },
+  {
+    "lang": "ru",
+    "category": "viewing",
+    "file": "ru/viewing.md",
+    "hash": "быстрые-сценарии-инцидентов-incidents",
+    "section": "Быстрые сценарии инцидентов (incidents)",
+    "comment": "CrashLoopBackOff: что рестартует и почему",
+    "command": "kubectl describe pod <pod-name> -n <namespace>"
+  },
+  {
+    "lang": "ru",
+    "category": "viewing",
+    "file": "ru/viewing.md",
+    "hash": "быстрые-сценарии-инцидентов-incidents",
+    "section": "Быстрые сценарии инцидентов (incidents)",
+    "comment": "CrashLoopBackOff: что рестартует и почему",
+    "command": "kubectl logs <pod-name> -n <namespace> --previous --all-containers=true"
+  },
+  {
+    "lang": "ru",
+    "category": "viewing",
+    "file": "ru/viewing.md",
+    "hash": "быстрые-сценарии-инцидентов-incidents",
+    "section": "Быстрые сценарии инцидентов (incidents)",
+    "comment": "Rollout stuck: состояние Deployment и ReplicaSet",
+    "command": "kubectl rollout status deployment/<deploy-name> -n <namespace> --timeout=60s"
+  },
+  {
+    "lang": "ru",
+    "category": "viewing",
+    "file": "ru/viewing.md",
+    "hash": "быстрые-сценарии-инцидентов-incidents",
+    "section": "Быстрые сценарии инцидентов (incidents)",
+    "comment": "Rollout stuck: состояние Deployment и ReplicaSet",
+    "command": "kubectl describe deployment/<deploy-name> -n <namespace>"
+  },
+  {
+    "lang": "ru",
+    "category": "viewing",
+    "file": "ru/viewing.md",
+    "hash": "быстрые-сценарии-инцидентов-incidents",
+    "section": "Быстрые сценарии инцидентов (incidents)",
+    "comment": "Rollout stuck: состояние Deployment и ReplicaSet",
+    "command": "kubectl get rs -n <namespace> -l app=<app-label> -o wide"
+  },
+  {
+    "lang": "ru",
+    "category": "viewing",
+    "file": "ru/viewing.md",
+    "hash": "быстрые-сценарии-инцидентов-incidents",
+    "section": "Быстрые сценарии инцидентов (incidents)",
+    "comment": "Pending: не хватает ресурсов, PVC, taints или node selector",
+    "command": "kubectl describe pod <pod-name> -n <namespace> | grep -A 40 Events"
+  },
+  {
+    "lang": "ru",
+    "category": "viewing",
+    "file": "ru/viewing.md",
+    "hash": "быстрые-сценарии-инцидентов-incidents",
+    "section": "Быстрые сценарии инцидентов (incidents)",
+    "comment": "Pending: не хватает ресурсов, PVC, taints или node selector",
+    "command": "kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints,CPU:.status.allocatable.cpu,MEM:.status.allocatable.memory"
+  },
+  {
+    "lang": "ru",
+    "category": "viewing",
+    "file": "ru/viewing.md",
+    "hash": "быстрые-сценарии-инцидентов-incidents",
+    "section": "Быстрые сценарии инцидентов (incidents)",
+    "comment": "Pending: не хватает ресурсов, PVC, taints или node selector",
+    "command": "kubectl get pvc -n <namespace>"
+  },
+  {
+    "lang": "ru",
+    "category": "viewing",
+    "file": "ru/viewing.md",
+    "hash": "быстрые-сценарии-инцидентов-incidents",
+    "section": "Быстрые сценарии инцидентов (incidents)",
+    "comment": "Service не отвечает: проверить endpoints и selector",
+    "command": "kubectl get svc <service-name> -n <namespace> -o wide"
+  },
+  {
+    "lang": "ru",
+    "category": "viewing",
+    "file": "ru/viewing.md",
+    "hash": "быстрые-сценарии-инцидентов-incidents",
+    "section": "Быстрые сценарии инцидентов (incidents)",
+    "comment": "Service не отвечает: проверить endpoints и selector",
+    "command": "kubectl get endpoints <service-name> -n <namespace> -o yaml"
+  },
+  {
+    "lang": "ru",
+    "category": "viewing",
+    "file": "ru/viewing.md",
+    "hash": "быстрые-сценарии-инцидентов-incidents",
+    "section": "Быстрые сценарии инцидентов (incidents)",
+    "comment": "Service не отвечает: проверить endpoints и selector",
+    "command": "kubectl describe svc <service-name> -n <namespace>"
+  },
+  {
+    "lang": "ru",
+    "category": "viewing",
+    "file": "ru/viewing.md",
+    "hash": "быстрые-сценарии-инцидентов-incidents",
+    "section": "Быстрые сценарии инцидентов (incidents)",
+    "comment": "DNS внутри кластера: быстрый pod для проверки резолва",
+    "command": "kubectl run dnscheck --rm -it --restart=Never --image=busybox:1.36 -- nslookup <service-name>.<namespace>.svc.cluster.local"
+  },
+  {
+    "lang": "ru",
+    "category": "viewing",
+    "file": "ru/viewing.md",
+    "hash": "быстрые-сценарии-инцидентов-incidents",
+    "section": "Быстрые сценарии инцидентов (incidents)",
+    "comment": "PVC не монтируется: события pod, PVC и storage class",
+    "command": "kubectl describe pod <pod-name> -n <namespace> | grep -A 40 -E 'Mount|Volume|Events'"
+  },
+  {
+    "lang": "ru",
+    "category": "viewing",
+    "file": "ru/viewing.md",
+    "hash": "быстрые-сценарии-инцидентов-incidents",
+    "section": "Быстрые сценарии инцидентов (incidents)",
+    "comment": "PVC не монтируется: события pod, PVC и storage class",
+    "command": "kubectl describe pvc <pvc-name> -n <namespace>"
+  },
+  {
+    "lang": "ru",
+    "category": "viewing",
+    "file": "ru/viewing.md",
+    "hash": "быстрые-сценарии-инцидентов-incidents",
+    "section": "Быстрые сценарии инцидентов (incidents)",
+    "comment": "PVC не монтируется: события pod, PVC и storage class",
+    "command": "kubectl get storageclass"
+  },
+  {
+    "lang": "ru",
+    "category": "viewing",
+    "file": "ru/viewing.md",
+    "hash": "быстрые-сценарии-инцидентов-incidents",
+    "section": "Быстрые сценарии инцидентов (incidents)",
+    "comment": "Node pressure: найти ноды и поды с высоким потреблением",
+    "command": "kubectl describe nodes | grep -E 'Name:|Pressure|Allocated resources' -A 8"
+  },
+  {
+    "lang": "ru",
+    "category": "viewing",
+    "file": "ru/viewing.md",
+    "hash": "быстрые-сценарии-инцидентов-incidents",
+    "section": "Быстрые сценарии инцидентов (incidents)",
+    "comment": "Node pressure: найти ноды и поды с высоким потреблением",
+    "command": "kubectl top nodes"
+  },
+  {
+    "lang": "ru",
+    "category": "viewing",
+    "file": "ru/viewing.md",
+    "hash": "быстрые-сценарии-инцидентов-incidents",
+    "section": "Быстрые сценарии инцидентов (incidents)",
+    "comment": "Node pressure: найти ноды и поды с высоким потреблением",
+    "command": "kubectl top pods -A --sort-by=memory | head -20"
   },
   {
     "lang": "ru",

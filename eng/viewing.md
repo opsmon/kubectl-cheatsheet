@@ -1,6 +1,6 @@
 # kubectl - Viewing & Diagnostics
 
-> Quick navigation tip: use `Ctrl/Cmd + F` to jump to sections. Key terms: `get`, `describe`, `logs`, `top`, `debug`, `events`, `troubleshooting`, `ephemeral`.
+> Quick navigation tip: use `Ctrl/Cmd + F` to jump to sections. Key terms: `get`, `describe`, `logs`, `top`, `debug`, `events`, `troubleshooting`, `incidents`, `ephemeral`.
 
 ## Getting information (get)
 
@@ -260,6 +260,47 @@ kubectl exec -it <pod-name> -n <namespace> -- ls -la /etc/config /etc/secrets
 
 # Temporary debug container in target pod network namespace
 kubectl debug <pod-name> -n <namespace> -it --image=busybox
+```
+
+## Fast incident playbooks (incidents)
+
+```bash
+# Quick namespace snapshot: pods, services, events
+kubectl get pods,svc,ingress,pvc -n <namespace> -o wide
+kubectl events -n <namespace> --types=Warning
+
+# CrashLoopBackOff: what is restarting and why
+kubectl get pods -n <namespace> --sort-by='.status.containerStatuses[0].restartCount'
+kubectl describe pod <pod-name> -n <namespace>
+kubectl logs <pod-name> -n <namespace> --previous --all-containers=true
+
+# Rollout stuck: Deployment and ReplicaSet state
+kubectl rollout status deployment/<deploy-name> -n <namespace> --timeout=60s
+kubectl describe deployment/<deploy-name> -n <namespace>
+kubectl get rs -n <namespace> -l app=<app-label> -o wide
+
+# Pending pod: resources, PVC, taints, or node selector
+kubectl describe pod <pod-name> -n <namespace> | grep -A 40 Events
+kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints,CPU:.status.allocatable.cpu,MEM:.status.allocatable.memory
+kubectl get pvc -n <namespace>
+
+# Service is not responding: check endpoints and selector
+kubectl get svc <service-name> -n <namespace> -o wide
+kubectl get endpoints <service-name> -n <namespace> -o yaml
+kubectl describe svc <service-name> -n <namespace>
+
+# Cluster DNS: quick pod to test resolution
+kubectl run dnscheck --rm -it --restart=Never --image=busybox:1.36 -- nslookup <service-name>.<namespace>.svc.cluster.local
+
+# PVC will not mount: pod, PVC, and storage class events
+kubectl describe pod <pod-name> -n <namespace> | grep -A 40 -E 'Mount|Volume|Events'
+kubectl describe pvc <pvc-name> -n <namespace>
+kubectl get storageclass
+
+# Node pressure: find nodes and pods with high usage
+kubectl describe nodes | grep -E 'Name:|Pressure|Allocated resources' -A 8
+kubectl top nodes
+kubectl top pods -A --sort-by=memory | head -20
 ```
 
 ## Ephemeral Containers

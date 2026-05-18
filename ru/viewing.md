@@ -1,6 +1,6 @@
 # kubectl - Просмотр и диагностика
 
-> Быстрая навигация: используйте `Ctrl/Cmd + F` для перехода к разделам. Ключевые слова: `get`, `describe`, `logs`, `top`, `debug`, `events`, `troubleshooting`, `ephemeral`.
+> Быстрая навигация: используйте `Ctrl/Cmd + F` для перехода к разделам. Ключевые слова: `get`, `describe`, `logs`, `top`, `debug`, `events`, `troubleshooting`, `incidents`, `ephemeral`.
 
 ## Получение информации (get)
 
@@ -260,6 +260,47 @@ kubectl exec -it <pod-name> -n <namespace> -- ls -la /etc/config /etc/secrets
 
 # Временный debug-контейнер в сетевом namespace целевого пода
 kubectl debug <pod-name> -n <namespace> -it --image=busybox
+```
+
+## Быстрые сценарии инцидентов (incidents)
+
+```bash
+# Быстрый снимок namespace: поды, сервисы, события
+kubectl get pods,svc,ingress,pvc -n <namespace> -o wide
+kubectl events -n <namespace> --types=Warning
+
+# CrashLoopBackOff: что рестартует и почему
+kubectl get pods -n <namespace> --sort-by='.status.containerStatuses[0].restartCount'
+kubectl describe pod <pod-name> -n <namespace>
+kubectl logs <pod-name> -n <namespace> --previous --all-containers=true
+
+# Rollout stuck: состояние Deployment и ReplicaSet
+kubectl rollout status deployment/<deploy-name> -n <namespace> --timeout=60s
+kubectl describe deployment/<deploy-name> -n <namespace>
+kubectl get rs -n <namespace> -l app=<app-label> -o wide
+
+# Pending: не хватает ресурсов, PVC, taints или node selector
+kubectl describe pod <pod-name> -n <namespace> | grep -A 40 Events
+kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints,CPU:.status.allocatable.cpu,MEM:.status.allocatable.memory
+kubectl get pvc -n <namespace>
+
+# Service не отвечает: проверить endpoints и selector
+kubectl get svc <service-name> -n <namespace> -o wide
+kubectl get endpoints <service-name> -n <namespace> -o yaml
+kubectl describe svc <service-name> -n <namespace>
+
+# DNS внутри кластера: быстрый pod для проверки резолва
+kubectl run dnscheck --rm -it --restart=Never --image=busybox:1.36 -- nslookup <service-name>.<namespace>.svc.cluster.local
+
+# PVC не монтируется: события pod, PVC и storage class
+kubectl describe pod <pod-name> -n <namespace> | grep -A 40 -E 'Mount|Volume|Events'
+kubectl describe pvc <pvc-name> -n <namespace>
+kubectl get storageclass
+
+# Node pressure: найти ноды и поды с высоким потреблением
+kubectl describe nodes | grep -E 'Name:|Pressure|Allocated resources' -A 8
+kubectl top nodes
+kubectl top pods -A --sort-by=memory | head -20
 ```
 
 ## Ephemeral Containers (временные контейнеры)

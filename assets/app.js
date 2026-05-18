@@ -15,6 +15,7 @@ const categories = [
       ["debug", "отладка-и-диагностика-debug", "debugging-and-diagnostics-debug"],
       ["events", "события-events", "events-events"],
       ["troubleshooting", "диагностика-типичных-проблем-подов-troubleshooting", "troubleshooting-common-pod-issues-troubleshooting"],
+      ["incidents", "быстрые-сценарии-инцидентов-incidents", "fast-incident-playbooks-incidents"],
       ["ephemeral", "ephemeral-containers-временные-контейнеры", "ephemeral-containers"]
     ]
   },
