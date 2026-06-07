@@ -1,23 +1,21 @@
 <!doctype html>
 {% assign is_english = page.path contains 'eng/' %}
 {% assign lang_dir = 'ru' %}
-{% assign alt_dir = 'eng' %}
 {% assign home_label = 'На главную' %}
 {% assign contents_label = 'Разделы' %}
-{% assign language_label = 'English' %}
 {% assign footer_label = 'Практический справочник kubectl' %}
 {% assign contribute_label = 'Участвовать' %}
 {% assign controls_label = 'Навигация по документу' %}
+{% assign language_switcher_label = 'Язык сайта' %}
 {% assign description = 'Практический справочник команд kubectl для ежедневной работы с Kubernetes.' %}
 {% if is_english %}
   {% assign lang_dir = 'eng' %}
-  {% assign alt_dir = 'ru' %}
   {% assign home_label = 'Home' %}
   {% assign contents_label = 'Topics' %}
-  {% assign language_label = 'Русский' %}
   {% assign footer_label = 'A practical kubectl reference' %}
   {% assign contribute_label = 'Contribute' %}
   {% assign controls_label = 'Document navigation' %}
+  {% assign language_switcher_label = 'Site language' %}
   {% assign description = 'A practical kubectl command reference for everyday Kubernetes work.' %}
 {% endif %}
 <html lang="{% if is_english %}en{% else %}ru{% endif %}">
@@ -38,8 +36,16 @@
       <nav aria-label="{{ controls_label }}">
         <a href="{{ '/' | append: '?lang=' | append: lang_dir | relative_url }}">{{ home_label }}</a>
         <a class="docs-contribute" href="{{ '/' | append: lang_dir | append: '/contributing.html' | relative_url }}">{{ contribute_label }}</a>
-        <a class="docs-language" href="{{ '/' | append: alt_dir | append: '/' | append: page.name | replace: '.md', '.html' | relative_url }}">{{ language_label }}</a>
         <a href="https://github.com/opsmon/kubectl-cheatsheet" target="_blank" rel="noreferrer">GitHub</a>
+        <div class="docs-language-switch" role="group" aria-label="{{ language_switcher_label }}">
+          {% if is_english %}
+            <a href="{{ '/ru/' | append: page.name | replace: '.md', '.html' | relative_url }}">RU</a>
+            <span aria-current="true">EN</span>
+          {% else %}
+            <span aria-current="true">RU</span>
+            <a href="{{ '/eng/' | append: page.name | replace: '.md', '.html' | relative_url }}">EN</a>
+          {% endif %}
+        </div>
       </nav>
     </header>
 

@@ -72,6 +72,7 @@ a {
 
 .docs-topbar nav {
   display: flex;
+  align-items: center;
   gap: 24px;
 }
 
@@ -95,6 +96,40 @@ a {
 .docs-topbar .docs-contribute:hover {
   background: var(--blue);
   color: #fff;
+}
+
+.docs-language-switch {
+  display: inline-grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px;
+  padding: 3px;
+  border-radius: 10px;
+  background: rgba(118, 118, 128, 0.12);
+}
+
+.docs-language-switch a,
+.docs-language-switch span {
+  display: grid;
+  min-width: 38px;
+  min-height: 27px;
+  place-items: center;
+  padding: 0 8px;
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.docs-language-switch span {
+  background: #fff;
+  color: var(--text);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+
+.docs-language-switch a:hover {
+  color: var(--blue);
 }
 
 .docs-shell {
@@ -344,11 +379,11 @@ a {
   }
 
   .docs-topbar nav {
-    gap: 15px;
+    gap: 10px;
   }
 
-  .docs-topbar nav a:first-child,
-  .docs-topbar nav a:last-child {
+  .docs-topbar nav > a:first-child,
+  .docs-topbar nav > a:nth-child(3) {
     display: none;
   }
 
