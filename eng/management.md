@@ -1,3 +1,7 @@
+---
+layout: docs
+---
+
 # kubectl - Resource Management
 
 > Quick navigation tip: use `Ctrl/Cmd + F` to jump to sections. Key terms: `apply`, `create`, `edit`, `patch`, `set`, `delete`, `diff`, `ssa`, `replace`, `wait`.

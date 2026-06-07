@@ -1,3 +1,7 @@
+---
+layout: docs
+---
+
 # kubectl - Сеть
 
 > Быстрая навигация: используйте `Ctrl/Cmd + F` для перехода к разделам. Ключевые слова: `port-forward`, `expose`, `ingress`, `networkpolicy`, `proxy`.

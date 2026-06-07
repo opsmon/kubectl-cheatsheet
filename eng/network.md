@@ -1,3 +1,7 @@
+---
+layout: docs
+---
+
 # kubectl - Network
 
 > Quick navigation tip: use `Ctrl/Cmd + F` to jump to sections. Key terms: `port-forward`, `expose`, `ingress`, `networkpolicy`, `proxy`.

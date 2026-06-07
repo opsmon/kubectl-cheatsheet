@@ -1,3 +1,7 @@
+---
+layout: docs
+---
+
 # kubectl - Кластер и инфраструктура
 
 > Быстрая навигация: используйте `Ctrl/Cmd + F` для перехода к разделам. Ключевые слова: `config`, `namespaces`, `nodes`, `crd`, `api-resources`, `capacity`, `versions`, `field-selectors`.

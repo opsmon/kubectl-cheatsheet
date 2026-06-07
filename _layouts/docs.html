@@ -1,0 +1,69 @@
+<!doctype html>
+{% assign is_english = page.path contains 'eng/' %}
+{% assign lang_dir = 'ru' %}
+{% assign alt_dir = 'eng' %}
+{% assign home_label = 'На главную' %}
+{% assign contents_label = 'Разделы' %}
+{% assign language_label = 'English' %}
+{% assign footer_label = 'Практический справочник kubectl' %}
+{% if is_english %}
+  {% assign lang_dir = 'eng' %}
+  {% assign alt_dir = 'ru' %}
+  {% assign home_label = 'Home' %}
+  {% assign contents_label = 'Topics' %}
+  {% assign language_label = 'Русский' %}
+  {% assign footer_label = 'A practical kubectl reference' %}
+{% endif %}
+<html lang="{% if is_english %}en{% else %}ru{% endif %}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f5f7">
+    <meta name="description" content="{{ site.description }}">
+    <title>{{ page.title | default: site.title }}</title>
+    <link rel="stylesheet" href="{{ '/assets/docs.css' | relative_url }}">
+  </head>
+  <body id="top">
+    <header class="docs-topbar">
+      <a class="docs-brand" href="{{ '/' | relative_url }}">
+        <span class="docs-brand-mark" aria-hidden="true">&gt;_</span>
+        <strong>kubectl</strong>
+      </a>
+      <nav aria-label="Document controls">
+        <a href="{{ '/' | relative_url }}">{{ home_label }}</a>
+        <a href="{{ '/' | append: alt_dir | append: '/' | append: page.name | replace: '.md', '.html' | relative_url }}">{{ language_label }}</a>
+        <a href="https://github.com/opsmon/kubectl-cheatsheet" target="_blank" rel="noreferrer">GitHub</a>
+      </nav>
+    </header>
+
+    <div class="docs-shell">
+      <aside class="docs-sidebar">
+        <p>{{ contents_label }}</p>
+        <nav aria-label="{{ contents_label }}">
+          <a href="{{ '/' | append: lang_dir | append: '/viewing.html' | relative_url }}">{% if is_english %}Viewing & diagnostics{% else %}Просмотр и диагностика{% endif %}</a>
+          <a href="{{ '/' | append: lang_dir | append: '/management.html' | relative_url }}">{% if is_english %}Resource management{% else %}Управление ресурсами{% endif %}</a>
+          <a href="{{ '/' | append: lang_dir | append: '/workloads.html' | relative_url }}">{% if is_english %}Workloads{% else %}Нагрузки{% endif %}</a>
+          <a href="{{ '/' | append: lang_dir | append: '/network.html' | relative_url }}">{% if is_english %}Network{% else %}Сеть{% endif %}</a>
+          <a href="{{ '/' | append: lang_dir | append: '/storage.html' | relative_url }}">{% if is_english %}Storage{% else %}Хранилище{% endif %}</a>
+          <a href="{{ '/' | append: lang_dir | append: '/security.html' | relative_url }}">{% if is_english %}Security{% else %}Безопасность{% endif %}</a>
+          <a href="{{ '/' | append: lang_dir | append: '/cluster.html' | relative_url }}">{% if is_english %}Cluster{% else %}Кластер{% endif %}</a>
+          <a href="{{ '/' | append: lang_dir | append: '/utilities.html' | relative_url }}">{% if is_english %}Utilities{% else %}Утилиты{% endif %}</a>
+        </nav>
+      </aside>
+
+      <main class="docs-main">
+        <a class="back-link" href="{{ '/' | relative_url }}">← {{ home_label }}</a>
+        <article class="docs-content">
+          {{ content }}
+        </article>
+        <footer>
+          <span>{{ footer_label }}</span>
+          <a href="#top">{% if is_english %}Back to top ↑{% else %}Наверх ↑{% endif %}</a>
+        </footer>
+      </main>
+    </div>
+
+    <script src="{{ '/assets/docs.js' | relative_url }}"></script>
+  </body>
+</html>
+

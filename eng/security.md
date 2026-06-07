@@ -1,3 +1,7 @@
+---
+layout: docs
+---
+
 # kubectl - Security
 
 > Quick navigation tip: use `Ctrl/Cmd + F` to jump to sections. Key terms: `rbac`, `auth`, `csr`, `pss`, `security-context`, `pdb`, `quota`.

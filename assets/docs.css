@@ -1,0 +1,357 @@
+:root {
+  color-scheme: light;
+  --bg: #f5f5f7;
+  --surface: #ffffff;
+  --text: #1d1d1f;
+  --muted: #6e6e73;
+  --line: rgba(0, 0, 0, 0.09);
+  --blue: #0071e3;
+  --code: #17171a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 84px;
+  background: var(--bg);
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--blue);
+}
+
+.docs-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  min-height: 58px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 0 max(24px, calc((100vw - 1240px) / 2));
+  border-bottom: 1px solid var(--line);
+  background: rgba(250, 250, 252, 0.82);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+
+.docs-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--text);
+  font-size: 17px;
+  letter-spacing: -0.03em;
+  text-decoration: none;
+}
+
+.docs-brand-mark {
+  display: grid;
+  width: 29px;
+  height: 29px;
+  place-items: center;
+  border-radius: 9px;
+  background: var(--text);
+  color: #fff;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 9px;
+}
+
+.docs-topbar nav {
+  display: flex;
+  gap: 24px;
+}
+
+.docs-topbar nav a {
+  color: #424245;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.docs-topbar nav a:hover {
+  color: var(--blue);
+}
+
+.docs-shell {
+  display: grid;
+  width: min(1240px, calc(100% - 48px));
+  grid-template-columns: 230px minmax(0, 850px);
+  gap: clamp(48px, 8vw, 100px);
+  justify-content: center;
+  margin: 0 auto;
+  padding: 54px 0 90px;
+}
+
+.docs-sidebar {
+  position: sticky;
+  top: 98px;
+  align-self: start;
+}
+
+.docs-sidebar > p {
+  margin: 0 0 12px;
+  color: #a1a1a6;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.docs-sidebar nav {
+  display: grid;
+  gap: 2px;
+}
+
+.docs-sidebar a {
+  padding: 8px 11px;
+  border-radius: 9px;
+  color: var(--muted);
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.docs-sidebar a:hover {
+  background: rgba(0, 0, 0, 0.045);
+  color: var(--text);
+}
+
+.docs-sidebar a.is-active {
+  background: #e8f2ff;
+  color: var(--blue);
+  font-weight: 600;
+}
+
+.docs-main {
+  min-width: 0;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 22px;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.docs-content {
+  padding: clamp(30px, 6vw, 68px);
+  border: 1px solid rgba(0, 0, 0, 0.055);
+  border-radius: 28px;
+  background: var(--surface);
+}
+
+.docs-content h1 {
+  margin: 0 0 20px;
+  font-size: clamp(38px, 6vw, 58px);
+  line-height: 1.02;
+  letter-spacing: -0.055em;
+}
+
+.docs-content h2 {
+  margin: 64px 0 20px;
+  padding-top: 4px;
+  font-size: 28px;
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+}
+
+.docs-content h3 {
+  margin: 42px 0 15px;
+  font-size: 20px;
+  letter-spacing: -0.025em;
+}
+
+.docs-content p,
+.docs-content li {
+  color: #424245;
+  font-size: 15px;
+}
+
+.docs-content blockquote {
+  margin: 24px 0 38px;
+  padding: 1px 0 1px 18px;
+  border-left: 3px solid var(--blue);
+}
+
+.docs-content blockquote p {
+  color: var(--muted);
+}
+
+.docs-content code {
+  padding: 2px 5px;
+  border-radius: 5px;
+  background: #f1f1f3;
+  color: #b42318;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.88em;
+}
+
+.docs-content .highlighter-rouge {
+  position: relative;
+  margin: 18px 0 30px;
+}
+
+.docs-content pre {
+  margin: 0;
+  padding: 23px;
+  overflow-x: auto;
+  border-radius: 17px;
+  background: var(--code);
+  color: #f5f5f7;
+  line-height: 1.65;
+}
+
+.docs-content pre code {
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 12.5px;
+}
+
+.copy-code {
+  position: absolute;
+  z-index: 2;
+  top: 10px;
+  right: 10px;
+  min-height: 28px;
+  padding: 0 9px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.09);
+  color: #d2d2d7;
+  font: 11px -apple-system, BlinkMacSystemFont, sans-serif;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 150ms ease, background 150ms ease;
+}
+
+.highlighter-rouge:hover .copy-code,
+.copy-code:focus-visible {
+  opacity: 1;
+}
+
+.copy-code:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.docs-content table {
+  display: block;
+  width: 100%;
+  margin: 24px 0 34px;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.docs-content th,
+.docs-content td {
+  padding: 11px 13px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.docs-content th {
+  color: var(--text);
+  font-weight: 650;
+}
+
+.docs-content td {
+  color: var(--muted);
+}
+
+.docs-main footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 28px 4px 0;
+  color: #86868b;
+  font-size: 12px;
+}
+
+.docs-main footer a {
+  text-decoration: none;
+}
+
+@media (max-width: 850px) {
+  .docs-shell {
+    width: min(100% - 28px, 850px);
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding-top: 26px;
+  }
+
+  .docs-sidebar {
+    position: static;
+    overflow-x: auto;
+  }
+
+  .docs-sidebar > p {
+    display: none;
+  }
+
+  .docs-sidebar nav {
+    display: flex;
+    width: max-content;
+    gap: 4px;
+  }
+
+  .docs-sidebar a {
+    background: rgba(0, 0, 0, 0.04);
+    white-space: nowrap;
+  }
+
+  .back-link {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .docs-topbar {
+    padding: 0 16px;
+  }
+
+  .docs-topbar nav {
+    gap: 15px;
+  }
+
+  .docs-topbar nav a:first-child {
+    display: none;
+  }
+
+  .docs-content {
+    padding: 28px 20px;
+    border-radius: 22px;
+  }
+
+  .docs-content h1 {
+    font-size: 38px;
+  }
+
+  .docs-content h2 {
+    margin-top: 50px;
+    font-size: 25px;
+  }
+
+  .copy-code {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

@@ -1,3 +1,7 @@
+---
+layout: docs
+---
+
 # kubectl - Utilities & Tools
 
 > Quick navigation tip: use `Ctrl/Cmd + F` to jump to sections. Key terms: `exec`, `cp`, `label`, `jsonpath`, `scheduling`, `tips`, `helm`, `krew`, `aliases`.

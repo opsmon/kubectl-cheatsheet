@@ -1,0 +1,13 @@
+title: kubectl Cheatsheet
+description: A practical bilingual kubectl reference for everyday Kubernetes work.
+url: https://opsmon.github.io
+baseurl: /kubectl-cheatsheet
+markdown: kramdown
+highlighter: rouge
+
+exclude:
+  - scripts
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+

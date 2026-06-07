@@ -1,3 +1,7 @@
+---
+layout: docs
+---
+
 # kubectl - Viewing & Diagnostics
 
 > Quick navigation tip: use `Ctrl/Cmd + F` to jump to sections. Key terms: `get`, `describe`, `logs`, `top`, `debug`, `events`, `troubleshooting`, `incidents`, `ephemeral`.

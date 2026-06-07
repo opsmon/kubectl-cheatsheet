@@ -1,3 +1,7 @@
+---
+layout: docs
+---
+
 # kubectl - Workloads
 
 > Quick navigation tip: use `Ctrl/Cmd + F` to jump to sections. Key terms: `run`, `rollout`, `scale`, `hpa`, `vpa`, `statefulsets`, `daemonsets`, `jobs`.

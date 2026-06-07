@@ -3,81 +3,117 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f5f7">
+    <meta name="description" content="Быстрый двуязычный справочник команд kubectl для ежедневной работы с Kubernetes.">
     <title>kubectl Cheatsheet</title>
     <link rel="stylesheet" href="assets/styles.css">
   </head>
   <body>
     <header class="topbar">
-      <a class="brand" href="README.md" aria-label="Open README">
-        <span class="brand-mark">k</span>
-        <span>
-          <strong>kubectl Cheatsheet</strong>
-          <small>daily Kubernetes commands</small>
+      <a class="brand" href="./" aria-label="kubectl Cheatsheet — главная">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" role="img">
+            <path d="M7.5 7.25 3 12l4.5 4.75M16.5 7.25 21 12l-4.5 4.75M14.25 4l-4.5 16"/>
+          </svg>
         </span>
+        <strong>kubectl</strong>
       </a>
-      <nav class="topnav" aria-label="Primary">
-        <a href="ru/viewing.md">RU docs</a>
-        <a href="eng/viewing.md">EN docs</a>
-        <a href="README.md">README</a>
+
+      <nav class="topnav" aria-label="Основная навигация">
+        <a href="#categories" id="navBrowse">Разделы</a>
+        <a href="ru/viewing.html" id="navDocs">Документация</a>
+        <a class="github-link" href="https://github.com/opsmon/kubectl-cheatsheet" target="_blank" rel="noreferrer">
+          GitHub
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M5 11 11 5M6 5h5v5"/>
+          </svg>
+        </a>
       </nav>
     </header>
 
     <main>
       <section class="hero" aria-labelledby="page-title">
-        <div class="hero-copy">
-          <p class="eyebrow" id="eyebrow">Быстрый поиск команд</p>
-          <h1 id="page-title">Найдите нужную команду <code>kubectl</code> без долгого чтения заметок.</h1>
-          <p class="lead" id="lead">
-            Ищите по задаче, команде или объекту Kubernetes. Затем переходите прямо в нужный Markdown-раздел.
-          </p>
-        </div>
-        <aside class="quick-panel" aria-label="Quick command examples">
-          <div class="terminal-title">
-            <span id="terminalFlow">типичный сценарий</span>
-            <span id="terminalHint">бери из docs</span>
-          </div>
-          <pre><code>kubectl get pods -A
-kubectl describe pod &lt;pod&gt; -n &lt;ns&gt;
-kubectl logs -f --tail=100 &lt;pod&gt;</code></pre>
-        </aside>
-      </section>
+        <div class="hero-glow" aria-hidden="true"></div>
+        <p class="eyebrow" id="eyebrow">Команды Kubernetes. Без лишнего.</p>
+        <h1 id="page-title">Всё нужное для <code>kubectl</code><br>в одном месте.</h1>
+        <p class="lead" id="lead">
+          Найдите команду по задаче, объекту или сценарию. На русском и английском.
+        </p>
 
-      <section class="controls" aria-label="Search and language controls">
         <label class="search">
-          <span id="searchLabel">Поиск</span>
-          <input id="searchInput" type="search" placeholder="logs, rollout, namespace, ingress..." autocomplete="off">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="6.75"></circle>
+            <path d="m16 16 4.25 4.25"></path>
+          </svg>
+          <span class="sr-only" id="searchLabel">Поиск по командам</span>
+          <input id="searchInput" type="search" placeholder="Попробуйте logs, rollout или namespace" autocomplete="off">
+          <kbd id="searchShortcut">⌘ K</kbd>
         </label>
-        <div class="segments" role="group" aria-label="Language">
-          <button class="segment is-active" type="button" data-lang="ru">RU</button>
-          <button class="segment" type="button" data-lang="eng">EN</button>
+
+        <div class="hero-meta">
+          <div class="segments" role="group" aria-label="Язык">
+            <button class="segment is-active" type="button" data-lang="ru" aria-pressed="true">RU</button>
+            <button class="segment" type="button" data-lang="eng" aria-pressed="false">EN</button>
+          </div>
+          <span class="command-count"><strong id="commandCount">700+</strong> <span id="commandCountLabel">команд и примеров</span></span>
         </div>
       </section>
 
       <section class="results" id="results" aria-live="polite" hidden></section>
 
-      <section class="layout">
-        <aside class="rail" aria-label="Common situations">
-          <h2 id="tasksTitle">Частые задачи</h2>
-          <a href="ru/viewing.md#диагностика-типичных-проблем-подов-troubleshooting" data-i18n-href="eng/viewing.md#troubleshooting-common-pod-issues-troubleshooting">
-            <span data-task="pod">Под не запускается</span>
-          </a>
-          <a href="ru/management.md#сравнение-конфигураций-diff" data-i18n-href="eng/management.md#comparing-configurations-diff">
-            <span data-task="diff">Проверить изменения перед apply</span>
-          </a>
-          <a href="ru/workloads.md#управление-обновлениями-rollout" data-i18n-href="eng/workloads.md#managing-updates-rollout">
-            <span data-task="rollback">Откатить deployment</span>
-          </a>
-          <a href="ru/security.md#проверка-прав-доступа-auth" data-i18n-href="eng/security.md#checking-permissions-auth">
-            <span data-task="auth">Проверить права доступа</span>
-          </a>
-          <a href="ru/utilities.md#продвинутый-вывод-данных-jsonpathcustom-columns" data-i18n-href="eng/utilities.md#advanced-output-jsonpathcustom-columns">
-            <span data-task="format">Настроить формат вывода</span>
-          </a>
-        </aside>
+      <section class="quick-start" aria-labelledby="quick-title">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker" id="quickKicker">Быстрый старт</p>
+            <h2 id="quick-title">Часто нужно прямо сейчас</h2>
+          </div>
+          <span class="section-note" id="quickNote">Проверенные сценарии</span>
+        </div>
 
-        <section class="cards" id="cards" aria-live="polite"></section>
+        <div class="quick-grid">
+          <a class="quick-card quick-card-wide" href="ru/viewing.html#диагностика-типичных-проблем-подов-troubleshooting" data-i18n-href="eng/viewing.html#troubleshooting-common-pod-issues-troubleshooting">
+            <span class="quick-icon icon-blue" aria-hidden="true">01</span>
+            <span>
+              <strong data-task="pod">Под не запускается</strong>
+              <small data-task-detail="pod">Статус, события, логи и диагностика</small>
+            </span>
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7.5 4.5 5.5 5.5-5.5 5.5"/></svg>
+          </a>
+          <a class="quick-card" href="ru/management.html#сравнение-конфигураций-diff" data-i18n-href="eng/management.html#comparing-configurations-diff">
+            <span class="quick-icon icon-purple" aria-hidden="true">02</span>
+            <span>
+              <strong data-task="diff">Проверить перед apply</strong>
+              <small data-task-detail="diff">Сравнение конфигураций</small>
+            </span>
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7.5 4.5 5.5 5.5-5.5 5.5"/></svg>
+          </a>
+          <a class="quick-card" href="ru/workloads.html#управление-обновлениями-rollout" data-i18n-href="eng/workloads.html#managing-updates-rollout">
+            <span class="quick-icon icon-orange" aria-hidden="true">03</span>
+            <span>
+              <strong data-task="rollback">Откатить deployment</strong>
+              <small data-task-detail="rollback">Rollout history и undo</small>
+            </span>
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7.5 4.5 5.5 5.5-5.5 5.5"/></svg>
+          </a>
+        </div>
+      </section>
+
+      <section class="catalog" id="categories" aria-labelledby="categories-title">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker" id="categoriesKicker">Справочник</p>
+            <h2 id="categories-title">Все разделы</h2>
+          </div>
+          <p class="section-description" id="categoriesDescription">От первого get до диагностики кластера.</p>
+        </div>
+        <div class="cards" id="cards" aria-live="polite"></div>
       </section>
     </main>
+
+    <footer>
+      <p><strong>kubectl Cheatsheet</strong> <span id="footerCopy">для спокойной работы с Kubernetes.</span></p>
+      <a href="https://github.com/opsmon/kubectl-cheatsheet" target="_blank" rel="noreferrer">Open source on GitHub</a>
+    </footer>
 
     <script src="assets/search-index.js"></script>
     <script src="assets/app.js"></script>

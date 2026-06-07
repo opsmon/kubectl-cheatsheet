@@ -148,52 +148,67 @@ const categories = [
   }
 ];
 
+const storedLanguage = localStorage.getItem("kubectl-cheatsheet-language");
 const state = {
-  lang: "ru",
+  lang: storedLanguage === "eng" ? "eng" : "ru",
   query: ""
 };
 
 const ui = {
   ru: {
-    eyebrow: "Быстрый поиск команд",
-    title: 'Найдите нужную команду <code>kubectl</code> без долгого чтения заметок.',
-    lead: "Ищите по задаче, команде или объекту Kubernetes. Затем переходите прямо в нужный Markdown-раздел.",
-    terminalFlow: "типичный сценарий",
-    terminalHint: "бери из docs",
-    searchLabel: "Поиск",
-    searchPlaceholder: "logs, rollout, namespace, ingress...",
-    tasksTitle: "Частые задачи",
+    eyebrow: "Команды Kubernetes. Без лишнего.",
+    title: 'Всё нужное для <code>kubectl</code><br>в одном месте.',
+    lead: "Найдите команду по задаче, объекту или сценарию. На русском и английском.",
+    searchLabel: "Поиск по командам",
+    searchPlaceholder: "Попробуйте logs, rollout или namespace",
+    commandCountLabel: "команд и примеров",
+    navBrowse: "Разделы",
+    navDocs: "Документация",
+    quickKicker: "Быстрый старт",
+    quickTitle: "Часто нужно прямо сейчас",
+    quickNote: "Проверенные сценарии",
+    categoriesKicker: "Справочник",
+    categoriesTitle: "Все разделы",
+    categoriesDescription: "От первого get до диагностики кластера.",
+    footerCopy: "для спокойной работы с Kubernetes.",
     open: "Открыть",
-    resultsTitle: "Найденные команды",
-    resultsSuffix: " показано",
+    resultsTitle: "Результаты поиска",
+    resultsSuffix: " найдено",
     empty: "Ничего не найдено. Попробуйте logs, patch, namespace, jsonpath или rollout.",
+    copied: "Скопировано",
+    copyCommand: "Скопировать команду",
     tasks: {
-      pod: "Под не запускается",
-      diff: "Проверить изменения перед apply",
-      rollback: "Откатить deployment",
-      auth: "Проверить права доступа",
-      format: "Настроить формат вывода"
+      pod: ["Под не запускается", "Статус, события, логи и диагностика"],
+      diff: ["Проверить перед apply", "Сравнение конфигураций"],
+      rollback: ["Откатить deployment", "Rollout history и undo"]
     }
   },
   eng: {
-    eyebrow: "Fast command lookup",
-    title: 'Find the right <code>kubectl</code> command without digging through long notes.',
-    lead: "Search by task, command, or Kubernetes object. Then jump straight to the exact Markdown section.",
-    terminalFlow: "common flow",
-    terminalHint: "copy from docs",
-    searchLabel: "Search",
-    searchPlaceholder: "logs, rollout, namespace, ingress...",
-    tasksTitle: "Common Tasks",
+    eyebrow: "Kubernetes commands. Nothing extra.",
+    title: 'Everything you need for <code>kubectl</code><br>in one place.',
+    lead: "Find a command by task, object, or scenario. Available in English and Russian.",
+    searchLabel: "Search commands",
+    searchPlaceholder: "Try logs, rollout, or namespace",
+    commandCountLabel: "commands and examples",
+    navBrowse: "Browse",
+    navDocs: "Documentation",
+    quickKicker: "Quick start",
+    quickTitle: "What you need right now",
+    quickNote: "Practical workflows",
+    categoriesKicker: "Reference",
+    categoriesTitle: "All topics",
+    categoriesDescription: "From your first get to cluster diagnostics.",
+    footerCopy: "for calmer Kubernetes work.",
     open: "Open",
-    resultsTitle: "Matching commands",
-    resultsSuffix: " shown",
-    empty: "Nothing found. Try a command like logs, patch, namespace, jsonpath, or rollout.",
+    resultsTitle: "Search results",
+    resultsSuffix: " found",
+    empty: "Nothing found. Try logs, patch, namespace, jsonpath, or rollout.",
+    copied: "Copied",
+    copyCommand: "Copy command",
     tasks: {
-      pod: "Pod will not start",
-      diff: "Check changes before apply",
-      rollback: "Roll back a deployment",
-      auth: "Check access rights",
-      format: "Format output"
+      pod: ["Pod will not start", "Status, events, logs, and diagnostics"],
+      diff: ["Check before apply", "Compare configurations"],
+      rollback: ["Roll back a deployment", "Rollout history and undo"]
     }
   }
 };
@@ -205,12 +220,16 @@ const langButtons = document.querySelectorAll("[data-lang]");
 const taskLinks = document.querySelectorAll("[data-i18n-href]");
 const commandIndex = Array.isArray(window.commandIndex) ? window.commandIndex : [];
 
+function publishedFile(file) {
+  return file.replace(/\.md$/, ".html");
+}
+
 function titleFor(category) {
   return state.lang === "ru" ? category.ruTitle : category.enTitle;
 }
 
 function fileFor(category) {
-  return state.lang === "ru" ? category.ruFile : category.enFile;
+  return publishedFile(state.lang === "ru" ? category.ruFile : category.enFile);
 }
 
 function summaryFor(category) {
@@ -230,19 +249,6 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
-function matches(category) {
-  const haystack = [
-    category.id,
-    category.ruTitle,
-    category.enTitle,
-    category.ruSummary,
-    category.enSummary,
-    ...category.topics.map((topic) => topic.join(" "))
-  ].join(" ").toLowerCase();
-
-  return haystack.includes(state.query) || matchingCommands(category.id).length > 0;
-}
-
 function matchingCommands(categoryId) {
   if (!state.query) {
     return [];
@@ -256,20 +262,55 @@ function matchingCommands(categoryId) {
     });
 }
 
+function matches(category) {
+  if (!state.query) {
+    return true;
+  }
+
+  const haystack = [
+    category.id,
+    category.ruTitle,
+    category.enTitle,
+    category.ruSummary,
+    category.enSummary,
+    ...category.topics.map((topic) => topic.join(" "))
+  ].join(" ").toLowerCase();
+
+  return haystack.includes(state.query) || matchingCommands(category.id).length > 0;
+}
+
+function setText(selector, value) {
+  const element = document.querySelector(selector);
+  if (element) {
+    element.textContent = value;
+  }
+}
+
 function render() {
   const visible = categories.filter(matches);
   const copy = ui[state.lang];
 
-  document.querySelector("#eyebrow").textContent = copy.eyebrow;
+  setText("#eyebrow", copy.eyebrow);
   document.querySelector("#page-title").innerHTML = copy.title;
-  document.querySelector("#lead").textContent = copy.lead;
-  document.querySelector("#terminalFlow").textContent = copy.terminalFlow;
-  document.querySelector("#terminalHint").textContent = copy.terminalHint;
-  document.querySelector("#searchLabel").textContent = copy.searchLabel;
-  document.querySelector("#tasksTitle").textContent = copy.tasksTitle;
+  setText("#lead", copy.lead);
+  setText("#searchLabel", copy.searchLabel);
+  setText("#commandCountLabel", copy.commandCountLabel);
+  setText("#navBrowse", copy.navBrowse);
+  setText("#navDocs", copy.navDocs);
+  setText("#quickKicker", copy.quickKicker);
+  setText("#quick-title", copy.quickTitle);
+  setText("#quickNote", copy.quickNote);
+  setText("#categoriesKicker", copy.categoriesKicker);
+  setText("#categories-title", copy.categoriesTitle);
+  setText("#categoriesDescription", copy.categoriesDescription);
+  setText("#footerCopy", copy.footerCopy);
   searchInput.placeholder = copy.searchPlaceholder;
+
   document.querySelectorAll("[data-task]").forEach((item) => {
-    item.textContent = copy.tasks[item.dataset.task];
+    item.textContent = copy.tasks[item.dataset.task][0];
+  });
+  document.querySelectorAll("[data-task-detail]").forEach((item) => {
+    item.textContent = copy.tasks[item.dataset.taskDetail][1];
   });
 
   cards.innerHTML = visible.length
@@ -279,34 +320,42 @@ function render() {
   renderResults();
 
   taskLinks.forEach((link) => {
-    if (state.lang === "eng") {
+    if (!link.dataset.ruHref) {
       link.dataset.ruHref = link.getAttribute("href");
-      link.setAttribute("href", link.dataset.i18nHref);
-    } else if (link.dataset.ruHref) {
-      link.setAttribute("href", link.dataset.ruHref);
     }
+    link.setAttribute("href", state.lang === "eng" ? link.dataset.i18nHref : link.dataset.ruHref);
   });
+
+  document.querySelector("#navDocs").setAttribute("href", state.lang === "ru" ? "ru/viewing.html" : "eng/viewing.html");
+  langButtons.forEach((button) => {
+    const active = button.dataset.lang === state.lang;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
+  document.documentElement.lang = state.lang === "ru" ? "ru" : "en";
 }
 
-function renderCard(category) {
+function renderCard(category, index) {
   const file = fileFor(category);
+  const alternateFile = publishedFile(state.lang === "ru" ? category.enFile : category.ruFile);
   const copy = ui[state.lang];
   const chips = category.topics
-    .map((topic) => `<a class="chip" href="${file}#${hashFor(topic)}">${topic[0]}</a>`)
+    .map((topic) => `<a class="chip" href="${file}#${hashFor(topic)}">${escapeHtml(topic[0])}</a>`)
     .join("");
 
   return `
     <article class="card" data-category="${category.id}">
+      <span class="card-number" aria-hidden="true">${String(index + 1).padStart(2, "0")}</span>
       <div class="card-header">
-        <span class="card-kicker">${category.id}</span>
-        <h2>${titleFor(category)}</h2>
-        <p>${summaryFor(category)}</p>
+        <span class="card-kicker">${escapeHtml(category.id)}</span>
+        <h2>${escapeHtml(titleFor(category))}</h2>
+        <p>${escapeHtml(summaryFor(category))}</p>
       </div>
       <div class="chips">${chips}</div>
       <div class="card-footer">
         <a class="button-link" href="${file}">${copy.open} ${state.lang.toUpperCase()}</a>
-        <a class="button-link secondary" href="${state.lang === "ru" ? category.enFile : category.ruFile}">
-          ${state.lang === "ru" ? "EN" : "RU"}
+        <a class="button-link secondary" href="${alternateFile}">
+          ${state.lang === "ru" ? "English" : "Русский"}
         </a>
       </div>
     </article>
@@ -342,13 +391,22 @@ function renderResults() {
 
 function renderResult(item) {
   const label = item.comment || item.section;
+  const command = escapeHtml(item.command);
 
   return `
-    <a class="result" href="${item.file}#${item.hash}">
-      <span>${escapeHtml(item.category)} / ${escapeHtml(item.section)}</span>
-      <strong>${escapeHtml(label)}</strong>
-      <code>${escapeHtml(item.command)}</code>
-    </a>
+    <div class="result">
+      <a class="result-main" href="${publishedFile(item.file)}#${item.hash}">
+        <span>${escapeHtml(item.category)} / ${escapeHtml(item.section)}</span>
+        <strong>${escapeHtml(label)}</strong>
+        <code>${command}</code>
+      </a>
+      <button class="copy-command" type="button" data-command="${command}" aria-label="${ui[state.lang].copyCommand}">
+        <svg viewBox="0 0 18 18" aria-hidden="true">
+          <rect x="6" y="5" width="8" height="9" rx="1.5"></rect>
+          <path d="M4 11V4.5C4 3.7 4.7 3 5.5 3H11"></path>
+        </svg>
+      </button>
+    </div>
   `;
 }
 
@@ -360,10 +418,46 @@ searchInput.addEventListener("input", (event) => {
 langButtons.forEach((button) => {
   button.addEventListener("click", () => {
     state.lang = button.dataset.lang;
-    langButtons.forEach((item) => item.classList.toggle("is-active", item === button));
-    document.documentElement.lang = state.lang === "ru" ? "ru" : "en";
+    localStorage.setItem("kubectl-cheatsheet-language", state.lang);
     render();
   });
 });
 
+results.addEventListener("click", async (event) => {
+  const button = event.target.closest(".copy-command");
+  if (!button) {
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(button.dataset.command);
+    button.setAttribute("aria-label", ui[state.lang].copied);
+    button.classList.add("is-copied");
+    window.setTimeout(() => {
+      button.setAttribute("aria-label", ui[state.lang].copyCommand);
+      button.classList.remove("is-copied");
+    }, 1400);
+  } catch (_error) {
+    searchInput.value = button.dataset.command;
+    searchInput.select();
+  }
+});
+
+document.addEventListener("keydown", (event) => {
+  if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+    event.preventDefault();
+    searchInput.focus();
+    searchInput.select();
+  }
+
+  if (event.key === "Escape" && document.activeElement === searchInput) {
+    searchInput.value = "";
+    state.query = "";
+    searchInput.blur();
+    render();
+  }
+});
+
+setText("#commandCount", `${commandIndex.length}+`);
+document.querySelector("#searchShortcut").textContent = navigator.platform.toLowerCase().includes("mac") ? "⌘ K" : "Ctrl K";
 render();

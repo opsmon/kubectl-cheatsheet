@@ -1,3 +1,7 @@
+---
+layout: docs
+---
+
 # kubectl - Storage & Configuration
 
 > Quick navigation tip: use `Ctrl/Cmd + F` to jump to sections. Key terms: `configmaps`, `secrets`, `pv`, `pvc`, `kustomize`.

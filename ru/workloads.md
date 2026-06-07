@@ -1,3 +1,7 @@
+---
+layout: docs
+---
+
 # kubectl - Рабочие нагрузки
 
 > Быстрая навигация: используйте `Ctrl/Cmd + F` для перехода к разделам. Ключевые слова: `run`, `rollout`, `scale`, `hpa`, `vpa`, `statefulsets`, `daemonsets`, `jobs`.

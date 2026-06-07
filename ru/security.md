@@ -1,3 +1,7 @@
+---
+layout: docs
+---
+
 # kubectl - Безопасность
 
 > Быстрая навигация: используйте `Ctrl/Cmd + F` для перехода к разделам. Ключевые слова: `rbac`, `auth`, `csr`, `pss`, `security-context`, `pdb`, `quota`.

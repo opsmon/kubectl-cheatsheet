@@ -1,3 +1,7 @@
+---
+layout: docs
+---
+
 # kubectl - Утилиты и инструменты
 
 > Быстрая навигация: используйте `Ctrl/Cmd + F` для перехода к разделам. Ключевые слова: `exec`, `cp`, `label`, `jsonpath`, `scheduling`, `tips`, `helm`, `krew`, `aliases`.

@@ -24,8 +24,21 @@ Practical `kubectl` cheatsheet for day-to-day Kubernetes work.
 
 - переключатель RU / EN;
 - поиск по команде, теме или сценарию с прямыми ссылками на разделы;
-- компактные карточки категорий со ссылками на Markdown-разделы;
+- компактные карточки категорий со ссылками на оформленные разделы;
 - адаптивная верстка без сборки и зависимостей.
+
+## GitHub Pages
+
+Сайт автоматически собирается и публикуется workflow
+[`Deploy GitHub Pages`](.github/workflows/pages.yml) после каждого push в `main`.
+
+Однократная настройка репозитория:
+
+1. Откройте `Settings` → `Pages`.
+2. В `Build and deployment` выберите `Source: GitHub Actions`.
+3. Дождитесь завершения workflow во вкладке `Actions`.
+
+Адрес сайта: <https://opsmon.github.io/kubectl-cheatsheet/>
 
 ## Карта команд / Command Map
 

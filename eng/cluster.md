@@ -1,3 +1,7 @@
+---
+layout: docs
+---
+
 # kubectl - Cluster & Infrastructure
 
 > Quick navigation tip: use `Ctrl/Cmd + F` to jump to sections. Key terms: `config`, `namespaces`, `nodes`, `crd`, `api-resources`, `capacity`, `versions`, `field-selectors`.

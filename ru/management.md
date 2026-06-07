@@ -1,3 +1,7 @@
+---
+layout: docs
+---
+
 # kubectl - Управление ресурсами
 
 > Быстрая навигация: используйте `Ctrl/Cmd + F` для перехода к разделам. Ключевые слова: `apply`, `create`, `edit`, `patch`, `set`, `delete`, `diff`, `ssa`, `replace`, `wait`.

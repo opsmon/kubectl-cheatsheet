@@ -1,3 +1,7 @@
+---
+layout: docs
+---
+
 # kubectl - Просмотр и диагностика
 
 > Быстрая навигация: используйте `Ctrl/Cmd + F` для перехода к разделам. Ключевые слова: `get`, `describe`, `logs`, `top`, `debug`, `events`, `troubleshooting`, `incidents`, `ephemeral`.
