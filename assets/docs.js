@@ -26,6 +26,11 @@ document.querySelectorAll(".docs-content .highlighter-rouge").forEach((block) =>
   block.append(button);
 });
 
+localStorage.setItem(
+  "kubectl-cheatsheet-language",
+  document.documentElement.lang === "en" ? "eng" : "ru"
+);
+
 const currentPage = window.location.pathname.replace(/\/$/, "");
 document.querySelectorAll(".docs-sidebar a").forEach((link) => {
   const linkPage = new URL(link.href).pathname.replace(/\/$/, "");

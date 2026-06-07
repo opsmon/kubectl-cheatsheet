@@ -37,7 +37,9 @@ items = []
 
 Dir["{ru,eng}/*.md"].sort.each do |file|
   lang = file.start_with?("ru/") ? "ru" : "eng"
-  category = CATEGORY_BY_FILE.fetch(File.basename(file))
+  category = CATEGORY_BY_FILE[File.basename(file)]
+  next unless category
+
   section = File.basename(file, ".md")
   section_hash = ""
   in_code = false

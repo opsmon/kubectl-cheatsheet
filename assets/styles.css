@@ -125,6 +125,17 @@ svg {
   gap: 3px;
 }
 
+.contribute-link {
+  padding: 6px 13px;
+  border-radius: 16px;
+  background: var(--text);
+  color: #fff !important;
+}
+
+.contribute-link:hover {
+  background: var(--blue);
+}
+
 .github-link svg {
   width: 14px;
   fill: none;
@@ -699,7 +710,7 @@ footer a:hover {
   }
 
   .topnav {
-    gap: 18px;
+    gap: 12px;
   }
 
   .topnav a:first-child {
@@ -768,6 +779,12 @@ footer a:hover {
     flex-direction: column;
     justify-content: center;
     gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .topnav > a:not(.contribute-link) {
+    display: none;
   }
 }
 

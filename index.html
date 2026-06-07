@@ -10,7 +10,7 @@
   </head>
   <body>
     <header class="topbar">
-      <a class="brand" href="./" aria-label="kubectl Cheatsheet — главная">
+      <a class="brand" id="brandLink" href="./" aria-label="kubectl Cheatsheet — главная">
         <span class="brand-mark" aria-hidden="true">
           <svg viewBox="0 0 24 24" role="img">
             <path d="M7.5 7.25 3 12l4.5 4.75M16.5 7.25 21 12l-4.5 4.75M14.25 4l-4.5 16"/>
@@ -19,9 +19,10 @@
         <strong>kubectl</strong>
       </a>
 
-      <nav class="topnav" aria-label="Основная навигация">
+      <nav class="topnav" id="topnav" aria-label="Основная навигация">
         <a href="#categories" id="navBrowse">Разделы</a>
         <a href="ru/viewing.html" id="navDocs">Документация</a>
+        <a class="contribute-link" href="ru/contributing.html" id="navContribute">Участвовать</a>
         <a class="github-link" href="https://github.com/opsmon/kubectl-cheatsheet" target="_blank" rel="noreferrer">
           GitHub
           <svg viewBox="0 0 16 16" aria-hidden="true">
@@ -51,7 +52,7 @@
         </label>
 
         <div class="hero-meta">
-          <div class="segments" role="group" aria-label="Язык">
+          <div class="segments" id="languageSwitcher" role="group" aria-label="Язык сайта">
             <button class="segment is-active" type="button" data-lang="ru" aria-pressed="true">RU</button>
             <button class="segment" type="button" data-lang="eng" aria-pressed="false">EN</button>
           </div>
@@ -112,7 +113,7 @@
 
     <footer>
       <p><strong>kubectl Cheatsheet</strong> <span id="footerCopy">для спокойной работы с Kubernetes.</span></p>
-      <a href="https://github.com/opsmon/kubectl-cheatsheet" target="_blank" rel="noreferrer">Open source on GitHub</a>
+      <a id="footerGitHub" href="https://github.com/opsmon/kubectl-cheatsheet" target="_blank" rel="noreferrer">Открытый код на GitHub</a>
     </footer>
 
     <script src="assets/search-index.js"></script>

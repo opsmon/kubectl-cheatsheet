@@ -6,6 +6,9 @@
 {% assign contents_label = 'Разделы' %}
 {% assign language_label = 'English' %}
 {% assign footer_label = 'Практический справочник kubectl' %}
+{% assign contribute_label = 'Участвовать' %}
+{% assign controls_label = 'Навигация по документу' %}
+{% assign description = 'Практический справочник команд kubectl для ежедневной работы с Kubernetes.' %}
 {% if is_english %}
   {% assign lang_dir = 'eng' %}
   {% assign alt_dir = 'ru' %}
@@ -13,25 +16,29 @@
   {% assign contents_label = 'Topics' %}
   {% assign language_label = 'Русский' %}
   {% assign footer_label = 'A practical kubectl reference' %}
+  {% assign contribute_label = 'Contribute' %}
+  {% assign controls_label = 'Document navigation' %}
+  {% assign description = 'A practical kubectl command reference for everyday Kubernetes work.' %}
 {% endif %}
 <html lang="{% if is_english %}en{% else %}ru{% endif %}">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#f5f5f7">
-    <meta name="description" content="{{ site.description }}">
+    <meta name="description" content="{{ description }}">
     <title>{{ page.title | default: site.title }}</title>
     <link rel="stylesheet" href="{{ '/assets/docs.css' | relative_url }}">
   </head>
   <body id="top">
     <header class="docs-topbar">
-      <a class="docs-brand" href="{{ '/' | relative_url }}">
+      <a class="docs-brand" href="{{ '/' | append: '?lang=' | append: lang_dir | relative_url }}">
         <span class="docs-brand-mark" aria-hidden="true">&gt;_</span>
         <strong>kubectl</strong>
       </a>
-      <nav aria-label="Document controls">
-        <a href="{{ '/' | relative_url }}">{{ home_label }}</a>
-        <a href="{{ '/' | append: alt_dir | append: '/' | append: page.name | replace: '.md', '.html' | relative_url }}">{{ language_label }}</a>
+      <nav aria-label="{{ controls_label }}">
+        <a href="{{ '/' | append: '?lang=' | append: lang_dir | relative_url }}">{{ home_label }}</a>
+        <a class="docs-contribute" href="{{ '/' | append: lang_dir | append: '/contributing.html' | relative_url }}">{{ contribute_label }}</a>
+        <a class="docs-language" href="{{ '/' | append: alt_dir | append: '/' | append: page.name | replace: '.md', '.html' | relative_url }}">{{ language_label }}</a>
         <a href="https://github.com/opsmon/kubectl-cheatsheet" target="_blank" rel="noreferrer">GitHub</a>
       </nav>
     </header>
@@ -48,11 +55,12 @@
           <a href="{{ '/' | append: lang_dir | append: '/security.html' | relative_url }}">{% if is_english %}Security{% else %}Безопасность{% endif %}</a>
           <a href="{{ '/' | append: lang_dir | append: '/cluster.html' | relative_url }}">{% if is_english %}Cluster{% else %}Кластер{% endif %}</a>
           <a href="{{ '/' | append: lang_dir | append: '/utilities.html' | relative_url }}">{% if is_english %}Utilities{% else %}Утилиты{% endif %}</a>
+          <a class="sidebar-contribute" href="{{ '/' | append: lang_dir | append: '/contributing.html' | relative_url }}">{{ contribute_label }}</a>
         </nav>
       </aside>
 
       <main class="docs-main">
-        <a class="back-link" href="{{ '/' | relative_url }}">← {{ home_label }}</a>
+        <a class="back-link" href="{{ '/' | append: '?lang=' | append: lang_dir | relative_url }}">← {{ home_label }}</a>
         <article class="docs-content">
           {{ content }}
         </article>
@@ -66,4 +74,3 @@
     <script src="{{ '/assets/docs.js' | relative_url }}"></script>
   </body>
 </html>
-

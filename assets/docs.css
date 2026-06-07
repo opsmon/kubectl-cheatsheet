@@ -85,6 +85,18 @@ a {
   color: var(--blue);
 }
 
+.docs-topbar .docs-contribute {
+  padding: 3px 11px;
+  border-radius: 14px;
+  background: var(--text);
+  color: #fff;
+}
+
+.docs-topbar .docs-contribute:hover {
+  background: var(--blue);
+  color: #fff;
+}
+
 .docs-shell {
   display: grid;
   width: min(1240px, calc(100% - 48px));
@@ -132,6 +144,14 @@ a {
   background: #e8f2ff;
   color: var(--blue);
   font-weight: 600;
+}
+
+.docs-sidebar .sidebar-contribute {
+  margin-top: 12px;
+  border-top: 1px solid var(--line);
+  border-radius: 0 0 9px 9px;
+  padding-top: 14px;
+  color: var(--blue);
 }
 
 .docs-main {
@@ -327,7 +347,8 @@ a {
     gap: 15px;
   }
 
-  .docs-topbar nav a:first-child {
+  .docs-topbar nav a:first-child,
+  .docs-topbar nav a:last-child {
     display: none;
   }
 

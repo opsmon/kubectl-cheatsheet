@@ -3,7 +3,7 @@
 Шпаргалка по `kubectl` для ежедневной работы с Kubernetes.
 Practical `kubectl` cheatsheet for day-to-day Kubernetes work.
 
-[Открыть визуальный индекс](index.html) · [Русская версия](ru/viewing.md) · [English version](eng/viewing.md)
+[Открыть визуальный индекс](index.html) · [Русская версия](ru/viewing.md) · [English version](eng/viewing.md) · [Contributing](eng/contributing.md)
 
 ## С чего начать / Start Here
 
@@ -87,6 +87,8 @@ Practical `kubectl` cheatsheet for day-to-day Kubernetes work.
 ```
 
 ## Contributing
+
+Подробные инструкции: [на русском](ru/contributing.md) · [in English](eng/contributing.md).
 
 1. По возможности обновляйте команды сразу в обеих языковых версиях.
 2. Сохраняйте одинаковый порядок разделов в `ru/` и `eng/`.

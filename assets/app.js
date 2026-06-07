@@ -148,9 +148,12 @@ const categories = [
   }
 ];
 
+const requestedLanguage = new URLSearchParams(window.location.search).get("lang");
 const storedLanguage = localStorage.getItem("kubectl-cheatsheet-language");
 const state = {
-  lang: storedLanguage === "eng" ? "eng" : "ru",
+  lang: requestedLanguage === "eng" || requestedLanguage === "ru"
+    ? requestedLanguage
+    : storedLanguage === "eng" ? "eng" : "ru",
   query: ""
 };
 
@@ -164,6 +167,11 @@ const ui = {
     commandCountLabel: "команд и примеров",
     navBrowse: "Разделы",
     navDocs: "Документация",
+    navContribute: "Участвовать",
+    navigationLabel: "Основная навигация",
+    languageLabel: "Язык сайта",
+    brandLabel: "kubectl Cheatsheet — главная",
+    description: "Быстрый двуязычный справочник команд kubectl для ежедневной работы с Kubernetes.",
     quickKicker: "Быстрый старт",
     quickTitle: "Часто нужно прямо сейчас",
     quickNote: "Проверенные сценарии",
@@ -171,12 +179,23 @@ const ui = {
     categoriesTitle: "Все разделы",
     categoriesDescription: "От первого get до диагностики кластера.",
     footerCopy: "для спокойной работы с Kubernetes.",
+    footerGitHub: "Открытый код на GitHub",
     open: "Открыть",
     resultsTitle: "Результаты поиска",
     resultsSuffix: " найдено",
     empty: "Ничего не найдено. Попробуйте logs, patch, namespace, jsonpath или rollout.",
     copied: "Скопировано",
     copyCommand: "Скопировать команду",
+    categoryLabels: {
+      viewing: "Диагностика",
+      management: "Управление",
+      workloads: "Нагрузки",
+      network: "Сеть",
+      storage: "Хранилище",
+      security: "Безопасность",
+      cluster: "Кластер",
+      utilities: "Утилиты"
+    },
     tasks: {
       pod: ["Под не запускается", "Статус, события, логи и диагностика"],
       diff: ["Проверить перед apply", "Сравнение конфигураций"],
@@ -192,6 +211,11 @@ const ui = {
     commandCountLabel: "commands and examples",
     navBrowse: "Browse",
     navDocs: "Documentation",
+    navContribute: "Contribute",
+    navigationLabel: "Primary navigation",
+    languageLabel: "Site language",
+    brandLabel: "kubectl Cheatsheet — home",
+    description: "A fast bilingual kubectl command reference for everyday Kubernetes work.",
     quickKicker: "Quick start",
     quickTitle: "What you need right now",
     quickNote: "Practical workflows",
@@ -199,12 +223,23 @@ const ui = {
     categoriesTitle: "All topics",
     categoriesDescription: "From your first get to cluster diagnostics.",
     footerCopy: "for calmer Kubernetes work.",
+    footerGitHub: "Open source on GitHub",
     open: "Open",
     resultsTitle: "Search results",
     resultsSuffix: " found",
     empty: "Nothing found. Try logs, patch, namespace, jsonpath, or rollout.",
     copied: "Copied",
     copyCommand: "Copy command",
+    categoryLabels: {
+      viewing: "Viewing",
+      management: "Management",
+      workloads: "Workloads",
+      network: "Network",
+      storage: "Storage",
+      security: "Security",
+      cluster: "Cluster",
+      utilities: "Utilities"
+    },
     tasks: {
       pod: ["Pod will not start", "Status, events, logs, and diagnostics"],
       diff: ["Check before apply", "Compare configurations"],
@@ -297,6 +332,7 @@ function render() {
   setText("#commandCountLabel", copy.commandCountLabel);
   setText("#navBrowse", copy.navBrowse);
   setText("#navDocs", copy.navDocs);
+  setText("#navContribute", copy.navContribute);
   setText("#quickKicker", copy.quickKicker);
   setText("#quick-title", copy.quickTitle);
   setText("#quickNote", copy.quickNote);
@@ -304,7 +340,12 @@ function render() {
   setText("#categories-title", copy.categoriesTitle);
   setText("#categoriesDescription", copy.categoriesDescription);
   setText("#footerCopy", copy.footerCopy);
+  setText("#footerGitHub", copy.footerGitHub);
   searchInput.placeholder = copy.searchPlaceholder;
+  document.querySelector('meta[name="description"]').setAttribute("content", copy.description);
+  document.querySelector("#brandLink").setAttribute("aria-label", copy.brandLabel);
+  document.querySelector("#topnav").setAttribute("aria-label", copy.navigationLabel);
+  document.querySelector("#languageSwitcher").setAttribute("aria-label", copy.languageLabel);
 
   document.querySelectorAll("[data-task]").forEach((item) => {
     item.textContent = copy.tasks[item.dataset.task][0];
@@ -327,6 +368,7 @@ function render() {
   });
 
   document.querySelector("#navDocs").setAttribute("href", state.lang === "ru" ? "ru/viewing.html" : "eng/viewing.html");
+  document.querySelector("#navContribute").setAttribute("href", `${state.lang}/contributing.html`);
   langButtons.forEach((button) => {
     const active = button.dataset.lang === state.lang;
     button.classList.toggle("is-active", active);
@@ -347,7 +389,7 @@ function renderCard(category, index) {
     <article class="card" data-category="${category.id}">
       <span class="card-number" aria-hidden="true">${String(index + 1).padStart(2, "0")}</span>
       <div class="card-header">
-        <span class="card-kicker">${escapeHtml(category.id)}</span>
+        <span class="card-kicker">${escapeHtml(copy.categoryLabels[category.id])}</span>
         <h2>${escapeHtml(titleFor(category))}</h2>
         <p>${escapeHtml(summaryFor(category))}</p>
       </div>
@@ -392,11 +434,12 @@ function renderResults() {
 function renderResult(item) {
   const label = item.comment || item.section;
   const command = escapeHtml(item.command);
+  const categoryLabel = ui[state.lang].categoryLabels[item.category] || item.category;
 
   return `
     <div class="result">
       <a class="result-main" href="${publishedFile(item.file)}#${item.hash}">
-        <span>${escapeHtml(item.category)} / ${escapeHtml(item.section)}</span>
+        <span>${escapeHtml(categoryLabel)} / ${escapeHtml(item.section)}</span>
         <strong>${escapeHtml(label)}</strong>
         <code>${command}</code>
       </a>
