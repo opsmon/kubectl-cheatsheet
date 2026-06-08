@@ -1,0 +1,8 @@
+{% assign official_docs_label = 'Официальная документация' %}
+{% if page.path contains 'eng/' %}
+  {% assign official_docs_label = 'Official documentation' %}
+{% endif %}
+<p class="official-docs">
+  <span>{{ official_docs_label }}</span>
+  <a href="{{ include.url }}" target="_blank" rel="noreferrer">{{ include.title }} ↗</a>
+</p>

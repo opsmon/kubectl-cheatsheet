@@ -119,6 +119,8 @@ kubectl get endpoints <service-name> -o jsonpath='{.subsets[*].addresses[*].ip}'
 
 ## Pod Scheduling (affinity / tolerations / nodeSelector)
 
+{% include official-docs.html url="https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/" title="Assigning Pods to Nodes" %}
+
 ```bash
 # List nodes with their labels (to find scheduling targets)
 kubectl get nodes --show-labels

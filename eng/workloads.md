@@ -95,6 +95,8 @@ kubectl get hpa
 
 ## HorizontalPodAutoscaler (HPA)
 
+{% include official-docs.html url="https://kubernetes.io/docs/concepts/workloads/autoscaling/horizontal-pod-autoscale/" title="Horizontal Pod Autoscaling" %}
+
 ```bash
 # List all HPAs
 kubectl get hpa
@@ -149,6 +151,8 @@ kubectl edit hpa <hpa-name>
 ```
 
 ## VerticalPodAutoscaler (VPA)
+
+{% include official-docs.html url="https://github.com/kubernetes/autoscaler/tree/master/vertical-pod-autoscaler" title="Vertical Pod Autoscaler" %}
 
 ```bash
 # VPA is not built into Kubernetes — install the component first:
@@ -216,6 +220,8 @@ kubectl get pods -n kube-system | grep vpa
 
 ## StatefulSets
 
+{% include official-docs.html url="https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/" title="StatefulSet" %}
+
 ```bash
 # List all StatefulSets
 kubectl get statefulsets
@@ -269,6 +275,8 @@ kubectl get sts -o custom-columns=NAME:.metadata.name,READY:.status.readyReplica
 
 ## DaemonSets
 
+{% include official-docs.html url="https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/" title="DaemonSet" %}
+
 ```bash
 # List all DaemonSets
 kubectl get daemonsets
@@ -312,6 +320,8 @@ kubectl get pods -l app=<ds-name> -o wide
 ```
 
 ## Jobs and CronJobs
+
+{% include official-docs.html url="https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/" title="Jobs and CronJobs" %}
 
 ```bash
 # List all Jobs

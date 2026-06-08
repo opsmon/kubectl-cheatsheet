@@ -222,6 +222,35 @@ a {
   letter-spacing: -0.035em;
 }
 
+.docs-content .official-docs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  width: fit-content;
+  margin: -8px 0 22px;
+  padding: 7px 10px;
+  border: 1px solid #cfe3fa;
+  border-radius: 10px;
+  background: #f2f8ff;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.docs-content .official-docs span {
+  color: var(--muted);
+}
+
+.docs-content .official-docs a {
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.docs-content .official-docs a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .docs-content h3 {
   margin: 42px 0 15px;
   font-size: 20px;

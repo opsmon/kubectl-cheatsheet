@@ -92,6 +92,8 @@ kubectl delete secret <secret-name>
 
 ## Постоянные тома (pv/pvc)
 
+{% include official-docs.html url="https://kubernetes.io/docs/concepts/storage/persistent-volumes/" title="Persistent Volumes и Claims" %}
+
 ```bash
 # Список всех PersistentVolume (уровень кластера)
 kubectl get pv
@@ -144,6 +146,8 @@ kubectl patch pvc <pvc-name> -p '{"metadata":{"finalizers":null}}'
 ```
 
 ## Работа с Kustomize (kustomize)
+
+{% include official-docs.html url="https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/" title="Kustomize" %}
 
 ```bash
 # Применить конфигурацию через kustomize

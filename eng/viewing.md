@@ -309,6 +309,8 @@ kubectl top pods -A --sort-by=memory | head -20
 
 ## Ephemeral Containers
 
+{% include official-docs.html url="https://kubernetes.io/docs/concepts/workloads/pods/ephemeral-containers/" title="Ephemeral Containers" %}
+
 ```bash
 # Add an ephemeral debug container to a running pod (kubectl >= 1.23)
 kubectl debug -it <pod-name> --image=busybox --target=<container-name>

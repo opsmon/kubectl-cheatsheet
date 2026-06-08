@@ -71,6 +71,8 @@ kubectl create service externalname <name> --external-name=db.example.com
 
 ## Ingress
 
+{% include official-docs.html url="https://kubernetes.io/docs/concepts/services-networking/ingress/" title="Ingress" %}
+
 ```bash
 # List all Ingress resources
 kubectl get ingress
@@ -138,6 +140,8 @@ kubectl get ingressclass
 ```
 
 ## Network Policies (networkpolicy)
+
+{% include official-docs.html url="https://kubernetes.io/docs/concepts/services-networking/network-policies/" title="Network Policies" %}
 
 ```bash
 # List all NetworkPolicies

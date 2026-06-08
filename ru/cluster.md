@@ -109,6 +109,8 @@ kubectl taint nodes <node-name> key=value:NoExecute
 
 ## Custom Resource Definitions (CRD)
 
+{% include official-docs.html url="https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/" title="CustomResourceDefinition" %}
+
 ```bash
 # Список всех CRD в кластере
 kubectl get crds
@@ -214,6 +216,8 @@ kubectl describe node <node-name> | grep -E "cpu|memory|Allocated|requests|limit
 ```
 
 ## Версии и совместимость (version skew)
+
+{% include official-docs.html url="https://kubernetes.io/releases/version-skew-policy/" title="Version Skew Policy" %}
 
 ```bash
 # Версия kubectl client и Kubernetes API server

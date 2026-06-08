@@ -119,6 +119,8 @@ kubectl get endpoints <service-name> -o jsonpath='{.subsets[*].addresses[*].ip}'
 
 ## Планирование подов (affinity / tolerations / nodeSelector)
 
+{% include official-docs.html url="https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/" title="Назначение подов на ноды" %}
+
 ```bash
 # Список нод с метками (для выбора целевых нод)
 kubectl get nodes --show-labels

@@ -8,6 +8,8 @@ layout: docs
 
 ## RBAC - Roles and Access Control
 
+{% include official-docs.html url="https://kubernetes.io/docs/reference/access-authn-authz/rbac/" title="RBAC" %}
+
 ```bash
 # List all roles in namespace
 kubectl get roles
@@ -171,6 +173,8 @@ kubectl config set-context my-user-context --cluster=<cluster-name> --user=my-us
 
 ## Pod Security Standards (PSS)
 
+{% include official-docs.html url="https://kubernetes.io/docs/concepts/security/pod-security-standards/" title="Pod Security Standards" %}
+
 ```bash
 # Check current Pod Security labels on a namespace
 kubectl get ns <namespace> --show-labels
@@ -204,6 +208,8 @@ kubectl get pod <pod-name> -n <namespace> -o yaml | grep -A 40 -E 'securityConte
 ```
 
 ## Security Context
+
+{% include official-docs.html url="https://kubernetes.io/docs/tasks/configure-pod-container/security-context/" title="Security Context" %}
 
 ```bash
 # View securityContext of a running pod
@@ -252,6 +258,8 @@ kubectl exec <pod-name> -- touch /test-write
 
 ## PodDisruptionBudget (PDB)
 
+{% include official-docs.html url="https://kubernetes.io/docs/concepts/workloads/pods/disruptions/" title="Pod disruptions and PDB" %}
+
 ```bash
 # List all PDBs
 kubectl get poddisruptionbudget
@@ -295,6 +303,8 @@ kubectl get pdb -o custom-columns=NAME:.metadata.name,MIN-AVAILABLE:.spec.minAva
 ```
 
 ## ResourceQuota and LimitRange
+
+{% include official-docs.html url="https://kubernetes.io/docs/concepts/policy/resource-quotas/" title="Resource Quotas" %}
 
 ```bash
 # List ResourceQuotas in namespace
