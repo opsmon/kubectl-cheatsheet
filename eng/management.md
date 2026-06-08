@@ -8,6 +8,8 @@ layout: docs
 
 ## Creating and applying resources (apply/create)
 
+{% include official-docs.html url="https://kubernetes.io/docs/tasks/manage-kubernetes-objects/declarative-config/" title="Declarative object management" %}
+
 ```bash
 # Apply configuration from file
 kubectl apply -f deployment.yaml
@@ -43,6 +45,8 @@ kubectl create secret docker-registry <name> --docker-server=<server> --docker-u
 
 ## Editing resources (edit)
 
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_edit/" title="kubectl edit" %}
+
 ```bash
 # Edit deployment in default editor
 kubectl edit deployment <deployment-name>
@@ -61,6 +65,8 @@ KUBE_EDITOR="nano" kubectl edit deployment <deployment-name>
 ```
 
 ## Patching resources (patch)
+
+{% include official-docs.html url="https://kubernetes.io/docs/tasks/manage-kubernetes-objects/update-api-object-kubectl-patch/" title="Updating objects with patch" %}
 
 ```bash
 # Change replica count via patch
@@ -83,6 +89,8 @@ kubectl patch svc <service-name> -p '{"spec":{"type":"NodePort"}}'
 ```
 
 ## Quick resource modification (set)
+
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_set/" title="kubectl set" %}
 
 ```bash
 # Change container image
@@ -125,6 +133,8 @@ kubectl set selector service/<service-name> app=myapp,tier=frontend
 
 ## Deleting resources (delete)
 
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_delete/" title="kubectl delete" %}
+
 ```bash
 # Delete pod
 kubectl delete pod <pod-name>
@@ -152,6 +162,8 @@ kubectl delete pods --all -n <namespace>
 ```
 
 ## Comparing configurations (diff)
+
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_diff/" title="kubectl diff" %}
 
 ```bash
 # Compare local file with current state in cluster
@@ -184,6 +196,8 @@ kubectl delete -f deployment.yaml --dry-run=client
 ```
 
 ## Server-side apply (SSA)
+
+{% include official-docs.html url="https://kubernetes.io/docs/reference/using-api/server-side-apply/" title="Server-Side Apply" %}
 
 ```bash
 # Apply using server-side apply — preferred for GitOps and multi-actor environments
@@ -222,6 +236,8 @@ kubectl apply -f ./manifests/ --server-side --field-manager=platform-team
 ```
 
 ## Replace and attach to resources (replace/attach)
+
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_replace/" title="kubectl replace" url2="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_attach/" title2="kubectl attach" %}
 
 ```bash
 # Full resource replacement from file
@@ -262,6 +278,8 @@ kubectl completion zsh
 ```
 
 ## Waiting for conditions (wait)
+
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_wait/" title="kubectl wait" %}
 
 ```bash
 # Wait for pod to become Ready

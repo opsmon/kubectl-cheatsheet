@@ -8,6 +8,8 @@ layout: docs
 
 ## ConfigMaps
 
+{% include official-docs.html url="https://kubernetes.io/docs/concepts/configuration/configmap/" title="ConfigMap" %}
+
 ```bash
 # Список всех ConfigMap в текущем namespace
 kubectl get configmaps
@@ -57,6 +59,8 @@ kubectl get cm -o custom-columns=NAME:.metadata.name,KEYS:.data
 ```
 
 ## Управление secret (secret)
+
+{% include official-docs.html url="https://kubernetes.io/docs/concepts/configuration/secret/" title="Secrets" %}
 
 ```bash
 # Список secret в текущем namespace

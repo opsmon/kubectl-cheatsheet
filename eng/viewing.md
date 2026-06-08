@@ -8,6 +8,8 @@ layout: docs
 
 ## Getting information (get)
 
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_get/" title="kubectl get" %}
+
 ```bash
 # Get list of all pods in current namespace
 kubectl get pods
@@ -46,6 +48,8 @@ kubectl get ns
 
 ## Detailed information (describe)
 
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_describe/" title="kubectl describe" %}
+
 ```bash
 # Detailed info about a pod
 kubectl describe pod <pod-name>
@@ -75,6 +79,8 @@ kubectl describe pod <pod-name> -n <namespace>
 ```
 
 ## Viewing logs (logs)
+
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_logs/" title="kubectl logs" %}
 
 ```bash
 # Pod logs
@@ -111,6 +117,8 @@ kubectl logs -f --tail=50 <pod-name> -n <namespace>
 
 ## Resource monitoring (top)
 
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_top/" title="kubectl top" %}
+
 ```bash
 # Node resource usage
 kubectl top nodes
@@ -135,6 +143,8 @@ kubectl top pods --containers
 ```
 
 ## Debugging and diagnostics (debug)
+
+{% include official-docs.html url="https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/" title="Debugging a running Pod" %}
 
 ```bash
 # Create debug container in existing pod
@@ -181,6 +191,8 @@ kubectl get --raw='/healthz'
 ```
 
 ## Events (events)
+
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_events/" title="kubectl events" %}
 
 > `kubectl events` is a dedicated subcommand available since kubectl 1.26. More convenient and flexible than `kubectl get events`.
 
@@ -232,6 +244,8 @@ kubectl events --types=Warning -o json | \
 ```
 
 ## Troubleshooting common pod issues (troubleshooting)
+
+{% include official-docs.html url="https://kubernetes.io/docs/tasks/debug/debug-application/" title="Troubleshooting applications" %}
 
 ```bash
 # Find non-running pods in all namespaces

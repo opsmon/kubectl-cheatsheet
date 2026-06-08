@@ -8,6 +8,8 @@ layout: docs
 
 ## Запуск подов и задач (run)
 
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_run/" title="kubectl run" %}
+
 ```bash
 # Запустить под с образом
 kubectl run <pod-name> --image=nginx
@@ -45,6 +47,8 @@ kubectl create cronjob <name> --image=busybox --schedule="*/5 * * * *" -- echo "
 
 ## Управление обновлениями (rollout)
 
+{% include official-docs.html url="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/" title="Deployment и rollout" %}
+
 ```bash
 # Статус обновления deployment
 kubectl rollout status deployment/<deployment-name>
@@ -72,6 +76,8 @@ kubectl rollout history deployment/<deployment-name> --revision=3
 ```
 
 ## Масштабирование (scale)
+
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_scale/" title="kubectl scale" %}
 
 ```bash
 # Масштабировать deployment до N реплик
@@ -321,7 +327,7 @@ kubectl get pods -l app=<ds-name> -o wide
 
 ## Jobs и CronJobs
 
-{% include official-docs.html url="https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/" title="Jobs и CronJobs" %}
+{% include official-docs.html url="https://kubernetes.io/docs/concepts/workloads/controllers/job/" title="Job" url2="https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/" title2="CronJob" %}
 
 ```bash
 # Список всех Jobs

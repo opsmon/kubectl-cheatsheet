@@ -8,6 +8,8 @@ layout: docs
 
 ## Выполнение команд в контейнере (exec)
 
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_exec/" title="kubectl exec" %}
+
 ```bash
 # Выполнить команду в поде
 kubectl exec <pod-name> -- <command>
@@ -37,6 +39,8 @@ kubectl exec <pod-name> -- cat /path/to/file
 
 ## Копирование файлов (cp)
 
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_cp/" title="kubectl cp" %}
+
 ```bash
 # Скопировать файл из пода на локальную машину
 kubectl cp <pod-name>:/path/to/file ./local-file
@@ -55,6 +59,8 @@ kubectl cp <pod-name>:/path/to/file ./local-file -c <container-name>
 ```
 
 ## Работа с метками (label/annotate)
+
+{% include official-docs.html url="https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/" title="Labels и selectors" url2="https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/" title2="Annotations" %}
 
 ```bash
 # Добавить label к поду
@@ -84,6 +90,8 @@ kubectl get pods -l 'environment in (production,staging)'
 ```
 
 ## Продвинутый вывод данных (jsonpath/custom-columns)
+
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/jsonpath/" title="JSONPath в kubectl" %}
 
 ```bash
 # Получить IP адреса всех подов
@@ -119,7 +127,7 @@ kubectl get endpoints <service-name> -o jsonpath='{.subsets[*].addresses[*].ip}'
 
 ## Планирование подов (affinity / tolerations / nodeSelector)
 
-{% include official-docs.html url="https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/" title="Назначение подов на ноды" %}
+{% include official-docs.html url="https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/" title="Назначение подов на ноды" url2="https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/" title2="Taints и tolerations" %}
 
 ```bash
 # Список нод с метками (для выбора целевых нод)
@@ -270,6 +278,8 @@ cat deployment.yaml service.yaml | kubectl apply -f -
 
 ## Helm
 
+{% include official-docs.html url="https://helm.sh/docs/" title="Helm Documentation" %}
+
 ```bash
 # Добавить репозиторий чартов
 helm repo add bitnami https://charts.bitnami.com/bitnami
@@ -367,6 +377,8 @@ helm test <release-name>
 
 ## Плагины kubectl (krew)
 
+{% include official-docs.html url="https://krew.sigs.k8s.io/docs/" title="Krew Documentation" %}
+
 ```bash
 # Установить krew (менеджер плагинов kubectl)
 # https://krew.sigs.k8s.io/docs/user-guide/setup/install/
@@ -413,6 +425,8 @@ kubectl whoami
 ```
 
 ## Алиасы и автодополнение в shell
+
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/quick-reference/#kubectl-autocomplete" title="kubectl autocomplete" %}
 
 ```bash
 # Включить автодополнение kubectl — bash

@@ -8,6 +8,8 @@ layout: docs
 
 ## Создание и применение ресурсов (apply/create)
 
+{% include official-docs.html url="https://kubernetes.io/docs/tasks/manage-kubernetes-objects/declarative-config/" title="Декларативное управление объектами" %}
+
 ```bash
 # Применить конфигурацию из файла
 kubectl apply -f deployment.yaml
@@ -43,6 +45,8 @@ kubectl create secret docker-registry <name> --docker-server=<server> --docker-u
 
 ## Редактирование ресурсов (edit)
 
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_edit/" title="kubectl edit" %}
+
 ```bash
 # Редактировать deployment в редакторе по умолчанию
 kubectl edit deployment <deployment-name>
@@ -61,6 +65,8 @@ KUBE_EDITOR="nano" kubectl edit deployment <deployment-name>
 ```
 
 ## Патчинг ресурсов (patch)
+
+{% include official-docs.html url="https://kubernetes.io/docs/tasks/manage-kubernetes-objects/update-api-object-kubectl-patch/" title="Обновление объектов через patch" %}
 
 ```bash
 # Изменить количество реплик через patch
@@ -83,6 +89,8 @@ kubectl patch svc <service-name> -p '{"spec":{"type":"NodePort"}}'
 ```
 
 ## Быстрое изменение ресурсов (set)
+
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_set/" title="kubectl set" %}
 
 ```bash
 # Изменить image контейнера
@@ -125,6 +133,8 @@ kubectl set selector service/<service-name> app=myapp,tier=frontend
 
 ## Удаление ресурсов (delete)
 
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_delete/" title="kubectl delete" %}
+
 ```bash
 # Удалить pod
 kubectl delete pod <pod-name>
@@ -152,6 +162,8 @@ kubectl delete pods --all -n <namespace>
 ```
 
 ## Сравнение конфигураций (diff)
+
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_diff/" title="kubectl diff" %}
 
 ```bash
 # Сравнить локальный файл с текущим состоянием в кластере
@@ -184,6 +196,8 @@ kubectl delete -f deployment.yaml --dry-run=client
 ```
 
 ## Server-side apply (SSA)
+
+{% include official-docs.html url="https://kubernetes.io/docs/reference/using-api/server-side-apply/" title="Server-Side Apply" %}
 
 ```bash
 # Применить манифест через server-side apply — рекомендуется для GitOps и мульти-акторных сред
@@ -222,6 +236,8 @@ kubectl apply -f ./manifests/ --server-side --field-manager=platform-team
 ```
 
 ## Замена и подключение к ресурсам (replace/attach)
+
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_replace/" title="kubectl replace" url2="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_attach/" title2="kubectl attach" %}
 
 ```bash
 # Полная замена ресурса из файла
@@ -262,6 +278,8 @@ kubectl completion zsh
 ```
 
 ## Ожидание готовности ресурсов (wait)
+
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_wait/" title="kubectl wait" %}
 
 ```bash
 # Дождаться, пока под перейдёт в состояние Ready

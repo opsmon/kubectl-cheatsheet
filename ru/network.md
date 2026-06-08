@@ -8,6 +8,8 @@ layout: docs
 
 ## Проброс портов (port-forward)
 
+{% include official-docs.html url="https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/" title="Port Forward" %}
+
 ```bash
 # Пробросить порт пода на локальную машину
 kubectl port-forward <pod-name> 8080:80
@@ -36,6 +38,8 @@ kubectl port-forward statefulset/<statefulset-name> 8080:80
 ```
 
 ## Создание сервисов (expose)
+
+{% include official-docs.html url="https://kubernetes.io/docs/concepts/services-networking/service/" title="Service" %}
 
 ```bash
 # Создать service из deployment
@@ -212,6 +216,8 @@ kubectl get pods -l <selector-from-policy>
 ```
 
 ## Прокси и доступ к API (proxy)
+
+{% include official-docs.html url="https://kubernetes.io/docs/tasks/extend-kubernetes/http-proxy-access-api/" title="Доступ к Kubernetes API через proxy" %}
 
 ```bash
 # Запустить прокси к API серверу (localhost:8001)

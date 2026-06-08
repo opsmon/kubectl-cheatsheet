@@ -8,6 +8,8 @@ layout: docs
 
 ## Получение информации (get)
 
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_get/" title="kubectl get" %}
+
 ```bash
 # Получить список всех подов в текущем namespace
 kubectl get pods
@@ -46,6 +48,8 @@ kubectl get ns
 
 ## Детальная информация (describe)
 
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_describe/" title="kubectl describe" %}
+
 ```bash
 # Детальная информация о поде
 kubectl describe pod <pod-name>
@@ -75,6 +79,8 @@ kubectl describe pod <pod-name> -n <namespace>
 ```
 
 ## Просмотр логов (logs)
+
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_logs/" title="kubectl logs" %}
 
 ```bash
 # Логи пода
@@ -111,6 +117,8 @@ kubectl logs -f --tail=50 <pod-name> -n <namespace>
 
 ## Мониторинг ресурсов (top)
 
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_top/" title="kubectl top" %}
+
 ```bash
 # Использование ресурсов нодами
 kubectl top nodes
@@ -135,6 +143,8 @@ kubectl top pods --containers
 ```
 
 ## Отладка и диагностика (debug)
+
+{% include official-docs.html url="https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/" title="Отладка работающего Pod" %}
 
 ```bash
 # Создать отладочный контейнер в существующем поде
@@ -181,6 +191,8 @@ kubectl get --raw='/healthz'
 ```
 
 ## События (events)
+
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_events/" title="kubectl events" %}
 
 > `kubectl events` — самостоятельная команда, доступна с kubectl 1.26. Удобнее и гибче, чем `kubectl get events`.
 
@@ -232,6 +244,8 @@ kubectl events --types=Warning -o json | \
 ```
 
 ## Диагностика типичных проблем подов (troubleshooting)
+
+{% include official-docs.html url="https://kubernetes.io/docs/tasks/debug/debug-application/" title="Диагностика приложений" %}
 
 ```bash
 # Найти все не-running поды во всех неймспейсах

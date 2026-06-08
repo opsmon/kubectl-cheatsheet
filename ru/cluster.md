@@ -8,6 +8,8 @@ layout: docs
 
 ## Контексты и конфигурация (config)
 
+{% include official-docs.html url="https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/" title="Организация доступа через kubeconfig" %}
+
 ```bash
 # Показать текущий контекст
 kubectl config current-context
@@ -38,6 +40,8 @@ kubectl config delete-context <context-name>
 ```
 
 ## Управление неймспейсами
+
+{% include official-docs.html url="https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/" title="Namespaces" %}
 
 ```bash
 # Список всех неймспейсов
@@ -80,6 +84,8 @@ kubectl get pods -A --no-headers | awk '{print $1}' | sort | uniq -c | sort -rn
 ```
 
 ## Управление нодами (taint/cordon/drain)
+
+{% include official-docs.html url="https://kubernetes.io/docs/tasks/administer-cluster/safely-drain-node/" title="Безопасный drain ноды" url2="https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/" title2="Taints и tolerations" %}
 
 ```bash
 # Запретить планирование новых подов на ноду
@@ -151,6 +157,8 @@ kubectl delete <custom-resource-kind> --all -n <namespace>
 
 ## Работа с API ресурсами (api-resources)
 
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_api-resources/" title="kubectl api-resources" %}
+
 ```bash
 # Показать все доступные API ресурсы
 kubectl api-resources
@@ -174,6 +182,8 @@ kubectl explain pod --recursive
 ```
 
 ## Планирование ёмкости кластера (capacity planning)
+
+{% include official-docs.html url="https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/" title="Requests и limits контейнеров" %}
 
 ```bash
 # Показать выделяемые ресурсы по каждой ноде
@@ -241,6 +251,8 @@ kubectl options | grep -i kuberc
 ```
 
 ## Селекторы полей и фильтрация
+
+{% include official-docs.html url="https://kubernetes.io/docs/concepts/overview/working-with-objects/field-selectors/" title="Field Selectors" %}
 
 ```bash
 # Получить поды по статусу (Running, Pending, Failed)

@@ -77,6 +77,8 @@ kubectl create token <sa-name> --duration=24h
 
 ## Проверка прав доступа (auth)
 
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_auth/kubectl_auth_can-i/" title="kubectl auth can-i" %}
+
 ```bash
 # Проверить, можно ли выполнить действие в текущем неймспейсе
 kubectl auth can-i get pods
@@ -115,6 +117,8 @@ kubectl auth reconcile -f rbac-manifest.yaml --dry-run=client
 ```
 
 ## Запросы на подпись сертификата (CSR)
+
+{% include official-docs.html url="https://kubernetes.io/docs/reference/access-authn-authz/certificate-signing-requests/" title="Certificate Signing Requests" %}
 
 ```bash
 # Список всех CSR в кластере
@@ -258,7 +262,7 @@ kubectl exec <pod-name> -- touch /test-write
 
 ## PodDisruptionBudget (PDB)
 
-{% include official-docs.html url="https://kubernetes.io/docs/concepts/workloads/pods/disruptions/" title="Pod disruptions и PDB" %}
+{% include official-docs.html url="https://kubernetes.io/docs/concepts/workloads/pods/disruptions/" title="Pod disruptions и PDB" url2="https://kubernetes.io/docs/reference/kubernetes-api/policy-resources/pod-disruption-budget-v1/" title2="PDB API reference" %}
 
 ```bash
 # Список всех PDB
@@ -304,7 +308,7 @@ kubectl get pdb -o custom-columns=NAME:.metadata.name,MIN-AVAILABLE:.spec.minAva
 
 ## ResourceQuota и LimitRange
 
-{% include official-docs.html url="https://kubernetes.io/docs/concepts/policy/resource-quotas/" title="Resource Quotas" %}
+{% include official-docs.html url="https://kubernetes.io/docs/concepts/policy/resource-quotas/" title="Resource Quotas" url2="https://kubernetes.io/docs/concepts/policy/limit-range/" title2="LimitRange" %}
 
 ```bash
 # Список ResourceQuota в неймспейсе

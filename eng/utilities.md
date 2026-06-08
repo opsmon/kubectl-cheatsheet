@@ -8,6 +8,8 @@ layout: docs
 
 ## Execute commands in container (exec)
 
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_exec/" title="kubectl exec" %}
+
 ```bash
 # Execute command in pod
 kubectl exec <pod-name> -- <command>
@@ -37,6 +39,8 @@ kubectl exec <pod-name> -- cat /path/to/file
 
 ## Copying files (cp)
 
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_cp/" title="kubectl cp" %}
+
 ```bash
 # Copy file from pod to local machine
 kubectl cp <pod-name>:/path/to/file ./local-file
@@ -55,6 +59,8 @@ kubectl cp <pod-name>:/path/to/file ./local-file -c <container-name>
 ```
 
 ## Working with labels (label/annotate)
+
+{% include official-docs.html url="https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/" title="Labels and selectors" url2="https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/" title2="Annotations" %}
 
 ```bash
 # Add label to pod
@@ -84,6 +90,8 @@ kubectl get pods -l 'environment in (production,staging)'
 ```
 
 ## Advanced output (jsonpath/custom-columns)
+
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/jsonpath/" title="JSONPath in kubectl" %}
 
 ```bash
 # Get IP addresses of all pods
@@ -119,7 +127,7 @@ kubectl get endpoints <service-name> -o jsonpath='{.subsets[*].addresses[*].ip}'
 
 ## Pod Scheduling (affinity / tolerations / nodeSelector)
 
-{% include official-docs.html url="https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/" title="Assigning Pods to Nodes" %}
+{% include official-docs.html url="https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/" title="Assigning Pods to Nodes" url2="https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/" title2="Taints and tolerations" %}
 
 ```bash
 # List nodes with their labels (to find scheduling targets)
@@ -270,6 +278,8 @@ cat deployment.yaml service.yaml | kubectl apply -f -
 
 ## Helm
 
+{% include official-docs.html url="https://helm.sh/docs/" title="Helm Documentation" %}
+
 ```bash
 # Add a chart repository
 helm repo add bitnami https://charts.bitnami.com/bitnami
@@ -367,6 +377,8 @@ helm test <release-name>
 
 ## kubectl plugins (krew)
 
+{% include official-docs.html url="https://krew.sigs.k8s.io/docs/" title="Krew Documentation" %}
+
 ```bash
 # Install krew (kubectl plugin manager)
 # https://krew.sigs.k8s.io/docs/user-guide/setup/install/
@@ -413,6 +425,8 @@ kubectl whoami
 ```
 
 ## Shell aliases & autocompletion
+
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/quick-reference/#kubectl-autocomplete" title="kubectl autocomplete" %}
 
 ```bash
 # Enable kubectl autocompletion — bash

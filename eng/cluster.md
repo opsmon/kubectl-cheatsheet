@@ -8,6 +8,8 @@ layout: docs
 
 ## Contexts and configuration (config)
 
+{% include official-docs.html url="https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/" title="Organizing cluster access with kubeconfig" %}
+
 ```bash
 # Show current context
 kubectl config current-context
@@ -38,6 +40,8 @@ kubectl config delete-context <context-name>
 ```
 
 ## Namespace management
+
+{% include official-docs.html url="https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/" title="Namespaces" %}
 
 ```bash
 # List all namespaces
@@ -80,6 +84,8 @@ kubectl get pods -A --no-headers | awk '{print $1}' | sort | uniq -c | sort -rn
 ```
 
 ## Node management (taint/cordon/drain)
+
+{% include official-docs.html url="https://kubernetes.io/docs/tasks/administer-cluster/safely-drain-node/" title="Safely draining a Node" url2="https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/" title2="Taints and tolerations" %}
 
 ```bash
 # Prevent scheduling new pods on node
@@ -151,6 +157,8 @@ kubectl delete <custom-resource-kind> --all -n <namespace>
 
 ## Working with API resources (api-resources)
 
+{% include official-docs.html url="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_api-resources/" title="kubectl api-resources" %}
+
 ```bash
 # Show all available API resources
 kubectl api-resources
@@ -174,6 +182,8 @@ kubectl explain pod --recursive
 ```
 
 ## Cluster capacity & resource planning
+
+{% include official-docs.html url="https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/" title="Container requests and limits" %}
 
 ```bash
 # Show allocatable resources per node
@@ -241,6 +251,8 @@ kubectl options | grep -i kuberc
 ```
 
 ## Field selectors and filtering
+
+{% include official-docs.html url="https://kubernetes.io/docs/concepts/overview/working-with-objects/field-selectors/" title="Field Selectors" %}
 
 ```bash
 # Get pods by status (Running, Pending, Failed)

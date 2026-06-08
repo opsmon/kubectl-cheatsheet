@@ -5,4 +5,7 @@
 <p class="official-docs">
   <span>{{ official_docs_label }}</span>
   <a href="{{ include.url }}" target="_blank" rel="noreferrer">{{ include.title }} ↗</a>
+  {% if include.url2 %}
+    <a href="{{ include.url2 }}" target="_blank" rel="noreferrer">{{ include.title2 }} ↗</a>
+  {% endif %}
 </p>
