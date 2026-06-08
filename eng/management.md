@@ -337,4 +337,4 @@ kubectl wait pod/<pod-name> --for=condition=ContainersReady --timeout=120s
 
 ---
 
-[← Back to README](../README.md)
+[← Back to cheatsheet]({{ site.baseurl }}/)

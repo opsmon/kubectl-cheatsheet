@@ -360,4 +360,4 @@ kubectl apply -f limitrange.yaml
 
 ---
 
-[← Back to README](../README.md)
+[← Back to cheatsheet]({{ site.baseurl }}/)

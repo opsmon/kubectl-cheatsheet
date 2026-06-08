@@ -249,4 +249,4 @@ kubectl get --raw /apis/metrics.k8s.io/v1beta1/pods
 
 ---
 
-[← Back to README](../README.md)
+[← Back to cheatsheet]({{ site.baseurl }}/)

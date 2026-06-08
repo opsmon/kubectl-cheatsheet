@@ -459,4 +459,4 @@ alias kwhere='echo "context: $(kubectl config current-context)" && echo "namespa
 
 ---
 
-[← Back to README](../README.md)
+[← Back to cheatsheet]({{ site.baseurl }}/)

@@ -278,4 +278,4 @@ kubectl get pods -l '!deprecated'
 
 ---
 
-[← Back to README](../README.md)
+[← Back to cheatsheet]({{ site.baseurl }}/)

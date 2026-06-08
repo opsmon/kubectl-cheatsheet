@@ -188,4 +188,4 @@ kubectl apply -k ./base/
 
 ---
 
-[← Back to README](../README.md)
+[← Back to cheatsheet]({{ site.baseurl }}/)

@@ -188,4 +188,4 @@ kubectl apply -k ./base/
 
 ---
 
-[← Назад к README](../README.md)
+[← Назад к шпаргалке]({{ site.baseurl }}/)

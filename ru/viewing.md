@@ -341,4 +341,4 @@ kubectl delete pod <pod-name>-debug
 
 ---
 
-[← Назад к README](../README.md)
+[← Назад к шпаргалке]({{ site.baseurl }}/)

@@ -361,4 +361,4 @@ kubectl delete cronjob <cronjob-name>
 
 ---
 
-[← Назад к README](../README.md)
+[← Назад к шпаргалке]({{ site.baseurl }}/)
