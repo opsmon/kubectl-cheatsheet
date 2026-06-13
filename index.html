@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f5f7">
+    <meta name="description" content="A fast bilingual kubectl command reference for everyday Kubernetes work.">
+    <title>kubectl Cheatsheet</title>
+    <link rel="stylesheet" href="assets/styles.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" id="brandLink" href="./" aria-label="kubectl Cheatsheet — home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" role="img">
+            <path d="M7.5 7.25 3 12l4.5 4.75M16.5 7.25 21 12l-4.5 4.75M14.25 4l-4.5 16"/>
+          </svg>
+        </span>
+        <strong>kubectl</strong>
+      </a>
+
+      <nav class="topnav" id="topnav" aria-label="Primary navigation">
+        <a href="#categories" id="navBrowse">Browse</a>
+        <a href="eng/viewing.html" id="navDocs">Documentation</a>
+        <a class="contribute-link" href="eng/contributing.html" id="navContribute">Contribute</a>
+        <a class="github-link" href="https://github.com/opsmon/kubectl-cheatsheet" target="_blank" rel="noreferrer">
+          GitHub
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M5 11 11 5M6 5h5v5"/>
+          </svg>
+        </a>
+        <div class="segments header-language" id="languageSwitcher" role="group" aria-label="Site language">
+          <button class="segment" type="button" data-lang="ru" aria-pressed="false">RU</button>
+          <button class="segment is-active" type="button" data-lang="eng" aria-pressed="true">EN</button>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="page-title">
+        <div class="hero-glow" aria-hidden="true"></div>
+        <p class="eyebrow" id="eyebrow">Kubernetes commands. Nothing extra.</p>
+        <h1 id="page-title">Everything you need for <code>kubectl</code><br>in one place.</h1>
+        <p class="lead" id="lead">
+          Find a command by task, object, or scenario. Available in English and Russian.
+        </p>
+
+        <label class="search">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="6.75"></circle>
+            <path d="m16 16 4.25 4.25"></path>
+          </svg>
+          <span class="sr-only" id="searchLabel">Search commands</span>
+          <input id="searchInput" type="search" placeholder="Try logs, rollout, or namespace" autocomplete="off">
+          <kbd id="searchShortcut">⌘ K</kbd>
+        </label>
+
+        <div class="hero-meta">
+          <span class="command-count"><strong id="commandCount">700+</strong> <span id="commandCountLabel">commands and examples</span></span>
+        </div>
+      </section>
+
+      <section class="results" id="results" aria-live="polite" hidden></section>
+
+      <section class="quick-start" aria-labelledby="quick-title">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker" id="quickKicker">Quick start</p>
+            <h2 id="quick-title">What you need right now</h2>
+          </div>
+          <span class="section-note" id="quickNote">Practical workflows</span>
+        </div>
+
+        <div class="quick-grid">
+          <a class="quick-card quick-card-wide" href="eng/viewing.html#troubleshooting-common-pod-issues-troubleshooting" data-ru-href="ru/viewing.html#диагностика-типичных-проблем-подов-troubleshooting" data-i18n-href="eng/viewing.html#troubleshooting-common-pod-issues-troubleshooting">
+            <span class="quick-icon icon-blue" aria-hidden="true">01</span>
+            <span>
+              <strong data-task="pod">Pod will not start</strong>
+              <small data-task-detail="pod">Status, events, logs, and diagnostics</small>
+            </span>
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7.5 4.5 5.5 5.5-5.5 5.5"/></svg>
+          </a>
+          <a class="quick-card" href="eng/management.html#comparing-configurations-diff" data-ru-href="ru/management.html#сравнение-конфигураций-diff" data-i18n-href="eng/management.html#comparing-configurations-diff">
+            <span class="quick-icon icon-purple" aria-hidden="true">02</span>
+            <span>
+              <strong data-task="diff">Check before apply</strong>
+              <small data-task-detail="diff">Compare configurations</small>
+            </span>
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7.5 4.5 5.5 5.5-5.5 5.5"/></svg>
+          </a>
+          <a class="quick-card" href="eng/workloads.html#managing-updates-rollout" data-ru-href="ru/workloads.html#управление-обновлениями-rollout" data-i18n-href="eng/workloads.html#managing-updates-rollout">
+            <span class="quick-icon icon-orange" aria-hidden="true">03</span>
+            <span>
+              <strong data-task="rollback">Roll back a deployment</strong>
+              <small data-task-detail="rollback">Rollout history and undo</small>
+            </span>
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7.5 4.5 5.5 5.5-5.5 5.5"/></svg>
+          </a>
+        </div>
+      </section>
+
+      <section class="catalog" id="categories" aria-labelledby="categories-title">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker" id="categoriesKicker">Reference</p>
+            <h2 id="categories-title">All topics</h2>
+          </div>
+          <p class="section-description" id="categoriesDescription">From your first get to cluster diagnostics.</p>
+        </div>
+        <div class="cards" id="cards" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <footer>
+      <p><strong>kubectl Cheatsheet</strong> <span id="footerCopy">for calmer Kubernetes work.</span></p>
+      <a id="footerGitHub" href="https://github.com/opsmon/kubectl-cheatsheet" target="_blank" rel="noreferrer">Open source on GitHub</a>
+    </footer>
+
+    <script src="assets/app.js"></script>
+  </body>
+</html>
