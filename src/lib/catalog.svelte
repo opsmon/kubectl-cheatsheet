@@ -1,4 +1,5 @@
-const categories = [
+<script module>
+export const categories = [
   {
     id: "viewing",
     ruTitle: "Просмотр и диагностика",
@@ -148,16 +149,9 @@ const categories = [
   }
 ];
 
-const requestedLanguage = new URLSearchParams(window.location.search).get("lang");
-const storedLanguage = localStorage.getItem("kubectl-cheatsheet-language");
-const state = {
-  lang: requestedLanguage === "eng" || requestedLanguage === "ru"
-    ? requestedLanguage
-    : storedLanguage === "ru" ? "ru" : "eng",
-  query: ""
-};
+export const docsOrder = ["viewing", "management", "workloads", "network", "storage", "security", "cluster", "utilities"];
 
-const ui = {
+export const ui = {
   ru: {
     eyebrow: "Команды Kubernetes. Без лишнего.",
     title: 'Всё нужное для <code>kubectl</code><br>в одном месте.',
@@ -170,7 +164,7 @@ const ui = {
     navContribute: "Участвовать",
     navigationLabel: "Основная навигация",
     languageLabel: "Язык сайта",
-    brandLabel: "kubectl Cheatsheet — главная",
+    brandLabel: "kubectl Cheatsheet - главная",
     description: "Быстрый двуязычный справочник команд kubectl для ежедневной работы с Kubernetes.",
     quickKicker: "Быстрый старт",
     quickTitle: "Часто нужно прямо сейчас",
@@ -187,6 +181,11 @@ const ui = {
     empty: "Ничего не найдено. Попробуйте logs, patch, namespace, jsonpath или rollout.",
     copied: "Скопировано",
     copyCommand: "Скопировать команду",
+    home: "На главную",
+    topics: "Разделы",
+    backToTop: "Наверх",
+    officialDocs: "Официальная документация",
+    practicalReference: "Практический справочник kubectl",
     categoryLabels: {
       viewing: "Диагностика",
       management: "Управление",
@@ -215,7 +214,7 @@ const ui = {
     navContribute: "Contribute",
     navigationLabel: "Primary navigation",
     languageLabel: "Site language",
-    brandLabel: "kubectl Cheatsheet — home",
+    brandLabel: "kubectl Cheatsheet - home",
     description: "A fast bilingual kubectl command reference for everyday Kubernetes work.",
     quickKicker: "Quick start",
     quickTitle: "What you need right now",
@@ -232,6 +231,11 @@ const ui = {
     empty: "Nothing found. Try logs, patch, namespace, jsonpath, or rollout.",
     copied: "Copied",
     copyCommand: "Copy command",
+    home: "Home",
+    topics: "Topics",
+    backToTop: "Back to top",
+    officialDocs: "Official documentation",
+    practicalReference: "A practical kubectl reference",
     categoryLabels: {
       viewing: "Viewing",
       management: "Management",
@@ -250,305 +254,23 @@ const ui = {
   }
 };
 
-const cards = document.querySelector("#cards");
-const results = document.querySelector("#results");
-const searchInput = document.querySelector("#searchInput");
-const langButtons = document.querySelectorAll("[data-lang]");
-const taskLinks = document.querySelectorAll("[data-i18n-href]");
-let commandIndex = Array.isArray(window.commandIndex) ? window.commandIndex : [];
-let commandIndexPromise;
-
-function updateCommandCount() {
-  if (!commandIndex.length) {
-    return;
-  }
-
-  const count = commandIndex.filter((item) => item.lang === state.lang).length;
-  setText("#commandCount", `${count}+`);
-}
-
-function loadCommandIndex() {
-  if (commandIndex.length) {
-    return Promise.resolve(commandIndex);
-  }
-
-  if (commandIndexPromise) {
-    return commandIndexPromise;
-  }
-
-  commandIndexPromise = new Promise((resolve, reject) => {
-    const script = document.createElement("script");
-    script.src = new URL("assets/search-index.js", document.baseURI).href;
-    script.onload = () => {
-      commandIndex = Array.isArray(window.commandIndex) ? window.commandIndex : [];
-      updateCommandCount();
-      resolve(commandIndex);
-    };
-    script.onerror = () => {
-      commandIndexPromise = undefined;
-      reject(new Error("Unable to load the search index."));
-    };
-    document.head.append(script);
-  });
-
-  return commandIndexPromise;
-}
-
-function publishedFile(file) {
+export function publishedFile(file) {
   return file.replace(/\.md$/, ".html");
 }
 
-function titleFor(category) {
-  return state.lang === "ru" ? category.ruTitle : category.enTitle;
+export function titleFor(category, lang) {
+  return lang === "ru" ? category.ruTitle : category.enTitle;
 }
 
-function fileFor(category) {
-  return publishedFile(state.lang === "ru" ? category.ruFile : category.enFile);
+export function fileFor(category, lang) {
+  return publishedFile(lang === "ru" ? category.ruFile : category.enFile);
 }
 
-function summaryFor(category) {
-  return state.lang === "ru" ? category.ruSummary : category.enSummary;
+export function summaryFor(category, lang) {
+  return lang === "ru" ? category.ruSummary : category.enSummary;
 }
 
-function hashFor(topic) {
-  return state.lang === "ru" ? topic[1] : topic[2];
+export function hashFor(topic, lang) {
+  return lang === "ru" ? topic[1] : topic[2];
 }
-
-function escapeHtml(value) {
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-}
-
-function matchingCommands(categoryId) {
-  if (!state.query) {
-    return [];
-  }
-
-  return commandIndex
-    .filter((item) => item.lang === state.lang && item.category === categoryId)
-    .filter((item) => {
-      const haystack = [item.section, item.comment, item.command].join(" ").toLowerCase();
-      return haystack.includes(state.query);
-    });
-}
-
-function matches(category) {
-  if (!state.query) {
-    return true;
-  }
-
-  const haystack = [
-    category.id,
-    category.ruTitle,
-    category.enTitle,
-    category.ruSummary,
-    category.enSummary,
-    ...category.topics.map((topic) => topic.join(" "))
-  ].join(" ").toLowerCase();
-
-  return haystack.includes(state.query) || matchingCommands(category.id).length > 0;
-}
-
-function setText(selector, value) {
-  const element = document.querySelector(selector);
-  if (element) {
-    element.textContent = value;
-  }
-}
-
-function render() {
-  const visible = categories.filter(matches);
-  const copy = ui[state.lang];
-
-  setText("#eyebrow", copy.eyebrow);
-  document.querySelector("#page-title").innerHTML = copy.title;
-  setText("#lead", copy.lead);
-  setText("#searchLabel", copy.searchLabel);
-  setText("#commandCountLabel", copy.commandCountLabel);
-  setText("#navBrowse", copy.navBrowse);
-  setText("#navDocs", copy.navDocs);
-  setText("#navContribute", copy.navContribute);
-  setText("#quickKicker", copy.quickKicker);
-  setText("#quick-title", copy.quickTitle);
-  setText("#quickNote", copy.quickNote);
-  setText("#categoriesKicker", copy.categoriesKicker);
-  setText("#categories-title", copy.categoriesTitle);
-  setText("#categoriesDescription", copy.categoriesDescription);
-  setText("#footerCopy", copy.footerCopy);
-  setText("#footerGitHub", copy.footerGitHub);
-  searchInput.placeholder = copy.searchPlaceholder;
-  document.querySelector('meta[name="description"]').setAttribute("content", copy.description);
-  document.querySelector("#brandLink").setAttribute("aria-label", copy.brandLabel);
-  document.querySelector("#topnav").setAttribute("aria-label", copy.navigationLabel);
-  document.querySelector("#languageSwitcher").setAttribute("aria-label", copy.languageLabel);
-
-  document.querySelectorAll("[data-task]").forEach((item) => {
-    item.textContent = copy.tasks[item.dataset.task][0];
-  });
-  document.querySelectorAll("[data-task-detail]").forEach((item) => {
-    item.textContent = copy.tasks[item.dataset.taskDetail][1];
-  });
-
-  cards.innerHTML = visible.length
-    ? visible.map(renderCard).join("")
-    : `<p class="empty">${copy.empty}</p>`;
-
-  renderResults();
-
-  taskLinks.forEach((link) => {
-    if (!link.dataset.ruHref) {
-      link.dataset.ruHref = link.getAttribute("href");
-    }
-    link.setAttribute("href", state.lang === "eng" ? link.dataset.i18nHref : link.dataset.ruHref);
-  });
-
-  document.querySelector("#navDocs").setAttribute("href", state.lang === "ru" ? "ru/viewing.html" : "eng/viewing.html");
-  document.querySelector("#navContribute").setAttribute("href", `${state.lang}/contributing.html`);
-  langButtons.forEach((button) => {
-    const active = button.dataset.lang === state.lang;
-    button.classList.toggle("is-active", active);
-    button.setAttribute("aria-pressed", String(active));
-  });
-  document.documentElement.lang = state.lang === "ru" ? "ru" : "en";
-  updateCommandCount();
-}
-
-function renderCard(category, index) {
-  const file = fileFor(category);
-  const alternateFile = publishedFile(state.lang === "ru" ? category.enFile : category.ruFile);
-  const copy = ui[state.lang];
-  const chips = category.topics
-    .map((topic) => `<a class="chip" href="${file}#${hashFor(topic)}">${escapeHtml(topic[0])}</a>`)
-    .join("");
-
-  return `
-    <article class="card" data-category="${category.id}">
-      <span class="card-number" aria-hidden="true">${String(index + 1).padStart(2, "0")}</span>
-      <div class="card-header">
-        <span class="card-kicker">${escapeHtml(copy.categoryLabels[category.id])}</span>
-        <h2>${escapeHtml(titleFor(category))}</h2>
-        <p>${escapeHtml(summaryFor(category))}</p>
-      </div>
-      <div class="chips">${chips}</div>
-      <div class="card-footer">
-        <a class="button-link" href="${file}">${copy.openCurrent}</a>
-        <a class="button-link secondary" href="${alternateFile}">${copy.openAlternate}</a>
-      </div>
-    </article>
-  `;
-}
-
-function renderResults() {
-  const copy = ui[state.lang];
-  const matchingItems = state.query
-    ? commandIndex.filter((item) => {
-        if (item.lang !== state.lang) {
-          return false;
-        }
-
-        const haystack = [item.category, item.section, item.comment, item.command].join(" ").toLowerCase();
-        return haystack.includes(state.query);
-      })
-    : [];
-  const items = matchingItems.slice(0, 12);
-
-  results.hidden = items.length === 0;
-  results.innerHTML = items.length
-    ? `
-      <div class="results-head">
-        <h2>${copy.resultsTitle}</h2>
-        <span>${matchingItems.length}${copy.resultsSuffix}</span>
-      </div>
-      <div class="result-list">
-        ${items.map(renderResult).join("")}
-      </div>
-    `
-    : "";
-}
-
-function renderResult(item) {
-  const label = item.comment || item.section;
-  const command = escapeHtml(item.command);
-  const categoryLabel = ui[state.lang].categoryLabels[item.category] || item.category;
-
-  return `
-    <div class="result">
-      <a class="result-main" href="${publishedFile(item.file)}#${item.hash}">
-        <span>${escapeHtml(categoryLabel)} / ${escapeHtml(item.section)}</span>
-        <strong>${escapeHtml(label)}</strong>
-        <code>${command}</code>
-      </a>
-      <button class="copy-command" type="button" data-command="${command}" aria-label="${ui[state.lang].copyCommand}">
-        <svg viewBox="0 0 18 18" aria-hidden="true">
-          <rect x="6" y="5" width="8" height="9" rx="1.5"></rect>
-          <path d="M4 11V4.5C4 3.7 4.7 3 5.5 3H11"></path>
-        </svg>
-      </button>
-    </div>
-  `;
-}
-
-searchInput.addEventListener("focus", () => {
-  loadCommandIndex().catch(() => {});
-}, { once: true });
-
-searchInput.addEventListener("input", async (event) => {
-  state.query = event.target.value.trim().toLowerCase();
-  if (state.query) {
-    await loadCommandIndex().catch(() => {});
-  }
-  render();
-});
-
-langButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    state.lang = button.dataset.lang;
-    localStorage.setItem("kubectl-cheatsheet-language", state.lang);
-    const url = new URL(window.location.href);
-    url.searchParams.set("lang", state.lang);
-    window.history.replaceState({}, "", url);
-    render();
-  });
-});
-
-results.addEventListener("click", async (event) => {
-  const button = event.target.closest(".copy-command");
-  if (!button) {
-    return;
-  }
-
-  try {
-    await navigator.clipboard.writeText(button.dataset.command);
-    button.setAttribute("aria-label", ui[state.lang].copied);
-    button.classList.add("is-copied");
-    window.setTimeout(() => {
-      button.setAttribute("aria-label", ui[state.lang].copyCommand);
-      button.classList.remove("is-copied");
-    }, 1400);
-  } catch (_error) {
-    searchInput.value = button.dataset.command;
-    searchInput.select();
-  }
-});
-
-document.addEventListener("keydown", (event) => {
-  if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
-    event.preventDefault();
-    searchInput.focus();
-    searchInput.select();
-  }
-
-  if (event.key === "Escape" && document.activeElement === searchInput) {
-    searchInput.value = "";
-    state.query = "";
-    searchInput.blur();
-    render();
-  }
-});
-
-document.querySelector("#searchShortcut").textContent = navigator.platform.toLowerCase().includes("mac") ? "⌘ K" : "Ctrl K";
-render();
+</script>

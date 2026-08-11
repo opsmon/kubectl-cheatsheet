@@ -1,100 +1,69 @@
 # kubectl Cheatsheet
 
-Шпаргалка по `kubectl` для ежедневной работы с Kubernetes.
-Practical `kubectl` cheatsheet for day-to-day Kubernetes work.
+A bilingual `kubectl` command reference for everyday Kubernetes work.
 
-[Открыть визуальный индекс](index.html) · [Русская версия](ru/viewing.md) · [English version](eng/viewing.md) · [Contributing](eng/contributing.md)
+<p align="center">
+  <a href="https://opsmon.github.io/kubectl-cheatsheet/">
+    <img src="https://img.shields.io/badge/Open-kubectl%20Cheatsheet-0071e3?style=for-the-badge" alt="Open kubectl Cheatsheet">
+  </a>
+</p>
 
-## С чего начать / Start Here
+The site is a static Svelte/Vite app. Markdown files in `ru/` and `eng/` remain the source of the documentation, while Vite builds deployable HTML into `public/`.
 
-| I need to... | RU | EN |
-|---|---|---|
-| Quickly inspect pods, logs, events, or resource usage | [Просмотр и диагностика](ru/viewing.md) | [Viewing and diagnostics](eng/viewing.md) |
-| Create, apply, patch, delete, or wait for resources | [Управление ресурсами](ru/management.md) | [Resource management](eng/management.md) |
-| Run workloads, roll out changes, scale, or manage jobs | [Нагрузки](ru/workloads.md) | [Workloads](eng/workloads.md) |
-| Expose services, debug access, or work with ingress policies | [Сеть](ru/network.md) | [Network](eng/network.md) |
-| Work with configmaps, secrets, volumes, or kustomize | [Хранилище](ru/storage.md) | [Storage](eng/storage.md) |
-| Check permissions, RBAC, security contexts, or quotas | [Безопасность](ru/security.md) | [Security](eng/security.md) |
-| Switch contexts, namespaces, nodes, CRDs, and API resources | [Кластер](ru/cluster.md) | [Cluster](eng/cluster.md) |
-| Use exec, cp, labels, jsonpath, helm, krew, and aliases | [Утилиты](ru/utilities.md) | [Utilities](eng/utilities.md) |
+## Links
 
-## Визуальный индекс / Visual Index
+- Live site: <https://opsmon.github.io/kubectl-cheatsheet/>
+- Home: `index.html`
+- Russian docs: `ru/viewing.html`
+- English docs: `eng/viewing.html`
+- Source markdown: `ru/*.md`, `eng/*.md`
 
-Для более удобной навигации откройте [`index.html`](index.html). Внутри есть:
+## Local Development
 
-- переключатель RU / EN;
-- поиск по команде, теме или сценарию с прямыми ссылками на разделы;
-- компактные карточки категорий со ссылками на оформленные разделы;
-- адаптивная верстка без сборки и зависимостей.
+```bash
+npm install
+npm run dev
+```
+
+Open the Vite URL printed in the terminal.
+
+## Checks
+
+```bash
+npm run verify
+```
+
+This rebuilds the search index, checks anchors, and runs `svelte-check`.
+
+## Build
+
+```bash
+npm run build
+```
+
+The production site is written to `public/`.
+
+## GitLab Pages
+
+GitLab Pages is configured in `.gitlab-ci.yml`.
+
+The `pages` job runs:
+
+```bash
+npm ci
+npm run verify
+npm run build
+```
+
+Then it publishes `public/` as the Pages artifact.
 
 ## GitHub Pages
 
-Сайт автоматически собирается и публикуется workflow
-[`Deploy GitHub Pages`](.github/workflows/pages.yml) после каждого push в `main`.
+GitHub Pages is still supported through `.github/workflows/pages.yml`. It uses the same Svelte/Vite build and uploads `public/`.
 
-Однократная настройка репозитория:
+## Updating Content
 
-1. Откройте `Settings` → `Pages`.
-2. В `Build and deployment` выберите `Source: GitHub Actions`.
-3. Дождитесь завершения workflow во вкладке `Actions`.
-
-Адрес сайта: <https://opsmon.github.io/kubectl-cheatsheet/>
-
-## Карта команд / Command Map
-
-| Category | Main commands |
-|---|---|
-| Viewing | `get`, `describe`, `logs`, `top`, `debug`, `events` |
-| Management | `apply`, `create`, `edit`, `patch`, `set`, `delete`, `diff`, `wait` |
-| Workloads | `run`, `rollout`, `scale`, `autoscale`, `jobs`, `cronjobs` |
-| Network | `port-forward`, `expose`, `ingress`, `networkpolicy`, `proxy` |
-| Storage | `configmap`, `secret`, `pv`, `pvc`, `kustomize` |
-| Security | `auth can-i`, `rbac`, `csr`, `pss`, `pdb`, `quota` |
-| Cluster | `config`, `namespace`, `node`, `crd`, `api-resources`, `version skew`, `kuberc` |
-| Utilities | `exec`, `cp`, `label`, `annotate`, `jsonpath`, `helm`, `krew` |
-
-## Структура / Structure
-
-```text
-.
-├── index.html
-├── Gemfile
-├── assets/
-│   ├── app.js
-│   ├── search-index.js
-│   └── styles.css
-├── scripts/
-│   ├── build_search_index.rb
-│   └── check_repo.rb
-├── eng/
-│   ├── viewing.md
-│   ├── management.md
-│   ├── workloads.md
-│   ├── network.md
-│   ├── storage.md
-│   ├── security.md
-│   ├── cluster.md
-│   └── utilities.md
-├── ru/
-│   ├── viewing.md
-│   ├── management.md
-│   ├── workloads.md
-│   ├── network.md
-│   ├── storage.md
-│   ├── security.md
-│   ├── cluster.md
-│   └── utilities.md
-└── README.md
-```
-
-## Contributing
-
-Подробные инструкции: [на русском](ru/contributing.md) · [in English](eng/contributing.md).
-
-1. По возможности обновляйте команды сразу в обеих языковых версиях.
-2. Сохраняйте одинаковый порядок разделов в `ru/` и `eng/`.
-3. Добавляйте новые темы в `index.html`, чтобы визуальная навигация оставалась полной.
-4. После изменения Markdown обновляйте поисковый индекс: `ruby scripts/build_search_index.rb`.
-5. Перед pull request запускайте проверку: `ruby scripts/check_repo.rb`.
-6. Для локальной сборки установите зависимости через `bundle install`, затем запустите `bundle exec jekyll serve`.
-7. Открывайте pull request с коротким описанием изменений.
+1. Update matching files in both `ru/` and `eng/` when possible.
+2. Keep section order consistent between languages.
+3. Add new visual navigation entries in `src/lib/catalog.svelte`.
+4. Run `npm run verify` before opening a merge request or pull request.

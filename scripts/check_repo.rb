@@ -37,12 +37,12 @@ Dir["{ru,eng}/*.md"].each do |file|
     .to_set
 end
 
-text = File.read("index.html") + File.read("assets/app.js")
+text = File.read("index.html") + File.read("src/App.svelte") + File.read("src/lib/catalog.svelte")
 text.scan(/((?:ru|eng)\/[^"#]+\.md)#([^"\n]+)/).each do |file, hash|
   errors << "Broken anchor: #{file}##{hash}" unless anchors[file]&.include?(hash)
 end
 
-File.read("assets/app.js").scan(/\{\s*id: "[^"]+".*?ruFile: "([^"]+)".*?enFile: "([^"]+)".*?topics: \[(.*?)\]\s*\}/m).each do |ru_file, en_file, topics|
+File.read("src/lib/catalog.svelte").scan(/\{\s*id: "[^"]+".*?ruFile: "([^"]+)".*?enFile: "([^"]+)".*?topics: \[(.*?)\]\s*\}/m).each do |ru_file, en_file, topics|
   topics.scan(/\["[^"]+", "([^"]+)", "([^"]+)"\]/).each do |ru_hash, en_hash|
     errors << "Broken topic anchor: #{ru_file}##{ru_hash}" unless anchors[ru_file]&.include?(ru_hash)
     errors << "Broken topic anchor: #{en_file}##{en_hash}" unless anchors[en_file]&.include?(en_hash)

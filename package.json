@@ -1,0 +1,19 @@
+{
+  "name": "kubectl-cheatsheet",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "check": "svelte-check --tsconfig ./jsconfig.json",
+    "verify": "ruby scripts/build_search_index.rb && ruby scripts/check_repo.rb && npm run check"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^6.2.1",
+    "svelte": "^5.38.0",
+    "svelte-check": "^4.3.1",
+    "vite": "^7.1.0"
+  }
+}

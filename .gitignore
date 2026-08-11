@@ -1,0 +1,5 @@
+node_modules/
+public/
+.svelte-kit/
+.vite/
+npm-debug.log*
