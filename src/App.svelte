@@ -1,13 +1,16 @@
 <script>
   import { onMount, tick } from "svelte";
   import { categories, docsOrder, fileFor, hashFor, publishedFile, summaryFor, titleFor, ui } from "./lib/catalog.svelte";
-  import { docs, renderMarkdown } from "./lib/docs.svelte";
+  import { docs, renderMarkdown, slug } from "./lib/docs.svelte";
+  import Workbench from "./lib/Workbench.svelte";
+  import Runbooks from "./lib/Runbooks.svelte";
 
   const commandIndex = Array.isArray(window.commandIndex) ? window.commandIndex : [];
   const route = parseRoute();
   let lang = initialLanguage();
   let query = "";
   let shortcut = "Ctrl K";
+  let showAllLegacy = false;
 
   $: copy = ui[lang];
   $: currentDoc = route.kind === "docs" ? docs[route.lang]?.[route.slug] : null;
@@ -32,22 +35,7 @@
     shortcut = navigator.platform.toLowerCase().includes("mac") ? "⌘ K" : "Ctrl K";
     enhanceDocs();
 
-    const onKeydown = (event) => {
-      const search = document.querySelector("#searchInput");
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
-        event.preventDefault();
-        search?.focus();
-        search?.select();
-      }
-
-      if (event.key === "Escape" && document.activeElement === search) {
-        query = "";
-        search.blur();
-      }
-    };
-
-    document.addEventListener("keydown", onKeydown);
-    return () => document.removeEventListener("keydown", onKeydown);
+    return undefined;
   });
 
   $: if (currentDocHtml) {
@@ -93,6 +81,7 @@
   }
 
   function setLanguage(nextLang) {
+    const previousLang = lang;
     lang = nextLang;
     localStorage.setItem("kubectl-cheatsheet-language", nextLang);
 
@@ -104,7 +93,12 @@
     }
 
     const nextPath = withPrefix(`${nextLang}/${route.slug}.html`);
-    window.location.assign(`${nextPath}${window.location.hash}`);
+    const currentHeadings = (docs[previousLang]?.[route.slug] || "").split("\n").filter((line) => /^#{1,3}\s/.test(line)).map((line) => slug(line.replace(/^#{1,3}\s+/, "")));
+    const nextHeadings = (docs[nextLang]?.[route.slug] || "").split("\n").filter((line) => /^#{1,3}\s/.test(line)).map((line) => slug(line.replace(/^#{1,3}\s+/, "")));
+    const currentHash = decodeURIComponent(window.location.hash.slice(1));
+    const index = currentHeadings.indexOf(currentHash);
+    const translatedHash = index >= 0 ? nextHeadings[index] : currentHash;
+    window.location.assign(`${nextPath}${window.location.search}${translatedHash ? `#${translatedHash}` : ""}`);
   }
 
   function matches(category) {
@@ -212,6 +206,9 @@
       </div>
     </section>
 
+    <Workbench {lang} />
+    <Runbooks {lang} />
+
     {#if matchingItems.length}
       <section class="results" aria-live="polite">
         <div class="results-head">
@@ -219,7 +216,7 @@
           <span>{matchingItems.length}{copy.resultsSuffix}</span>
         </div>
         <div class="result-list">
-          {#each matchingItems.slice(0, 12) as item}
+          {#each (showAllLegacy ? matchingItems : matchingItems.slice(0, 12)) as item}
             <div class="result">
               <a class="result-main" href={docHref(item.file, item.hash)}>
                 <span>{copy.categoryLabels[item.category] || item.category} / {item.section}</span>
@@ -229,6 +226,7 @@
             </div>
           {/each}
         </div>
+        {#if matchingItems.length > 12 && !showAllLegacy}<button class="wb-more" type="button" on:click={() => showAllLegacy = true}>{lang === "ru" ? "Показать все результаты документации" : "Show all documentation results"}</button>{/if}
       </section>
     {/if}
 
@@ -335,6 +333,7 @@
 
     <main class="docs-main">
       <a class="back-link" href={homeHref(lang)}>← {copy.home}</a>
+      <Workbench {lang} compact prefix="../" />
       <article class="docs-content">
         {@html currentDocHtml}
       </article>

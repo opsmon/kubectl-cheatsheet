@@ -66,19 +66,24 @@ function inlineMarkdown(value) {
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_match, text, href) => {
       const target = String(href).replace(/\.md($|#)/, ".html$1");
+      if (!safeHref(target)) return inlineMarkdown(text);
       const external = /^https?:\/\//.test(target);
       const attrs = external ? ' target="_blank" rel="noreferrer"' : "";
       return `<a href="${escapeHtml(target)}"${attrs}>${inlineMarkdown(text)}</a>`;
     });
 }
 
+function safeHref(value) {
+  return /^(https?:\/\/|\/?(?:ru|eng)\/|\.\.?\/|#)/.test(value);
+}
+
 function officialDocs(line, copy) {
   const attrs = Object.fromEntries([...line.matchAll(/(\w+)="([^"]+)"/g)].map((match) => [match[1], match[2]]));
-  if (!attrs.url || !attrs.title) {
+  if (!attrs.url || !attrs.title || !/^https:\/\/kubernetes\.io\//.test(attrs.url)) {
     return "";
   }
 
-  const second = attrs.url2 && attrs.title2
+  const second = attrs.url2 && attrs.title2 && /^https:\/\/kubernetes\.io\//.test(attrs.url2)
     ? `<a href="${escapeHtml(attrs.url2)}" target="_blank" rel="noreferrer">${escapeHtml(attrs.title2)} ↗</a>`
     : "";
 
@@ -104,6 +109,7 @@ export function renderMarkdown(markdown, copy) {
   const html = [];
   let paragraph = [];
   let list = [];
+  let listType = "ul";
   let table = [];
   let code = [];
   let codeLanguage = "";
@@ -119,7 +125,7 @@ export function renderMarkdown(markdown, copy) {
 
   function flushList() {
     if (list.length) {
-      html.push(`<ul>${list.map((item) => `<li>${inlineMarkdown(item)}</li>`).join("")}</ul>`);
+      html.push(`<${listType}>${list.map((item) => `<li>${inlineMarkdown(item)}</li>`).join("")}</${listType}>`);
       list = [];
     }
   }
@@ -140,6 +146,19 @@ export function renderMarkdown(markdown, copy) {
   }
 
   for (const line of lines) {
+    if (inCode) {
+      const fence = line.match(/^```(\w+)?/);
+      if (fence) {
+        html.push(`<div class="highlighter-rouge"><pre><code class="language-${escapeHtml(codeLanguage)}">${escapeHtml(code.join("\n"))}</code></pre></div>`);
+        code = [];
+        codeLanguage = "";
+        inCode = false;
+      } else {
+        code.push(line);
+      }
+      continue;
+    }
+
     if (line.trim() === "---" || line.includes("{{ site.baseurl }}")) {
       flushParagraph();
       flushList();
@@ -150,24 +169,12 @@ export function renderMarkdown(markdown, copy) {
 
     const fence = line.match(/^```(\w+)?/);
     if (fence) {
-      if (inCode) {
-        html.push(`<div class="highlighter-rouge"><pre><code class="language-${escapeHtml(codeLanguage)}">${escapeHtml(code.join("\n"))}</code></pre></div>`);
-        code = [];
-        codeLanguage = "";
-        inCode = false;
-      } else {
-        flushParagraph();
-        flushList();
-        flushTable();
-        flushBlockquote();
-        inCode = true;
-        codeLanguage = fence[1] || "";
-      }
-      continue;
-    }
-
-    if (inCode) {
-      code.push(line);
+      flushParagraph();
+      flushList();
+      flushTable();
+      flushBlockquote();
+      inCode = true;
+      codeLanguage = fence[1] || "";
       continue;
     }
 
@@ -219,6 +226,9 @@ export function renderMarkdown(markdown, copy) {
       flushParagraph();
       flushTable();
       flushBlockquote();
+      const nextType = numbered ? "ol" : "ul";
+      if (list.length && listType !== nextType) flushList();
+      listType = nextType;
       list.push((bullet || numbered)[1]);
       continue;
     }

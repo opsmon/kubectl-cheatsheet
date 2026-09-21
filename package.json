@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1",
     "check": "svelte-check --tsconfig ./jsconfig.json",
-    "verify": "ruby scripts/build_search_index.rb && ruby scripts/check_repo.rb && ruby scripts/check_examples.rb && npm run check"
+    "verify": "ruby scripts/build_search_index.rb && ruby scripts/check_repo.rb && ruby scripts/check_examples.rb && node scripts/check_recipes.mjs && node scripts/check_command.mjs && node scripts/check_collections.mjs && node scripts/check_search.mjs && node scripts/check_runbooks.mjs && npm run check"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^6.2.1",
