@@ -121,8 +121,8 @@ kubectl get pods -A -o jsonpath='{range .items[*]}{range .spec.containers[*]}{.i
 # Get decoded secret value
 kubectl get secret <secret-name> -o jsonpath='{.data.password}' | base64 -d
 
-# Get service endpoint addresses
-kubectl get endpoints <service-name> -o jsonpath='{.subsets[*].addresses[*].ip}'
+# Get Service EndpointSlice addresses (requires jq)
+kubectl get endpointslices -l kubernetes.io/service-name=<service-name> -o json | jq -r '.items[].endpoints[].addresses[]'
 ```
 
 ## Pod Scheduling (affinity / tolerations / nodeSelector)

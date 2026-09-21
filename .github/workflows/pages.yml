@@ -36,13 +36,16 @@ jobs:
         with:
           ruby-version: '3.4'
 
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
       - name: Install dependencies
         run: npm ci
 
       - name: Verify source
         run: |
           npm run verify
-          git diff --exit-code -- assets/search-index.js
+          git diff --exit-code -- assets/search-index.js src/lib/generated-docs
 
       - name: Build Svelte app
         run: npm run build

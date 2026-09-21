@@ -1,0 +1,7 @@
+{
+  "items": [
+    { "metadata": { "namespace": "team", "name": "ready-two" }, "status": { "conditions": [{ "type": "Ready", "status": "True" }], "containerStatuses": [{ "name": "app", "ready": true }, { "name": "sidecar", "ready": true }] } },
+    { "metadata": { "namespace": "team", "name": "sidecar-not-ready" }, "status": { "conditions": [{ "type": "Ready", "status": "False" }], "containerStatuses": [{ "name": "app", "ready": true }, { "name": "sidecar", "ready": false }] } },
+    { "metadata": { "namespace": "ops", "name": "waiting" }, "status": { "conditions": [] } }
+  ]
+}

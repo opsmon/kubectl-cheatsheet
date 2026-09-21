@@ -121,8 +121,8 @@ kubectl get pods -A -o jsonpath='{range .items[*]}{range .spec.containers[*]}{.i
 # Получить секрет в декодированном виде
 kubectl get secret <secret-name> -o jsonpath='{.data.password}' | base64 -d
 
-# Получить endpoint адреса сервиса
-kubectl get endpoints <service-name> -o jsonpath='{.subsets[*].addresses[*].ip}'
+# Получить адреса EndpointSlice сервиса (нужен jq)
+kubectl get endpointslices -l kubernetes.io/service-name=<service-name> -o json | jq -r '.items[].endpoints[].addresses[]'
 ```
 
 ## Планирование подов (affinity / tolerations / nodeSelector)

@@ -1,7 +1,7 @@
 <script>
   import { onMount, tick } from "svelte";
   import { categories, docsOrder, fileFor, hashFor, publishedFile, summaryFor, titleFor, ui } from "./lib/catalog.svelte";
-  import { docs, renderMarkdown, slug } from "./lib/docs.svelte";
+  import { hasDoc, headings, loadDoc } from "./lib/docs.js";
   import Workbench from "./lib/Workbench.svelte";
   import Runbooks from "./lib/Runbooks.svelte";
 
@@ -13,8 +13,9 @@
   let showAllLegacy = false;
 
   $: copy = ui[lang];
-  $: currentDoc = route.kind === "docs" ? docs[route.lang]?.[route.slug] : null;
-  $: currentDocHtml = currentDoc ? renderMarkdown(currentDoc, copy) : "";
+  let currentDocHtml = "";
+  let docError = false;
+  $: currentDoc = route.kind === "docs" && hasDoc(route.lang, route.slug);
   $: matchingItems = query
     ? commandIndex.filter((item) => {
         const haystack = [item.category, item.section, item.comment, item.command].join(" ").toLowerCase();
@@ -34,6 +35,16 @@
   onMount(() => {
     shortcut = navigator.platform.toLowerCase().includes("mac") ? "⌘ K" : "Ctrl K";
     enhanceDocs();
+    if (currentDoc) {
+      loadDoc(route.lang, route.slug).then(async (html) => {
+        currentDocHtml = html;
+        await tick();
+        enhanceDocs();
+        const hash = decodeURIComponent(window.location.hash.slice(1));
+        if (hash) document.getElementById(hash)?.scrollIntoView();
+      })
+        .catch(() => { docError = true; });
+    }
 
     return undefined;
   });
@@ -94,11 +105,11 @@
     }
 
     const nextPath = withPrefix(`${nextLang}/${route.slug}.html`);
-    const currentHeadings = (docs[previousLang]?.[route.slug] || "").split("\n").filter((line) => /^#{1,3}\s/.test(line)).map((line) => slug(line.replace(/^#{1,3}\s+/, "")));
-    const nextHeadings = (docs[nextLang]?.[route.slug] || "").split("\n").filter((line) => /^#{1,3}\s/.test(line)).map((line) => slug(line.replace(/^#{1,3}\s+/, "")));
+    const currentHeadings = headings(previousLang, route.slug);
+    const nextHeadings = headings(nextLang, route.slug);
     const currentHash = decodeURIComponent(window.location.hash.slice(1));
     const index = currentHeadings.indexOf(currentHash);
-    const translatedHash = index >= 0 ? nextHeadings[index] : currentHash;
+    const translatedHash = index >= 0 ? (nextHeadings[index] || currentHash) : currentHash;
     window.location.assign(`${nextPath}${window.location.search}${translatedHash ? `#${translatedHash}` : ""}`);
   }
 
@@ -336,7 +347,7 @@
       <a class="back-link" href={homeHref(lang)}>← {copy.home}</a>
       <Workbench {lang} compact prefix="../" />
       <article class="docs-content">
-        {@html currentDocHtml}
+        {#if docError}<p role="alert">{lang === "ru" ? "Не удалось загрузить документ." : "Could not load the document."}</p>{:else if !currentDocHtml}<p role="status">{lang === "ru" ? "Загрузка документа…" : "Loading document…"}</p>{:else}{@html currentDocHtml}{/if}
       </article>
       <footer>
         <span>{copy.practicalReference}</span>

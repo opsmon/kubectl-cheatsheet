@@ -31,6 +31,7 @@ test("palette works on documentation and language switch maps old anchor", async
   await expect(page.locator("#recipe-search")).toBeFocused();
   await page.getByRole("link", { name: "EN", exact: true }).click();
   await expect(page).toHaveURL(/\/eng\/viewing\.html#viewing-logs-logs$/);
+  await expect(page.locator("#viewing-logs-logs")).toBeInViewport();
 });
 
 test("runbook supports insufficient evidence branch", async ({ page }) => {

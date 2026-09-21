@@ -5,15 +5,17 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
-    "build": "vite build",
+    "build": "npm run build:docs && vite build",
+    "build:docs": "node scripts/build_docs.mjs",
     "test:e2e": "playwright test",
     "preview": "vite preview --host 127.0.0.1",
     "check": "svelte-check --tsconfig ./jsconfig.json",
-    "verify": "ruby scripts/build_search_index.rb && ruby scripts/check_repo.rb && ruby scripts/check_examples.rb && ruby scripts/check_diff.rb && node scripts/check_recipes.mjs && node scripts/check_command.mjs && node scripts/check_collections.mjs && node scripts/check_search.mjs && node scripts/check_runbooks.mjs && npm run check"
+    "verify": "ruby scripts/build_search_index.rb && ruby scripts/check_repo.rb && ruby scripts/check_examples.rb && ruby scripts/check_diff.rb && ruby scripts/check_ready.rb && npm run build:docs && node scripts/check_docs.mjs && node scripts/check_recipes.mjs && node scripts/check_command.mjs && node scripts/check_collections.mjs && node scripts/check_search.mjs && node scripts/check_runbooks.mjs && npm run check"
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",
     "@sveltejs/vite-plugin-svelte": "^6.2.1",
+    "markdown-it": "^15.0.2",
     "svelte": "^5.38.0",
     "svelte-check": "^4.3.1",
     "vite": "^7.1.0"

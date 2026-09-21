@@ -1,0 +1,188 @@
+{
+  "ru": {
+    "viewing": [
+      "kubectl---просмотр-и-диагностика",
+      "получение-информации-get",
+      "детальная-информация-describe",
+      "просмотр-логов-logs",
+      "мониторинг-ресурсов-top",
+      "отладка-и-диагностика-debug",
+      "события-events",
+      "диагностика-типичных-проблем-подов-troubleshooting",
+      "быстрые-сценарии-инцидентов-incidents",
+      "ephemeral-containers-временные-контейнеры"
+    ],
+    "management": [
+      "kubectl---управление-ресурсами",
+      "создание-и-применение-ресурсов-applycreate",
+      "редактирование-ресурсов-edit",
+      "патчинг-ресурсов-patch",
+      "быстрое-изменение-ресурсов-set",
+      "удаление-ресурсов-delete",
+      "сравнение-конфигураций-diff",
+      "server-side-apply-ssa",
+      "замена-и-подключение-к-ресурсам-replaceattach",
+      "ожидание-готовности-ресурсов-wait"
+    ],
+    "workloads": [
+      "kubectl---рабочие-нагрузки",
+      "запуск-подов-и-задач-run",
+      "управление-обновлениями-rollout",
+      "масштабирование-scale",
+      "horizontalpodautoscaler-hpa",
+      "verticalpodautoscaler-vpa",
+      "statefulsets",
+      "daemonsets",
+      "jobs-и-cronjobs"
+    ],
+    "network": [
+      "kubectl---сеть",
+      "проброс-портов-port-forward",
+      "создание-сервисов-expose",
+      "ingress",
+      "сетевые-политики-networkpolicy",
+      "прокси-и-доступ-к-api-proxy"
+    ],
+    "storage": [
+      "kubectl---хранилище-и-конфигурация",
+      "configmaps",
+      "управление-secret-secret",
+      "постоянные-тома-pvpvc",
+      "работа-с-kustomize-kustomize"
+    ],
+    "security": [
+      "kubectl---безопасность",
+      "rbac---роли-и-управление-доступом",
+      "проверка-прав-доступа-auth",
+      "запросы-на-подпись-сертификата-csr",
+      "pod-security-standards-pss",
+      "security-context",
+      "poddisruptionbudget-pdb",
+      "resourcequota-и-limitrange"
+    ],
+    "cluster": [
+      "kubectl---кластер-и-инфраструктура",
+      "контексты-и-конфигурация-config",
+      "управление-неймспейсами",
+      "управление-нодами-taintcordondrain",
+      "custom-resource-definitions-crd",
+      "работа-с-api-ресурсами-api-resources",
+      "планирование-ёмкости-кластера-capacity-planning",
+      "версии-и-совместимость-version-skew",
+      "селекторы-полей-и-фильтрация"
+    ],
+    "utilities": [
+      "kubectl---утилиты-и-инструменты",
+      "выполнение-команд-в-контейнере-exec",
+      "копирование-файлов-cp",
+      "работа-с-метками-labelannotate",
+      "продвинутый-вывод-данных-jsonpathcustom-columns",
+      "планирование-подов-affinity--tolerations--nodeselector",
+      "советы-и-полезные-паттерны",
+      "helm",
+      "плагины-kubectl-krew",
+      "алиасы-и-автодополнение-в-shell"
+    ],
+    "contributing": [
+      "как-помочь-проекту",
+      "быстрый-способ",
+      "локальная-проверка",
+      "что-можно-улучшить",
+      "правила-контента",
+      "сообщить-о-проблеме"
+    ]
+  },
+  "eng": {
+    "viewing": [
+      "kubectl---viewing--diagnostics",
+      "getting-information-get",
+      "detailed-information-describe",
+      "viewing-logs-logs",
+      "resource-monitoring-top",
+      "debugging-and-diagnostics-debug",
+      "events-events",
+      "troubleshooting-common-pod-issues-troubleshooting",
+      "fast-incident-playbooks-incidents",
+      "ephemeral-containers"
+    ],
+    "management": [
+      "kubectl---resource-management",
+      "creating-and-applying-resources-applycreate",
+      "editing-resources-edit",
+      "patching-resources-patch",
+      "quick-resource-modification-set",
+      "deleting-resources-delete",
+      "comparing-configurations-diff",
+      "server-side-apply-ssa",
+      "replace-and-attach-to-resources-replaceattach",
+      "waiting-for-conditions-wait"
+    ],
+    "workloads": [
+      "kubectl---workloads",
+      "running-pods-and-jobs-run",
+      "managing-updates-rollout",
+      "scaling-scale",
+      "horizontalpodautoscaler-hpa",
+      "verticalpodautoscaler-vpa",
+      "statefulsets",
+      "daemonsets",
+      "jobs-and-cronjobs"
+    ],
+    "network": [
+      "kubectl---network",
+      "port-forwarding-port-forward",
+      "creating-services-expose",
+      "ingress",
+      "network-policies-networkpolicy",
+      "proxy-and-api-access-proxy"
+    ],
+    "storage": [
+      "kubectl---storage--configuration",
+      "configmaps",
+      "secrets-management-secret",
+      "persistent-volumes-pvpvc",
+      "working-with-kustomize-kustomize"
+    ],
+    "security": [
+      "kubectl---security",
+      "rbac---roles-and-access-control",
+      "checking-permissions-auth",
+      "certificate-signing-requests-csr",
+      "pod-security-standards-pss",
+      "security-context",
+      "poddisruptionbudget-pdb",
+      "resourcequota-and-limitrange"
+    ],
+    "cluster": [
+      "kubectl---cluster--infrastructure",
+      "contexts-and-configuration-config",
+      "namespace-management",
+      "node-management-taintcordondrain",
+      "custom-resource-definitions-crd",
+      "working-with-api-resources-api-resources",
+      "cluster-capacity--resource-planning",
+      "versions-and-compatibility-version-skew",
+      "field-selectors-and-filtering"
+    ],
+    "utilities": [
+      "kubectl---utilities--tools",
+      "execute-commands-in-container-exec",
+      "copying-files-cp",
+      "working-with-labels-labelannotate",
+      "advanced-output-jsonpathcustom-columns",
+      "pod-scheduling-affinity--tolerations--nodeselector",
+      "tips-and-useful-patterns",
+      "helm",
+      "kubectl-plugins-krew",
+      "shell-aliases--autocompletion"
+    ],
+    "contributing": [
+      "contributing",
+      "quick-workflow",
+      "local-checks",
+      "good-contributions",
+      "content-guidelines",
+      "report-a-problem"
+    ]
+  }
+}

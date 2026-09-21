@@ -6,10 +6,10 @@ stages:
 pages:
   stage: deploy
   script:
-    - apt-get update && apt-get install -y --no-install-recommends ruby
+    - apt-get update && apt-get install -y --no-install-recommends ruby jq
     - npm ci
     - npm run verify
-    - git diff --exit-code -- assets/search-index.js
+    - git diff --exit-code -- assets/search-index.js src/lib/generated-docs
     - npm run build
     - npx playwright install --with-deps chromium
     - PREVIEW=1 npm run test:e2e
