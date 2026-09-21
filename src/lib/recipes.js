@@ -5,6 +5,7 @@ const source = "https://kubernetes.io/docs/reference/kubectl/";
 function recipe(id, category, section, ruHash, enHash, ruTitle, enTitle, command, effect = "read", params = [], extras = {}) {
   return {
     id, category, section, status: "editorial", effect,
+    compatibility: "unknown", shell: "posix",
     title: { ru: ruTitle, eng: enTitle }, command, params,
     source: extras.source || source,
     requires: extras.requires || ["kubectl", "cluster access"],
@@ -32,8 +33,8 @@ export const recipes = [
   recipe("resources-get", "management", "viewing", "получение-информации-get", "getting-information-get", "Получить ресурс", "Get a resource", "kubectl get {{resource}}", "read", [{ name: "resource", label: { ru: "Ресурс", eng: "Resource" }, kind: "resource" }]),
   recipe("deployment-diff", "management", "management", "сравнение-конфигураций-diff", "comparing-configurations-diff", "Сравнить конфигурацию", "Diff configuration", "kubectl diff -f {{file}}", "read", [file], { intents: ["проверить перед apply", "diff before apply"] }),
   recipe("file-apply", "management", "management", "создание-и-применение-ресурсов-applycreate", "creating-and-applying-resources-applycreate", "Применить конфигурацию", "Apply configuration", "kubectl apply -f {{file}}", "write", [file]),
-  recipe("file-dry-run", "management", "management", "создание-и-применение-ресурсов-applycreate", "creating-and-applying-resources-applycreate", "Проверка конфигурации на сервере", "Server dry run", "kubectl apply -f {{file}} --dry-run=server", "read", [file]),
-  recipe("resource-explain", "management", "viewing", "получение-информации-get", "getting-information-get", "Описание полей ресурса", "Explain resource fields", "kubectl explain {{resource}}", "read", [{ name: "resource", label: { ru: "Ресурс", eng: "Resource" }, kind: "resource" }]),
+  recipe("file-dry-run", "management", "management", "создание-и-применение-ресурсов-applycreate", "creating-and-applying-resources-applycreate", "Проверка конфигурации на сервере", "Server dry run", "kubectl apply -f {{file}} --dry-run=server", "unknown", [file]),
+  recipe("resource-explain", "management", "cluster", "работа-с-api-ресурсами-api-resources", "working-with-api-resources-api-resources", "Описание полей ресурса", "Explain resource fields", "kubectl explain {{resource}}", "read", [{ name: "resource", label: { ru: "Ресурс", eng: "Resource" }, kind: "resource" }]),
   // Workloads
   recipe("deployment-status", "workloads", "workloads", "управление-обновлениями-rollout", "managing-updates-rollout", "Статус rollout", "Rollout status", "kubectl rollout status deployment/{{deployment}}", "read", [deploy]),
   recipe("deployment-history", "workloads", "workloads", "управление-обновлениями-rollout", "managing-updates-rollout", "История rollout", "Rollout history", "kubectl rollout history deployment/{{deployment}}", "read", [deploy]),
@@ -41,10 +42,10 @@ export const recipes = [
   recipe("deployment-undo", "workloads", "workloads", "управление-обновлениями-rollout", "managing-updates-rollout", "Откатить Deployment", "Undo Deployment rollout", "kubectl rollout undo deployment/{{deployment}}", "write", [deploy]),
   recipe("jobs-list", "workloads", "workloads", "jobs-и-cronjobs", "jobs-and-cronjobs", "Список Job", "List Jobs", "kubectl get jobs", "read"),
   // Network
-  recipe("services-list", "network", "network", "создание-сервисов-expose", "creating-services-expose", "Список Service", "List Services", "kubectl get services", "read"),
-  recipe("service-describe", "network", "network", "создание-сервисов-expose", "creating-services-expose", "Проверить Service", "Describe Service", "kubectl describe service {{service}}", "read", [service]),
-  recipe("service-slices", "network", "network", "создание-сервисов-expose", "creating-services-expose", "EndpointSlice сервиса", "Service EndpointSlices", "kubectl get endpointslices -l kubernetes.io/service-name={{service}}", "read", [service], { intents: ["service не отвечает", "service unavailable", "endpoints"] }),
-  recipe("network-policies", "network", "network", "сетевые-политики-networkpolicy", "network-policies-networkpolicy", "Список NetworkPolicy", "List NetworkPolicies", "kubectl get networkpolicies", "read"),
+  recipe("services-list", "network", "viewing", "получение-информации-get", "getting-information-get", "Список Service", "List Services", "kubectl get services", "read"),
+  recipe("service-describe", "network", "viewing", "детальная-информация-describe", "detailed-information-describe", "Проверить Service", "Describe Service", "kubectl describe svc {{service}}", "read", [service]),
+  recipe("service-slices", "network", "viewing", "быстрые-сценарии-инцидентов-incidents", "fast-incident-playbooks-incidents", "EndpointSlice сервиса", "Service EndpointSlices", "kubectl get endpointslices -l kubernetes.io/service-name={{service}}", "read", [service], { intents: ["service не отвечает", "service unavailable", "endpoints"] }),
+  recipe("network-policies", "network", "network", "сетевые-политики-networkpolicy", "network-policies-networkpolicy", "Список NetworkPolicy", "List NetworkPolicies", "kubectl get networkpolicy", "read"),
   recipe("ingress-list", "network", "network", "ingress", "ingress", "Список Ingress", "List Ingresses", "kubectl get ingress", "read"),
   // Storage
   recipe("configmaps-list", "storage", "storage", "configmaps", "configmaps", "Список ConfigMap", "List ConfigMaps", "kubectl get configmaps", "read"),
@@ -57,7 +58,7 @@ export const recipes = [
   recipe("roles-list", "security", "security", "rbac---роли-и-управление-доступом", "rbac---roles-and-access-control", "Список Role", "List Roles", "kubectl get roles", "read"),
   recipe("clusterroles-list", "security", "security", "rbac---роли-и-управление-доступом", "rbac---roles-and-access-control", "Список ClusterRole", "List ClusterRoles", "kubectl get clusterroles", "read", [], { scope: "cluster" }),
   recipe("csr-list", "security", "security", "запросы-на-подпись-сертификата-csr", "certificate-signing-requests-csr", "Список CSR", "List CSRs", "kubectl get csr", "read", [], { scope: "cluster" }),
-  recipe("quota-list", "security", "security", "resourcequota-и-limitrange", "resourcequota-and-limitrange", "Список ResourceQuota", "List ResourceQuotas", "kubectl get resourcequotas", "read"),
+  recipe("quota-list", "security", "security", "resourcequota-и-limitrange", "resourcequota-and-limitrange", "Список ResourceQuota", "List ResourceQuotas", "kubectl get resourcequota", "read"),
   // Cluster
   recipe("contexts-list", "cluster", "cluster", "контексты-и-конфигурация-config", "contexts-and-configuration-config", "Список контекстов", "List contexts", "kubectl config get-contexts", "read", [], { scope: "local" }),
   recipe("current-context", "cluster", "cluster", "контексты-и-конфигурация-config", "contexts-and-configuration-config", "Текущий контекст", "Current context", "kubectl config current-context", "read", [], { scope: "local" }),

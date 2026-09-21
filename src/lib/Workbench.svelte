@@ -9,15 +9,20 @@
   export let compact = false;
   export let prefix = "";
 
-  const buildable = new Set(["pods-list", "pod-describe", "pod-logs", "events-list", "deployment-status", "deployment-restart"]);
+  const buildable = new Set(["pods-list", "resources-get", "pod-describe", "pod-logs", "pod-previous-logs", "events-list", "deployment-status", "deployment-restart", "service-describe", "service-slices"]);
   let query = "";
   let category = "";
   let effect = "";
+  let tool = "";
+  let scope = "";
+  let sensitiveOnly = false;
   let showAll = false;
   let selectedId = "";
   let values = {};
   let context = "";
   let namespace = "";
+  let container = "";
+  let allNamespaces = false;
   let prod = false;
   let copied = false;
   let copyError = false;
@@ -29,10 +34,10 @@
   let previousFocus;
   let resultCursor = -1;
 
-  $: results = searchRecipes(recipes, query, lang, { category, effect });
+  $: results = searchRecipes(recipes, query, lang, { category, effect, tool, scope, sensitive: sensitiveOnly });
   $: visible = showAll || compact ? results : results.slice(0, 8);
   $: selected = recipeById[selectedId];
-  $: built = selected ? buildCommand(selected, values, { context, namespace }) : null;
+  $: built = selected ? buildCommand(selected, values, { context, namespace, container, allNamespaces }) : null;
   $: canCopy = selected && (buildable.has(selected.id) || selected.params.length === 0) && built?.ready;
   $: sourceHref = selected ? `${prefix}${selected.links[lang]}` : "";
 
@@ -41,6 +46,7 @@
     try { storage = window.localStorage; } catch (_error) { storage = { getItem: () => { throw Error("unavailable"); }, setItem: () => { throw Error("unavailable"); } }; }
     const result = readCollections(storage, recipes.map((item) => item.id));
     saved = result.data;
+    activeCollection = saved.collections[0]?.name || "";
     storageAvailable = result.available;
     const id = new URLSearchParams(window.location.search).get("recipe");
     if (id && recipeById[id]) choose(id);
@@ -78,6 +84,8 @@
     values = {};
     context = "";
     namespace = "";
+    container = "";
+    allNamespaces = false;
     copied = false;
     copyError = false;
     tick().then(() => document.getElementById("recipe-detail")?.scrollIntoView({ block: "nearest" }));
@@ -150,8 +158,11 @@
         <select bind:value={category}><option value="">{lang === "ru" ? "Все" : "All"}</option>{#each ["viewing", "management", "workloads", "network", "storage", "security", "cluster", "utilities"] as item}<option value={item}>{item}</option>{/each}</select>
       </label>
       <label>{lang === "ru" ? "Последствия" : "Effect"}
-        <select bind:value={effect}><option value="">{lang === "ru" ? "Все" : "All"}</option><option value="read">{lang === "ru" ? "Чтение" : "Read"}</option><option value="write">{lang === "ru" ? "Изменение" : "Write"}</option><option value="exec">Exec</option></select>
+        <select bind:value={effect}><option value="">{lang === "ru" ? "Все" : "All"}</option><option value="read">{lang === "ru" ? "Чтение" : "Read"}</option><option value="write">{lang === "ru" ? "Изменение" : "Write"}</option><option value="exec">Exec</option><option value="unknown">{lang === "ru" ? "Неизвестно" : "Unknown"}</option></select>
       </label>
+      <label>{lang === "ru" ? "Инструмент" : "Tool"}<select bind:value={tool}><option value="">{lang === "ru" ? "Все" : "All"}</option><option value="kubectl">kubectl</option><option value="helm">helm</option></select></label>
+      <label>{lang === "ru" ? "Область" : "Scope"}<select bind:value={scope}><option value="">{lang === "ru" ? "Все" : "All"}</option><option value="namespace">Namespace</option><option value="cluster">Cluster</option><option value="local">Local</option></select></label>
+      <label class="wb-filter-check"><input type="checkbox" bind:checked={sensitiveOnly}>{lang === "ru" ? "Чувствительный вывод" : "Sensitive output"}</label>
       <span role="status">{results.length} {lang === "ru" ? "рецептов" : "recipes"}</span>
     </div>
     {#if results.length}
@@ -169,8 +180,10 @@
   {#if selected}
     <article class="wb-detail" id="recipe-detail">
       <div class="wb-detail-head"><div><small>{selected.id} · {selected.status}</small><h3>{selected.title[lang]}</h3></div><button type="button" on:click={closeRecipe} aria-label={lang === "ru" ? "Закрыть карточку" : "Close card"}>×</button></div>
-      <p class:danger={selected.effect !== "read"} class="wb-effect"><strong>{lang === "ru" ? "Последствие:" : "Effect:"}</strong> {selected.effect === "read" ? (lang === "ru" ? "чтение, без изменения ресурсов" : "reads without changing resources") : selected.effect === "write" ? (lang === "ru" ? "изменяет ресурсы кластера" : "changes cluster resources") : (lang === "ru" ? "выполняет команду в контейнере" : "runs a command in a container")}</p>
+      <p class:danger={selected.effect !== "read"} class="wb-effect"><strong>{lang === "ru" ? "Последствие:" : "Effect:"}</strong> {selected.effect === "read" ? (lang === "ru" ? "чтение, без изменения ресурсов" : "reads without changing resources") : selected.effect === "write" ? (lang === "ru" ? "изменяет ресурсы кластера" : "changes cluster resources") : selected.effect === "exec" ? (lang === "ru" ? "выполняет команду в контейнере" : "runs a command in a container") : (lang === "ru" ? "влияние не подтверждено" : "impact is unverified")}</p>
       {#if selected.sensitive}<p class="wb-notice">{lang === "ru" ? "Вывод может содержать чувствительные данные." : "Output may contain sensitive data."}</p>{/if}
+      {#if selected.command.startsWith("kubectl ") && selected.scope !== "local" && !context}<p class="wb-notice">{lang === "ru" ? "Контекст не указан: kubectl использует текущий контекст вашей локальной конфигурации." : "No context specified: kubectl uses the current context from your local configuration."}</p>{/if}
+      {#if selected.command.startsWith("kubectl ") && !selected.scope && !namespace}<p class="wb-notice">{lang === "ru" ? "Namespace не указан: используется namespace текущего контекста." : "No namespace specified: the current context's namespace is used."}</p>{/if}
       {#if prod}<p class="wb-notice">{lang === "ru" ? "Вы отметили production. Проверьте контекст и влияние команды перед запуском." : "You marked production. Check context and impact before running."}</p>{/if}
       <div class="wb-fields">
         {#each selected.params as param}
@@ -180,13 +193,15 @@
           <label>Context <input bind:value={context} autocomplete="off" aria-invalid={Boolean(built?.errors.context)}></label>
           {#if selected.scope !== "cluster"}<label>Namespace <input bind:value={namespace} autocomplete="off" aria-invalid={Boolean(built?.errors.namespace)}></label>{/if}
         {/if}
+        {#if selected.id === "pod-logs" || selected.id === "pod-previous-logs"}<label>{lang === "ru" ? "Контейнер (если их несколько)" : "Container (if multiple)"}<input bind:value={container} autocomplete="off" aria-invalid={Boolean(built?.errors.container)}></label>{/if}
+        {#if selected.id === "pods-list" || selected.id === "events-list"}<label class="wb-check"><input type="checkbox" bind:checked={allNamespaces}>All namespaces</label>{/if}
         <label class="wb-check"><input type="checkbox" bind:checked={prod}>Production</label>
       </div>
       {#if !built?.ready}<p class="wb-notice">{lang === "ru" ? "Заполните параметры допустимыми именами и проверьте контекст. Команда пока не готова." : "Enter valid names and check context. The command is not ready."}</p>{/if}
       <pre class="wb-code"><code>{built?.ready ? built.command : selected.command}</code></pre>
       {#if canCopy}<button class="wb-primary" type="button" on:click={copyCommand}>{copied ? (lang === "ru" ? "Скопировано" : "Copied") : (lang === "ru" ? "Копировать команду" : "Copy command")}</button>{:else if selected.params.length && !buildable.has(selected.id)}<p class="wb-notice">{lang === "ru" ? "Для этого рецепта пока доступен только справочник; конструктор не проверен." : "This recipe currently links to the reference; its builder is not reviewed yet."}</p>{/if}
       {#if copyError}<p role="alert">{lang === "ru" ? "Буфер обмена недоступен. Выделите текст команды вручную." : "Clipboard unavailable. Select the command text manually."}</p>{/if}
-      <p class="wb-meta">{lang === "ru" ? "Нужно:" : "Requires:"} {selected.requires.join(", ")} · {lang === "ru" ? "Статус: редакторская проверка, без проверки на кластере" : "Status: editorial review, not tested on a cluster"}</p>
+      <p class="wb-meta">{lang === "ru" ? "Нужно:" : "Requires:"} {selected.requires.join(", ")} · {lang === "ru" ? "Версия Kubernetes: совместимость не подтверждена" : "Kubernetes version: compatibility unverified"} · {lang === "ru" ? "Статус: редакторская проверка, без проверки на кластере" : "Status: editorial review, not tested on a cluster"}</p>
       <p class="wb-links"><a href={sourceHref}>{lang === "ru" ? "Исходный раздел" : "Source section"}</a> · <a href={selected.source} target="_blank" rel="noreferrer">Kubernetes docs ↗</a></p>
       {#if storageAvailable}<div class="wb-save"><button type="button" on:click={() => toggleFavorite(selected.id)}>{saved.favorites.includes(selected.id) ? (lang === "ru" ? "Убрать из избранного" : "Remove favorite") : (lang === "ru" ? "В избранное" : "Favorite")}</button>{#if activeCollection}<button type="button" on:click={() => toggleInCollection(selected.id)}>{saved.collections.find((item) => item.name === activeCollection)?.ids.includes(selected.id) ? (lang === "ru" ? "Убрать из подборки" : "Remove from collection") : (lang === "ru" ? "В подборку" : "Add to collection")}</button>{/if}</div>{/if}
     </article>
@@ -195,10 +210,14 @@
   {#if !compact}
     <details class="wb-collections"><summary>{lang === "ru" ? "Избранное и подборки" : "Favorites and collections"} ({saved.favorites.length})</summary>
       {#if storageAvailable}
-        <p>{saved.favorites.map((id) => recipeById[id]?.title[lang]).filter(Boolean).join(", ") || (lang === "ru" ? "Пока пусто" : "Empty")}</p>
+        <h3>{lang === "ru" ? "Избранное" : "Favorites"}</h3>
+        {#if saved.favorites.length}<div class="wb-saved-list">{#each saved.favorites as id}<button type="button" on:click={() => choose(id)}>{recipeById[id].title[lang]}</button>{/each}</div>{:else}<p>{lang === "ru" ? "Пока пусто" : "Empty"}</p>{/if}
         <div class="wb-collection-form"><input bind:value={collectionName} maxlength="40" placeholder={lang === "ru" ? "Название подборки" : "Collection name"}><button type="button" on:click={addCollection}>{lang === "ru" ? "Создать" : "Create"}</button></div>
         <label>{lang === "ru" ? "Активная подборка" : "Active collection"}<select bind:value={activeCollection}><option value="">—</option>{#each saved.collections as item}<option value={item.name}>{item.name} ({item.ids.length})</option>{/each}</select></label>
-        {#if activeCollection}<button type="button" on:click={deleteCollection}>{lang === "ru" ? "Удалить подборку" : "Delete collection"}</button>{/if}
+        {#if activeCollection}
+          <div class="wb-saved-list">{#each saved.collections.find((item) => item.name === activeCollection)?.ids || [] as id}<button type="button" on:click={() => choose(id)}>{recipeById[id].title[lang]}</button>{/each}</div>
+          <button type="button" on:click={deleteCollection}>{lang === "ru" ? "Удалить подборку" : "Delete collection"}</button>
+        {/if}
         <a download="kubectl-recipes.json" href={`data:application/json;charset=utf-8,${encodeURIComponent(exportCollections(saved))}`}>{lang === "ru" ? "Экспорт ID" : "Export IDs"}</a>
         <button type="button" on:click={() => persist({ version: 1, favorites: [], collections: [] })}>{lang === "ru" ? "Удалить все сохранённые данные" : "Delete all saved data"}</button>
       {:else}<p role="status">{lang === "ru" ? "Локальное хранилище недоступно; сохранение отключено." : "Local storage is unavailable; saving is disabled."}</p>{/if}

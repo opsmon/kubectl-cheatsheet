@@ -6,10 +6,13 @@ stages:
 pages:
   stage: deploy
   script:
+    - apt-get update && apt-get install -y --no-install-recommends ruby
     - npm ci
     - npm run verify
     - git diff --exit-code -- assets/search-index.js
     - npm run build
+    - npx playwright install --with-deps chromium
+    - PREVIEW=1 npm run test:e2e
   artifacts:
     paths:
       - public

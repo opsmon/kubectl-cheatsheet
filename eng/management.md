@@ -201,6 +201,20 @@ kubectl apply --validate=true --dry-run=client -f deployment.yaml
 kubectl delete -f deployment.yaml --dry-run=client
 ```
 
+For an automated pipeline after a separate configuration review, handle the `diff` exit code explicitly. Code 0 means no differences, 1 means differences, and greater than 1 means an error. The next example runs `apply` only for 0 or 1; applying is a separate decision from inspecting the diff.
+
+```sh
+if kubectl diff -f deployment.yaml; then
+  diff_status=0
+else
+  diff_status=$?
+fi
+case "$diff_status" in
+  0|1) kubectl apply -f deployment.yaml ;;
+  *) printf 'kubectl diff failed (%s)\n' "$diff_status" >&2; exit "$diff_status" ;;
+esac
+```
+
 ## Server-side apply (SSA)
 
 {% include official-docs.html url="https://kubernetes.io/docs/reference/using-api/server-side-apply/" title="Server-Side Apply" %}

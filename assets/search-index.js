@@ -129,6 +129,15 @@ window.commandIndex = [
     "lang": "eng",
     "category": "management",
     "file": "eng/management.md",
+    "hash": "comparing-configurations-diff",
+    "section": "Comparing configurations (diff)",
+    "comment": null,
+    "command": "if kubectl diff -f deployment.yaml; then\n  diff_status=0\nelse\n  diff_status=$?\nfi\ncase \"$diff_status\" in\n  0|1) kubectl apply -f deployment.yaml ;;\n  *) printf 'kubectl diff failed (%s)\\n' \"$diff_status\" >&2; exit \"$diff_status\" ;;\nesac"
+  },
+  {
+    "lang": "eng",
+    "category": "management",
+    "file": "eng/management.md",
     "hash": "server-side-apply-ssa",
     "section": "Server-side apply (SSA)",
     "comment": null,
@@ -655,6 +664,15 @@ window.commandIndex = [
     "section": "Сравнение конфигураций (diff)",
     "comment": null,
     "command": "# Сравнить локальный файл с текущим состоянием в кластере\nkubectl diff -f deployment.yaml\n\n# Сравнить все файлы из директории\nkubectl diff -f ./configs/\n\n# Сравнить конфигурацию из URL\nkubectl diff -f https://example.com/config.yaml\n\n# Сравнить с использованием kustomize\nkubectl diff -k ./overlays/production/\n\n# Сначала просмотреть diff (код 0: различий нет, 1: есть различия, >1: ошибка)\nkubectl diff -f deployment.yaml\n\n# После проверки изменений отдельно применить конфигурацию\nkubectl apply -f deployment.yaml\n\n# Diff с указанием server-side\nkubectl diff -f deployment.yaml --server-side\n\n# Проверить конфигурацию без применения (dry-run + diff)\nkubectl apply -f deployment.yaml --dry-run=server\nkubectl apply -f deployment.yaml --dry-run=client\n\n# Валидация файла без применения\nkubectl apply --validate=true --dry-run=client -f deployment.yaml\n\n# Проверить что изменится при удалении\nkubectl delete -f deployment.yaml --dry-run=client"
+  },
+  {
+    "lang": "ru",
+    "category": "management",
+    "file": "ru/management.md",
+    "hash": "сравнение-конфигураций-diff",
+    "section": "Сравнение конфигураций (diff)",
+    "comment": null,
+    "command": "if kubectl diff -f deployment.yaml; then\n  diff_status=0\nelse\n  diff_status=$?\nfi\ncase \"$diff_status\" in\n  0|1) kubectl apply -f deployment.yaml ;;\n  *) printf 'kubectl diff failed (%s)\\n' \"$diff_status\" >&2; exit \"$diff_status\" ;;\nesac"
   },
   {
     "lang": "ru",

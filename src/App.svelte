@@ -65,7 +65,8 @@
       return requested;
     }
 
-    return localStorage.getItem("kubectl-cheatsheet-language") === "ru" ? "ru" : "eng";
+    try { return localStorage.getItem("kubectl-cheatsheet-language") === "ru" ? "ru" : "eng"; }
+    catch (_error) { return "eng"; }
   }
 
   function withPrefix(file) {
@@ -83,7 +84,7 @@
   function setLanguage(nextLang) {
     const previousLang = lang;
     lang = nextLang;
-    localStorage.setItem("kubectl-cheatsheet-language", nextLang);
+    try { localStorage.setItem("kubectl-cheatsheet-language", nextLang); } catch (_error) { /* preference stays in page memory */ }
 
     if (route.kind === "home") {
       const url = new URL(window.location.href);

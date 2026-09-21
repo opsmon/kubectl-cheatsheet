@@ -38,7 +38,9 @@ export function searchRecipes(recipes, query, lang = "eng", filters = {}) {
     (!filters.category || recipe.category === filters.category) &&
     (!filters.effect || recipe.effect === filters.effect) &&
     (!filters.sensitive || recipe.sensitive) &&
-    (!filters.tool || recipe.command.startsWith(`${filters.tool} `))
+    (!filters.tool || recipe.command.startsWith(`${filters.tool} `)) &&
+    (!filters.scope || (recipe.scope || "namespace") === filters.scope) &&
+    (!filters.requires || recipe.requires.includes(filters.requires))
   ).map((recipe) => {
     const title = tokens(recipe.title[lang]);
     const intents = tokens(recipe.intents.join(" "));
