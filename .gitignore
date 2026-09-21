@@ -3,3 +3,5 @@ public/
 .svelte-kit/
 .vite/
 npm-debug.log*
+test-results/
+playwright-report/

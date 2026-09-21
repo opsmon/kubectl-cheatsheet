@@ -121,8 +121,8 @@ kubectl get pods -A -o jsonpath='{range .items[*]}{range .spec.containers[*]}{.i
 # Get decoded secret value
 kubectl get secret <secret-name> -o jsonpath='{.data.password}' | base64 -d
 
-# Get service endpoint addresses
-kubectl get endpoints <service-name> -o jsonpath='{.subsets[*].addresses[*].ip}'
+# Get Service EndpointSlice addresses (requires jq)
+kubectl get endpointslices -l kubernetes.io/service-name=<service-name> -o json | jq -r '.items[].endpoints[].addresses[]'
 ```
 
 ## Pod Scheduling (affinity / tolerations / nodeSelector)
@@ -245,8 +245,8 @@ kubectl get pod <pod-name> -o jsonpath='{.metadata.resourceVersion}'
 # Get all container images running in cluster
 kubectl get pods -A -o jsonpath='{range .items[*]}{range .spec.containers[*]}{.image}{"\n"}{end}{end}' | sort -u
 
-# Find pods that are NOT ready
-kubectl get pods -A --no-headers | awk '$3 != $4 || $5 != "Running"'
+# Find pods without Ready=True (including multi-container pods; requires jq)
+kubectl get pods -A -o json | jq -r '.items[] | select(any(.status.conditions[]?; .type == "Ready" and .status == "True") | not) | [.metadata.namespace, .metadata.name] | @tsv'
 
 # Delete all failed pods across all namespaces
 kubectl delete pods --field-selector=status.phase=Failed -A

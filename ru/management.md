@@ -181,8 +181,11 @@ kubectl diff -f https://example.com/config.yaml
 # Сравнить с использованием kustomize
 kubectl diff -k ./overlays/production/
 
-# Показать diff перед apply (полезно в CI/CD)
-kubectl diff -f deployment.yaml && kubectl apply -f deployment.yaml
+# Сначала просмотреть diff (код 0: различий нет, 1: есть различия, >1: ошибка)
+kubectl diff -f deployment.yaml
+
+# После проверки изменений отдельно применить конфигурацию
+kubectl apply -f deployment.yaml
 
 # Diff с указанием server-side
 kubectl diff -f deployment.yaml --server-side
@@ -196,6 +199,20 @@ kubectl apply --validate=true --dry-run=client -f deployment.yaml
 
 # Проверить что изменится при удалении
 kubectl delete -f deployment.yaml --dry-run=client
+```
+
+Для автоматизированного pipeline после отдельного review конфигурации обрабатывайте код `diff` явно. Код 0 означает отсутствие различий, 1 — различия, больше 1 — ошибку. Следующий пример запускает `apply` только при 0 или 1; это отдельное решение о применении, а не часть просмотра diff.
+
+```sh
+if kubectl diff -f deployment.yaml; then
+  diff_status=0
+else
+  diff_status=$?
+fi
+case "$diff_status" in
+  0|1) kubectl apply -f deployment.yaml ;;
+  *) printf 'kubectl diff failed (%s)\n' "$diff_status" >&2; exit "$diff_status" ;;
+esac
 ```
 
 ## Server-side apply (SSA)

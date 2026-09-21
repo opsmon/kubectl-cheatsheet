@@ -153,7 +153,7 @@ kubectl debug <pod-name> -it --image=busybox
 # Create pod copy for debugging
 kubectl debug <pod-name> -it --image=busybox --copy-to=debug-pod
 
-# Debug node (creates privileged pod on node)
+# Debug node (creates a debug pod; privileges depend on the profile)
 kubectl debug node/<node-name> -it --image=ubuntu
 
 # View events in namespace
@@ -302,9 +302,9 @@ kubectl describe pod <pod-name> -n <namespace> | grep -A 40 Events
 kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints,CPU:.status.allocatable.cpu,MEM:.status.allocatable.memory
 kubectl get pvc -n <namespace>
 
-# Service is not responding: check endpoints and selector
+# Service is not responding: check EndpointSlices and selector
 kubectl get svc <service-name> -n <namespace> -o wide
-kubectl get endpoints <service-name> -n <namespace> -o yaml
+kubectl get endpointslices -n <namespace> -l kubernetes.io/service-name=<service-name> -o yaml
 kubectl describe svc <service-name> -n <namespace>
 
 # Cluster DNS: quick pod to test resolution
@@ -344,7 +344,7 @@ kubectl debug <pod-name> -it --copy-to=<pod-name>-debug --container=<container-n
 # Share the process namespace with the target container (see its processes)
 kubectl debug -it <pod-name> --image=busybox --target=<container-name> --share-processes
 
-# Debug a node by spawning a privileged pod on it
+# Debug a node by creating a debug pod (privileges depend on the profile)
 kubectl debug node/<node-name> -it --image=busybox
 
 # List all pods that have ephemeral containers attached

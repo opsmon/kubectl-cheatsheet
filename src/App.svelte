@@ -1,17 +1,22 @@
 <script>
   import { onMount, tick } from "svelte";
   import { categories, docsOrder, fileFor, hashFor, publishedFile, summaryFor, titleFor, ui } from "./lib/catalog.svelte";
-  import { docs, renderMarkdown } from "./lib/docs.svelte";
+  import { hasDoc, headings, loadDoc } from "./lib/docs.js";
+  import Workbench from "./lib/Workbench.svelte";
+  import Runbooks from "./lib/Runbooks.svelte";
+  import { recipes } from "./lib/recipes.js";
 
   const commandIndex = Array.isArray(window.commandIndex) ? window.commandIndex : [];
   const route = parseRoute();
   let lang = initialLanguage();
   let query = "";
   let shortcut = "Ctrl K";
+  let showAllLegacy = false;
 
   $: copy = ui[lang];
-  $: currentDoc = route.kind === "docs" ? docs[route.lang]?.[route.slug] : null;
-  $: currentDocHtml = currentDoc ? renderMarkdown(currentDoc, copy) : "";
+  let currentDocHtml = "";
+  let docError = false;
+  $: currentDoc = route.kind === "docs" && hasDoc(route.lang, route.slug);
   $: matchingItems = query
     ? commandIndex.filter((item) => {
         const haystack = [item.category, item.section, item.comment, item.command].join(" ").toLowerCase();
@@ -19,7 +24,6 @@
       })
     : [];
   $: visibleCategories = categories.filter((category) => matches(category));
-  $: commandCount = commandIndex.filter((item) => item.lang === lang).length || 700;
 
   $: if (typeof document !== "undefined") {
     document.documentElement.lang = lang === "ru" ? "ru" : "en";
@@ -31,23 +35,18 @@
   onMount(() => {
     shortcut = navigator.platform.toLowerCase().includes("mac") ? "⌘ K" : "Ctrl K";
     enhanceDocs();
+    if (currentDoc) {
+      loadDoc(route.lang, route.slug).then(async (html) => {
+        currentDocHtml = html;
+        await tick();
+        enhanceDocs();
+        const hash = decodeURIComponent(window.location.hash.slice(1));
+        if (hash) document.getElementById(hash)?.scrollIntoView();
+      })
+        .catch(() => { docError = true; });
+    }
 
-    const onKeydown = (event) => {
-      const search = document.querySelector("#searchInput");
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
-        event.preventDefault();
-        search?.focus();
-        search?.select();
-      }
-
-      if (event.key === "Escape" && document.activeElement === search) {
-        query = "";
-        search.blur();
-      }
-    };
-
-    document.addEventListener("keydown", onKeydown);
-    return () => document.removeEventListener("keydown", onKeydown);
+    return undefined;
   });
 
   $: if (currentDocHtml) {
@@ -77,7 +76,8 @@
       return requested;
     }
 
-    return localStorage.getItem("kubectl-cheatsheet-language") === "ru" ? "ru" : "eng";
+    try { return localStorage.getItem("kubectl-cheatsheet-language") === "ru" ? "ru" : "eng"; }
+    catch (_error) { return "eng"; }
   }
 
   function withPrefix(file) {
@@ -93,8 +93,9 @@
   }
 
   function setLanguage(nextLang) {
+    const previousLang = lang;
     lang = nextLang;
-    localStorage.setItem("kubectl-cheatsheet-language", nextLang);
+    try { localStorage.setItem("kubectl-cheatsheet-language", nextLang); } catch (_error) { /* preference stays in page memory */ }
 
     if (route.kind === "home") {
       const url = new URL(window.location.href);
@@ -104,7 +105,12 @@
     }
 
     const nextPath = withPrefix(`${nextLang}/${route.slug}.html`);
-    window.location.assign(`${nextPath}${window.location.hash}`);
+    const currentHeadings = headings(previousLang, route.slug);
+    const nextHeadings = headings(nextLang, route.slug);
+    const currentHash = decodeURIComponent(window.location.hash.slice(1));
+    const index = currentHeadings.indexOf(currentHash);
+    const translatedHash = index >= 0 ? (nextHeadings[index] || currentHash) : currentHash;
+    window.location.assign(`${nextPath}${window.location.search}${translatedHash ? `#${translatedHash}` : ""}`);
   }
 
   function matches(category) {
@@ -136,23 +142,6 @@
       .filter((item) => [item.section, item.comment, item.command].join(" ").toLowerCase().includes(normalizedQuery));
   }
 
-  async function copyCommand(command, event) {
-    const button = event.currentTarget;
-    try {
-      await navigator.clipboard.writeText(command);
-      button.classList.add("is-copied");
-      button.setAttribute("aria-label", copy.copied);
-      window.setTimeout(() => {
-        button.classList.remove("is-copied");
-        button.setAttribute("aria-label", copy.copyCommand);
-      }, 1400);
-    } catch (_error) {
-      query = command;
-      await tick();
-      document.querySelector("#searchInput")?.select();
-    }
-  }
-
   function docTitle() {
     const category = categories.find((item) => item.id === route.slug);
     if (category) {
@@ -166,41 +155,6 @@
   }
 
   function enhanceDocs() {
-    document.querySelectorAll(".docs-content .highlighter-rouge").forEach((block) => {
-      if (block.querySelector(".copy-code")) {
-        return;
-      }
-
-      const code = block.querySelector("pre code");
-      if (!code) {
-        return;
-      }
-
-      const button = document.createElement("button");
-      button.className = "copy-code";
-      button.type = "button";
-      button.textContent = lang === "ru" ? "Копировать" : "Copy";
-      button.setAttribute("aria-label", button.textContent);
-      button.addEventListener("click", async () => {
-        const originalLabel = button.textContent;
-        try {
-          await navigator.clipboard.writeText(code.textContent);
-          button.textContent = lang === "ru" ? "Готово" : "Copied";
-          window.setTimeout(() => {
-            button.textContent = originalLabel;
-          }, 1400);
-        } catch (_error) {
-          button.textContent = lang === "ru" ? "Выделите код" : "Select code";
-          const range = document.createRange();
-          range.selectNodeContents(code);
-          const selection = window.getSelection();
-          selection.removeAllRanges();
-          selection.addRange(range);
-        }
-      });
-      block.append(button);
-    });
-
     const currentPage = window.location.pathname.replace(/\/$/, "");
     document.querySelectorAll(".docs-sidebar a").forEach((link) => {
       const linkPage = new URL(link.href).pathname.replace(/\/$/, "");
@@ -260,9 +214,12 @@
       </label>
 
       <div class="hero-meta">
-        <span class="command-count"><strong>{commandCount}+</strong> <span>{copy.commandCountLabel}</span></span>
+        <span class="command-count"><strong>{recipes.length}</strong> <span>{copy.commandCountLabel}</span></span>
       </div>
     </section>
+
+    <Workbench {lang} />
+    <Runbooks {lang} />
 
     {#if matchingItems.length}
       <section class="results" aria-live="polite">
@@ -271,22 +228,17 @@
           <span>{matchingItems.length}{copy.resultsSuffix}</span>
         </div>
         <div class="result-list">
-          {#each matchingItems.slice(0, 12) as item}
+          {#each (showAllLegacy ? matchingItems : matchingItems.slice(0, 12)) as item}
             <div class="result">
               <a class="result-main" href={docHref(item.file, item.hash)}>
                 <span>{copy.categoryLabels[item.category] || item.category} / {item.section}</span>
                 <strong>{item.comment || item.section}</strong>
-                <code>{item.command}</code>
+                <span>{lang === "ru" ? "Открыть пример в разделе" : "Open example in section"}</span>
               </a>
-              <button class="copy-command" type="button" aria-label={copy.copyCommand} on:click={(event) => copyCommand(item.command, event)}>
-                <svg viewBox="0 0 18 18" aria-hidden="true">
-                  <rect x="6" y="5" width="8" height="9" rx="1.5"></rect>
-                  <path d="M4 11V4.5C4 3.7 4.7 3 5.5 3H11"></path>
-                </svg>
-              </button>
             </div>
           {/each}
         </div>
+        {#if matchingItems.length > 12 && !showAllLegacy}<button class="wb-more" type="button" on:click={() => showAllLegacy = true}>{lang === "ru" ? "Показать все результаты документации" : "Show all documentation results"}</button>{/if}
       </section>
     {/if}
 
@@ -393,8 +345,9 @@
 
     <main class="docs-main">
       <a class="back-link" href={homeHref(lang)}>← {copy.home}</a>
+      <Workbench {lang} compact prefix="../" />
       <article class="docs-content">
-        {@html currentDocHtml}
+        {#if docError}<p role="alert">{lang === "ru" ? "Не удалось загрузить документ." : "Could not load the document."}</p>{:else if !currentDocHtml}<p role="status">{lang === "ru" ? "Загрузка документа…" : "Loading document…"}</p>{:else}{@html currentDocHtml}{/if}
       </article>
       <footer>
         <span>{copy.practicalReference}</span>

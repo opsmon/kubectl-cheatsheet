@@ -153,7 +153,7 @@ kubectl debug <pod-name> -it --image=busybox
 # Создать копию пода для отладки
 kubectl debug <pod-name> -it --image=busybox --copy-to=debug-pod
 
-# Отладка ноды (создаёт привилегированный под на ноде)
+# Отладка ноды (создаёт отладочный под; права зависят от профиля)
 kubectl debug node/<node-name> -it --image=ubuntu
 
 # Посмотреть события в namespace
@@ -302,9 +302,9 @@ kubectl describe pod <pod-name> -n <namespace> | grep -A 40 Events
 kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints,CPU:.status.allocatable.cpu,MEM:.status.allocatable.memory
 kubectl get pvc -n <namespace>
 
-# Service не отвечает: проверить endpoints и selector
+# Service не отвечает: проверить EndpointSlice и selector
 kubectl get svc <service-name> -n <namespace> -o wide
-kubectl get endpoints <service-name> -n <namespace> -o yaml
+kubectl get endpointslices -n <namespace> -l kubernetes.io/service-name=<service-name> -o yaml
 kubectl describe svc <service-name> -n <namespace>
 
 # DNS внутри кластера: быстрый pod для проверки резолва
@@ -344,7 +344,7 @@ kubectl debug <pod-name> -it --copy-to=<pod-name>-debug --container=<container-n
 # Разделить пространство процессов с целевым контейнером (видеть его процессы)
 kubectl debug -it <pod-name> --image=busybox --target=<container-name> --share-processes
 
-# Отладка узла — запустить привилегированный под на ноде
+# Отладка узла — создать отладочный под (права зависят от профиля)
 kubectl debug node/<node-name> -it --image=busybox
 
 # Найти все поды с прикреплёнными временными контейнерами

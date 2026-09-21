@@ -31,16 +31,29 @@ jobs:
           node-version: 22
           cache: npm
 
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
       - name: Install dependencies
         run: npm ci
 
       - name: Verify source
         run: |
           npm run verify
-          git diff --exit-code -- assets/search-index.js
+          git diff --exit-code -- assets/search-index.js src/lib/generated-docs
 
       - name: Build Svelte app
         run: npm run build
+
+      - name: Browser tests
+        run: |
+          npx playwright install --with-deps chromium
+          PREVIEW=1 npm run test:e2e
 
       - name: Configure Pages
         uses: actions/configure-pages@v6

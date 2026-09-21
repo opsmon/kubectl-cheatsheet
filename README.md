@@ -35,6 +35,26 @@ npm run verify
 
 This rebuilds the search index, checks anchors, and runs `svelte-check`.
 
+It also validates the 40 bilingual recipes, command rendering, collections,
+search ranking and read-only playbooks. Ruby, jq, Node.js and npm are required.
+`npm run verify` regenerates the per-page documentation modules; commit them
+with any matching Markdown changes.
+
+For browser tests, install Playwright Chromium and run:
+
+```bash
+npx playwright install chromium
+npm run test:e2e
+```
+
+After `npm run build`, run `PREVIEW=1 npm run test:e2e` to exercise the
+production artifact, including nested RU/EN pages.
+
+The app prepares commands locally and never connects to a cluster. Recipe
+parameters are kept in page memory; favorites and collections store only public
+recipe IDs in localStorage. Editorial review does not mean a command was tested
+against your cluster.
+
 ## Build
 
 ```bash
