@@ -4,6 +4,7 @@
   import { hasDoc, headings, loadDoc } from "./lib/docs.js";
   import Workbench from "./lib/Workbench.svelte";
   import Runbooks from "./lib/Runbooks.svelte";
+  import { recipes } from "./lib/recipes.js";
 
   const commandIndex = Array.isArray(window.commandIndex) ? window.commandIndex : [];
   const route = parseRoute();
@@ -23,7 +24,6 @@
       })
     : [];
   $: visibleCategories = categories.filter((category) => matches(category));
-  $: commandCount = commandIndex.filter((item) => item.lang === lang).length;
 
   $: if (typeof document !== "undefined") {
     document.documentElement.lang = lang === "ru" ? "ru" : "en";
@@ -214,7 +214,7 @@
       </label>
 
       <div class="hero-meta">
-        <span class="command-count"><strong>{commandCount}</strong> <span>{copy.commandCountLabel}</span></span>
+        <span class="command-count"><strong>{recipes.length}</strong> <span>{copy.commandCountLabel}</span></span>
       </div>
     </section>
 

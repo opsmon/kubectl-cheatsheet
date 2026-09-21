@@ -40,7 +40,11 @@ export function searchRecipes(recipes, query, lang = "eng", filters = {}) {
     (!filters.sensitive || recipe.sensitive) &&
     (!filters.tool || recipe.command.startsWith(`${filters.tool} `)) &&
     (!filters.scope || (recipe.scope || "namespace") === filters.scope) &&
-    (!filters.requires || recipe.requires.includes(filters.requires))
+    (!filters.requires || recipe.requires.includes(filters.requires)) &&
+    (!filters.resource || recipe.resource === filters.resource) &&
+    (!filters.task || recipe.task === filters.task) &&
+    (!filters.compatibility || recipe.compatibility === filters.compatibility) &&
+    (!filters.shell || recipe.shell === filters.shell)
   ).map((recipe) => {
     const title = tokens(recipe.title[lang]);
     const intents = tokens(recipe.intents.join(" "));

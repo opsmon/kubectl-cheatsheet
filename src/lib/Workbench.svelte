@@ -15,6 +15,11 @@
   let effect = "";
   let tool = "";
   let scope = "";
+  let resource = "";
+  let task = "";
+  let requires = "";
+  let compatibility = "";
+  let shell = "";
   let sensitiveOnly = false;
   let showAll = false;
   let selectedId = "";
@@ -27,6 +32,7 @@
   let copied = false;
   let copyError = false;
   let storageAvailable = true;
+  let storageRecovered = false;
   let saved = { version: 1, favorites: [], collections: [] };
   let collectionName = "";
   let activeCollection = "";
@@ -34,7 +40,7 @@
   let previousFocus;
   let resultCursor = -1;
 
-  $: results = searchRecipes(recipes, query, lang, { category, effect, tool, scope, sensitive: sensitiveOnly });
+  $: results = searchRecipes(recipes, query, lang, { category, effect, tool, scope, resource, task, requires, compatibility, shell, sensitive: sensitiveOnly });
   $: visible = showAll || compact ? results : results.slice(0, 8);
   $: selected = recipeById[selectedId];
   $: built = selected ? buildCommand(selected, values, { context, namespace, container, allNamespaces }) : null;
@@ -48,6 +54,7 @@
     saved = result.data;
     activeCollection = saved.collections[0]?.name || "";
     storageAvailable = result.available;
+    storageRecovered = result.recovered || false;
     const id = new URLSearchParams(window.location.search).get("recipe");
     if (id && recipeById[id]) choose(id);
 
@@ -102,6 +109,7 @@
     saved = next;
     try { storageAvailable = writeCollections(window.localStorage, next); }
     catch (_error) { storageAvailable = false; }
+    if (storageAvailable) storageRecovered = false;
   }
 
   function toggleFavorite(id) {
@@ -165,6 +173,16 @@
       <label class="wb-filter-check"><input type="checkbox" bind:checked={sensitiveOnly}>{lang === "ru" ? "Чувствительный вывод" : "Sensitive output"}</label>
       <span role="status">{results.length} {lang === "ru" ? "рецептов" : "recipes"}</span>
     </div>
+    <details class="wb-advanced"><summary>{lang === "ru" ? "Дополнительные фильтры" : "More filters"}</summary>
+      <div class="wb-filters">
+        <label>{lang === "ru" ? "Ресурс" : "Resource"}<select bind:value={resource}><option value="">{lang === "ru" ? "Все" : "All"}</option><option value="pod">Pod</option><option value="deployment">Deployment</option><option value="service">Service</option><option value="node">Node</option><option value="secret">Secret</option><option value="volume">Volume</option><option value="rbac">RBAC</option><option value="other">{lang === "ru" ? "Другие" : "Other"}</option></select></label>
+        <label>{lang === "ru" ? "Задача" : "Task"}<select bind:value={task}><option value="">{lang === "ru" ? "Все" : "All"}</option><option value="inspect">{lang === "ru" ? "Просмотр" : "Inspect"}</option><option value="diagnose">{lang === "ru" ? "Диагностика" : "Diagnose"}</option><option value="change">{lang === "ru" ? "Изменение" : "Change"}</option><option value="execute">Exec</option></select></label>
+        <label>{lang === "ru" ? "Зависимость" : "Requires"}<select bind:value={requires}><option value="">{lang === "ru" ? "Все" : "All"}</option><option value="kubectl">kubectl</option><option value="helm">helm</option><option value="krew">krew</option></select></label>
+        <label>{lang === "ru" ? "Версия" : "Version"}<select bind:value={compatibility}><option value="">{lang === "ru" ? "Все" : "All"}</option><option value="unknown">{lang === "ru" ? "Не подтверждена" : "Unverified"}</option></select></label>
+        <label>Shell<select bind:value={shell}><option value="">{lang === "ru" ? "Все" : "All"}</option><option value="posix">POSIX</option></select></label>
+      </div>
+      <p class="wb-meta">{lang === "ru" ? "Для текущих рецептов версии Kubernetes не проверены; доступен только POSIX renderer." : "Kubernetes versions are unverified for the current recipes; only POSIX rendering is available."}</p>
+    </details>
     {#if results.length}
       <div class="wb-results" role="listbox" aria-label={lang === "ru" ? "Результаты" : "Results"}>
         {#each visible as item, index (item.id)}
@@ -210,6 +228,7 @@
   {#if !compact}
     <details class="wb-collections"><summary>{lang === "ru" ? "Избранное и подборки" : "Favorites and collections"} ({saved.favorites.length})</summary>
       {#if storageAvailable}
+        {#if storageRecovered}<p role="alert">{lang === "ru" ? "Сохранённые данные повреждены. Подборки начаты заново; сохраните новую запись, чтобы заменить повреждённую." : "Saved data was damaged. Collections were reset; save an item to replace the damaged record."}</p>{/if}
         <h3>{lang === "ru" ? "Избранное" : "Favorites"}</h3>
         {#if saved.favorites.length}<div class="wb-saved-list">{#each saved.favorites as id}<button type="button" on:click={() => choose(id)}>{recipeById[id].title[lang]}</button>{/each}</div>{:else}<p>{lang === "ru" ? "Пока пусто" : "Empty"}</p>{/if}
         <div class="wb-collection-form"><input bind:value={collectionName} maxlength="40" placeholder={lang === "ru" ? "Название подборки" : "Collection name"}><button type="button" on:click={addCollection}>{lang === "ru" ? "Создать" : "Create"}</button></div>

@@ -15,6 +15,7 @@ for (const recipe of recipes) {
   assert.ok(recipe.status && recipe.source && recipe.requires.length, recipe.id);
   assert.equal(recipe.compatibility, "unknown", `${recipe.id}: version compatibility must remain explicit`);
   assert.equal(recipe.shell, "posix", `${recipe.id}: only POSIX rendering is available`);
+  assert.ok(recipe.resource && recipe.task, `${recipe.id}: missing search facets`);
   assert.ok(recipe.title.ru && recipe.title.eng && recipe.command, recipe.id);
   const placeholders = [...recipe.command.matchAll(/{{([a-z]+)}}/g)].map((match) => match[1]);
   assert.deepEqual([...new Set(placeholders)].sort(), recipe.params.map((param) => param.name).sort(), recipe.id);

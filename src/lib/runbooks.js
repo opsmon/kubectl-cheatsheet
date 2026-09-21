@@ -10,7 +10,7 @@ export const runbooks = [
       { id: "unknown", label: { ru: "Данных недостаточно", eng: "Not enough evidence" }, next: { ru: "Соберите события, текущие и предыдущие логи всех нужных контейнеров; эскалируйте с временными метками.", eng: "Collect events and current and previous logs for relevant containers; escalate with timestamps." } }
     ],
     expected: { ru: "События покажут причины рестартов, а --previous даст вывод прошлого экземпляра контейнера, если он сохранён.", eng: "Events may show restart reasons; --previous returns the earlier container instance if retained." },
-    limits: { ru: "Логи могут содержать секреты; при нескольких контейнерах укажите контейнер вручную. Старые логи могут быть недоступны.", eng: "Logs may contain secrets; select a container when there are several. Earlier logs may be unavailable." }
+    limits: { ru: "Логи могут содержать секреты; при нескольких контейнерах укажите контейнер в карточке команды. Старые логи могут быть недоступны.", eng: "Logs may contain secrets; select the container in the recipe when there are several. Earlier logs may be unavailable." }
   },
   {
     id: "pending", title: { ru: "Pod остаётся Pending", eng: "Pod stays Pending" },

@@ -2,10 +2,28 @@
 // not executed against a Kubernetes cluster or guaranteed for every version.
 const source = "https://kubernetes.io/docs/reference/kubectl/";
 
+function resourceFor(id) {
+  if (/^pods?-/.test(id)) return "pod";
+  if (/^deployment-/.test(id)) return "deployment";
+  if (/^services?-/.test(id)) return "service";
+  if (/^nodes?-/.test(id)) return "node";
+  if (/^secrets?-/.test(id)) return "secret";
+  if (/^(pvcs?|pvs?)-/.test(id)) return "volume";
+  if (/^(roles|clusterroles|can-i)-/.test(id)) return "rbac";
+  return "other";
+}
+
+function taskFor(id, effect) {
+  if (effect === "write") return "change";
+  if (effect === "exec") return "execute";
+  if (/^(pod-describe|pod-previous-logs|service-describe|service-slices|node-describe)$/.test(id)) return "diagnose";
+  return "inspect";
+}
+
 function recipe(id, category, section, ruHash, enHash, ruTitle, enTitle, command, effect = "read", params = [], extras = {}) {
   return {
     id, category, section, status: "editorial", effect,
-    compatibility: "unknown", shell: "posix",
+    compatibility: "unknown", shell: "posix", resource: resourceFor(id), task: taskFor(id, effect),
     title: { ru: ruTitle, eng: enTitle }, command, params,
     source: extras.source || source,
     requires: extras.requires || ["kubectl", "cluster access"],

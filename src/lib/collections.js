@@ -13,11 +13,16 @@ export function normalizeCollections(value, validIds) {
 }
 
 export function readCollections(storage, validIds) {
+  let raw;
   try {
-    const raw = storage.getItem(key);
-    return { data: normalizeCollections(raw ? JSON.parse(raw) : null, validIds), available: true };
+    raw = storage.getItem(key);
   } catch (_error) {
     return { data: normalizeCollections(null, validIds), available: false };
+  }
+  try {
+    return { data: normalizeCollections(raw ? JSON.parse(raw) : null, validIds), available: true, recovered: false };
+  } catch (_error) {
+    return { data: normalizeCollections(null, validIds), available: true, recovered: true };
   }
 }
 

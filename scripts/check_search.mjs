@@ -30,4 +30,5 @@ assert.ok(hits >= 27, `${hits}/30 editorial searches hit Top 5`);
 assert.equal(searchRecipes(recipes, "pod logs", "eng")[0].id, "pod-logs", "exact match precedes typo match");
 assert.ok(searchRecipes(recipes, "", "eng", { category: "storage", effect: "read" }).every((item) => item.category === "storage" && item.effect === "read"));
 assert.ok(searchRecipes(recipes, "", "eng", { tool: "helm" }).every((item) => item.command.startsWith("helm ")));
+assert.ok(searchRecipes(recipes, "", "eng", { resource: "pod", task: "diagnose", requires: "kubectl", compatibility: "unknown", shell: "posix" }).every((item) => item.resource === "pod" && item.task === "diagnose"));
 console.log(`OK: ${hits}/30 editorial searches hit Top 5.`);

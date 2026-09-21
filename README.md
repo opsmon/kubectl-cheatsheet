@@ -36,7 +36,9 @@ npm run verify
 This rebuilds the search index, checks anchors, and runs `svelte-check`.
 
 It also validates the 40 bilingual recipes, command rendering, collections,
-search ranking and read-only playbooks. Ruby, Node.js and npm are required.
+search ranking and read-only playbooks. Ruby, jq, Node.js and npm are required.
+`npm run verify` regenerates the per-page documentation modules; commit them
+with any matching Markdown changes.
 
 For browser tests, install Playwright Chromium and run:
 

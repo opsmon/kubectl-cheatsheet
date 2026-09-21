@@ -100,3 +100,13 @@ test("collection restores saved recipe without storing parameters", async ({ pag
   expect(stored).toContain("pod-previous-logs");
   expect(stored).not.toContain("private-pod-0");
 });
+
+test("catalog facets combine without claiming version compatibility", async ({ page }) => {
+  await page.goto("/");
+  await page.locator(".wb-advanced summary").click();
+  await page.getByRole("combobox", { name: "Resource", exact: true }).selectOption("pod");
+  await page.getByRole("combobox", { name: "Task", exact: true }).selectOption("diagnose");
+  await page.getByRole("combobox", { name: "Version", exact: true }).selectOption("unknown");
+  await expect(page.locator(".wb-results [role=option]")).toHaveCount(2);
+  await expect(page.getByText("Kubernetes versions are unverified")).toBeVisible();
+});

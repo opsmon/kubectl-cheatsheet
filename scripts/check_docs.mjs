@@ -10,5 +10,6 @@ for (const lang of ["ru", "eng"]) {
     assert.ok(!html.includes("{{ site.baseurl }}"), `${lang}/${name}: unresolved template`);
   }
 }
+for (const name of Object.keys(anchors.ru)) assert.equal(anchors.ru[name].length, anchors.eng[name].length, `${name}: translated heading count differs`);
 assert.ok((await import("../src/lib/generated-docs/ru-security.js")).default.includes("cat &lt;&lt;EOF"));
 console.log("OK: generated docs retain anchors and code, with safe links.");

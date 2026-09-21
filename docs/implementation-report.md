@@ -1,27 +1,50 @@
-# Implementation report
+# Отчёт о первом продуктовом релизе
 
-Date: 2026-09-21. Starting HEAD: `21f8b16f58a9a06e7afcba46eb8eac1030bdb64d`. The working tree was clean before changes.
+Дата: 21 сентября 2026 года. Исходный HEAD: `21f8b16f58a9a06e7afcba46eb8eac1030bdb64d`; рабочее дерево перед началом было чистым. Чекпойнты: `f3873d3`, `491fbae`, `c1ec7cb`, `058bdff` и финальный коммит этого отчёта.
 
-## Scope and status
+## Что было и что стало
 
-T01 is partially complete. The search index now retains entire fenced examples, including multiline pipelines and heredocs. Search results link to the source section without a copy action; documentation blocks also no longer offer bulk copying. This is an interim safeguard until individual examples have reviewed IDs and effects. RU/EN examples were corrected for `diff` then `apply`, Pod readiness, EndpointSlice diagnosis, and node debugging privileges. The home count now reports indexed example blocks without an invented fallback.
+Раньше поиск индексировал отдельные строки, теряя продолжения pipeline и heredoc; смешанные блоки можно было копировать целиком. Теперь старый справочник доступен для чтения и поиска по полному fenced-блоку без массового копирования. Выделены 40 канонических RU/EN рецептов с единым ID, источником, зависимостями, параметрами, эффектом и редакторским статусом. Их используют поиск, карточки, конструктор, избранное и ранбуки. Число на главной показывает именно 40 уникальных рецептов.
 
-T02–T08 are not started. The original Markdown pages and published URLs remain in place. Existing anchors are unchanged. No local user data is migrated or stored by this change.
+Исправлены RU/EN примеры `diff` → `apply`, NOT ready, EndpointSlice и описание `kubectl debug node`. Для автоматизированного `diff` приведена отдельная обработка кодов 0/1/>1. Команды в браузере не выполняются; `kubeconfig`, токены и пользовательские параметры не отправляются на сервер. Документы предварительно разбираются структурным Markdown-парсером, очищаются от сырого HTML и загружаются по одному модулю на страницу.
 
-## Files changed
+Редакторская сверка этих примеров опирается на [коды выхода kubectl diff](https://kubernetes.io/docs/reference/kubectl/generated/kubectl_diff/), [EndpointSlice и статус Endpoints](https://kubernetes.io/docs/concepts/services-networking/service/) и [профили node-debug](https://kubernetes.io/docs/tasks/debug/debug-cluster/kubectl-node-debug/).
 
-`scripts/build_search_index.rb`, `scripts/check_examples.rb`, `assets/search-index.js`, `src/App.svelte`, `src/lib/catalog.svelte`, `package.json`, `ru/management.md`, `eng/management.md`, `ru/viewing.md`, `eng/viewing.md`, `ru/utilities.md`, `eng/utilities.md`, and this report.
+## Состояние T01–T08
 
-## Checks performed
+| Задача | Состояние | Проверяемый результат и граница |
+|---|---|---|
+| T01 | Закрыта для первого набора | Multiline и heredoc сохраняются; неразмеченные блоки не копируются. Исправленные примеры и stub `kubectl` проверены. Остальной исторический справочник остаётся без полной редакторской ревизии. |
+| T02 | Закрыта для 40 рецептов | Схема, общие ID и RU/EN ссылки проверяются автоматически; legacy URL и якоря сохранены. Статус `editorial` не означает проверку на кластере. |
+| T03 | Закрыта для 40 рецептов | Общий поиск на главной и страницах документации, словарь, опечатки, рейтинг, 30/30 Top‑5, полная выдача и комбинируемые фильтры ресурса, задачи, последствий, чувствительности, инструмента, области, версии, shell и зависимостей. Все версии пока честно `unknown`, профиль shell только POSIX. |
+| T04 | Закрыта для ограниченного набора | Get, describe, logs (включая previous и контейнер), events, rollout status/restart и диагностика Service. Параметры валидируются; POSIX quoting, context, namespace и `--all-namespaces` проверены. Остальные рецепты с параметрами ссылаются на справочник без кнопки копирования. |
+| T05 | Закрыта для доступного конструктора | Эффект показан возле команды; restart помечен изменением, exec отдельно, server dry-run — неизвестным влиянием. Production — вводимый пользователем акцент, без заявления о безопасности. |
+| T06 | Закрыта | Избранное и подборки хранят только ID; доступны восстановление, открытие, удаление и экспорт ID. Повреждённая запись и недоступный localStorage обрабатываются. |
+| T07 | Закрыта | CrashLoopBackOff, Pending и Service недоступен: наблюдения, ветки, диагностические шаги, ожидаемые результаты, ограничения, эскалация и исход «недостаточно данных». |
+| T08 | Частично | Локальные `verify`, unit/fixture, production build и e2e выполнены. CI обновлён для Ruby, jq и Chromium, но удалённые GitHub/GitLab jobs в этом workspace не запускались. Интеграционные проверки на одноразовом кластере не проводились. |
 
-- Baseline `npm run verify` and `npm run build` failed because dependencies were absent. Ruby heading and anchor checks passed.
-- `npm ci` completed.
-- `npm run verify`: passed, including `svelte-check` with zero errors and warnings.
-- `npm run build`: passed with Vite 7.3.6.
-- `check_examples.rb` confirms RU/EN CSR heredocs, events pipelines, readiness queries, and removal of the unsafe diff/apply chain.
+## Изменённые файлы
 
-No browser screenshots or browser tests were produced. No Kubernetes command was run against a cluster. The revised `diff` example separates review and apply, so exit-code stub tests for an automated flow do not apply yet. Pod readiness output was not tested against a cluster or fixture.
+- Данные и логика: `src/lib/recipes.js`, `search.js`, `command.js`, `collections.js`, `runbooks.js`, `Workbench.svelte`, `Runbooks.svelte`, `docs.js`, `src/App.svelte`, `src/lib/catalog.svelte`.
+- Документы и индекс: `ru/{management,viewing,utilities}.md`, `eng/{management,viewing,utilities}.md`, `scripts/build_search_index.rb`, `assets/search-index.js`, `scripts/build_docs.mjs`, `src/lib/generated-docs/*`; прежний `src/lib/docs.svelte` удалён.
+- Проверки и публикация: `scripts/check_*.rb`, `scripts/check_*.mjs`, `tests/fixtures/pods.json`, `tests/e2e/workspace.spec.js`, `playwright.config.js`, `package.json`, `package-lock.json`, `.github/workflows/pages.yml`, `.gitlab-ci.yml`, `.gitignore`, `README.md`, `assets/workbench.css`, `src/main.js`.
 
-## Remaining limitations and next work
+## Фактически выполненные проверки
 
-The search index holds whole documentation blocks for discovery, so its count is of blocks, not unique recipes. Search results deliberately do not present a copyable command. T02 should introduce reviewed recipes with stable IDs, exact command boundaries, effects, RU/EN parity, and regression fixtures before restoring command copying. T03 should then index those recipes and expose all ranked results. Remaining A04–A10 items need separate review and implementation.
+- Исходно `npm run verify` и `npm run build` не выполнялись из-за отсутствия npm-зависимостей; Ruby-проверка заголовков и ссылок проходила. После `npm ci` оба выполняются.
+- `npm run verify`: все Ruby/Node fixtures и `svelte-check` прошли, 0 ошибок и предупреждений. Проверены heredoc, pipeline, RU/EN якоря, 40 схем, 30 поисковых запросов, quoting/injection, cluster scope, `-A`/namespace, контейнеры, diff 0/1/2 на fake `kubectl`, Pod readiness на JSON fixture, подборки и три ранбука.
+- `npm run build`: прошла production-сборка всех 18 RU/EN документов. Основной JS после разделения документов — около 299 КБ до gzip против примерно 478 КБ перед ним; это размер файла сборки, не замер скорости загрузки.
+- `PREVIEW=1 CAPTURE_SCREENSHOTS=1 npm run test:e2e`: 10/10 сценариев на локальной production-сборке в Chrome. Проверены preview=clipboard, запрет копирования неверных параметров, избранное и подборка после reload, клавиатура, поиск и перевод якоря на странице документации, ранбук, комбинация фильтров, недоступный localStorage, мобильная ширина и отсутствие внешних запросов с введённым поисковым текстом.
+- `git diff --check`: без ошибок.
+
+Скриншоты работающих сценариев: [конструктор](screenshots/recipe-builder.png), [ранбук Service](screenshots/service-runbook.png).
+
+## Ограничения и совместимость
+
+Старые `.html` URL, Markdown-источники и старые якоря сохранены; переключение языка переводит известный якорь по порядку заголовков. Индекс исторических блоков служит поиску по справочнику, а не источником копируемых команд. Непроверенные версии Kubernetes не объявляются совместимыми. POSIX — единственный профиль формирования команд; PowerShell не заявлен. Параметры команды живут только в памяти страницы; localStorage хранит публичные ID и выбранный язык. Предыдущего формата подборок в проекте не было; новые записи имеют `version: 1`, неизвестные ID отбрасываются при чтении.
+
+Локальный браузерный прогон не доказывает работу удалённых CI runner и не заменяет тест на одноразовом кластере. Команды с учётом реальных RBAC, admission webhook, версий Kubernetes и shell профилей остаются предметом следующей редакторской и интеграционной проверки.
+
+## Следующие задачи
+
+Уточнять фильтры версии и shell по мере появления проверенных данных; расширить каталог после редакторской проверки; выполнить CI в GitHub/GitLab и интеграционные тесты на явно созданной одноразовой среде без production credentials. Не возвращать копирование исторических смешанных блоков до разметки границ, эффектов и предупреждений каждого примера.
