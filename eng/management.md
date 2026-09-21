@@ -181,8 +181,11 @@ kubectl diff -f https://example.com/config.yaml
 # Compare using kustomize
 kubectl diff -k ./overlays/production/
 
-# Show diff before apply (useful in CI/CD)
-kubectl diff -f deployment.yaml && kubectl apply -f deployment.yaml
+# Inspect the diff first (exit 0: no changes, 1: changes, >1: error)
+kubectl diff -f deployment.yaml
+
+# Apply the configuration separately after reviewing changes
+kubectl apply -f deployment.yaml
 
 # Diff with server-side
 kubectl diff -f deployment.yaml --server-side

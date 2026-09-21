@@ -245,8 +245,8 @@ kubectl get pod <pod-name> -o jsonpath='{.metadata.resourceVersion}'
 # Получить все образы контейнеров, запущенных в кластере
 kubectl get pods -A -o jsonpath='{range .items[*]}{range .spec.containers[*]}{.image}{"\n"}{end}{end}' | sort -u
 
-# Найти поды, которые не готовы (NOT ready)
-kubectl get pods -A --no-headers | awk '$3 != $4 || $5 != "Running"'
+# Найти поды без условия Ready=True (включая поды с несколькими контейнерами; нужен jq)
+kubectl get pods -A -o json | jq -r '.items[] | select(any(.status.conditions[]?; .type == "Ready" and .status == "True") | not) | [.metadata.namespace, .metadata.name] | @tsv'
 
 # Удалить все упавшие поды во всех неймспейсах
 kubectl delete pods --field-selector=status.phase=Failed -A

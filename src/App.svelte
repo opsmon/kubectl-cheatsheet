@@ -19,7 +19,7 @@
       })
     : [];
   $: visibleCategories = categories.filter((category) => matches(category));
-  $: commandCount = commandIndex.filter((item) => item.lang === lang).length || 700;
+  $: commandCount = commandIndex.filter((item) => item.lang === lang).length;
 
   $: if (typeof document !== "undefined") {
     document.documentElement.lang = lang === "ru" ? "ru" : "en";
@@ -136,23 +136,6 @@
       .filter((item) => [item.section, item.comment, item.command].join(" ").toLowerCase().includes(normalizedQuery));
   }
 
-  async function copyCommand(command, event) {
-    const button = event.currentTarget;
-    try {
-      await navigator.clipboard.writeText(command);
-      button.classList.add("is-copied");
-      button.setAttribute("aria-label", copy.copied);
-      window.setTimeout(() => {
-        button.classList.remove("is-copied");
-        button.setAttribute("aria-label", copy.copyCommand);
-      }, 1400);
-    } catch (_error) {
-      query = command;
-      await tick();
-      document.querySelector("#searchInput")?.select();
-    }
-  }
-
   function docTitle() {
     const category = categories.find((item) => item.id === route.slug);
     if (category) {
@@ -166,41 +149,6 @@
   }
 
   function enhanceDocs() {
-    document.querySelectorAll(".docs-content .highlighter-rouge").forEach((block) => {
-      if (block.querySelector(".copy-code")) {
-        return;
-      }
-
-      const code = block.querySelector("pre code");
-      if (!code) {
-        return;
-      }
-
-      const button = document.createElement("button");
-      button.className = "copy-code";
-      button.type = "button";
-      button.textContent = lang === "ru" ? "Копировать" : "Copy";
-      button.setAttribute("aria-label", button.textContent);
-      button.addEventListener("click", async () => {
-        const originalLabel = button.textContent;
-        try {
-          await navigator.clipboard.writeText(code.textContent);
-          button.textContent = lang === "ru" ? "Готово" : "Copied";
-          window.setTimeout(() => {
-            button.textContent = originalLabel;
-          }, 1400);
-        } catch (_error) {
-          button.textContent = lang === "ru" ? "Выделите код" : "Select code";
-          const range = document.createRange();
-          range.selectNodeContents(code);
-          const selection = window.getSelection();
-          selection.removeAllRanges();
-          selection.addRange(range);
-        }
-      });
-      block.append(button);
-    });
-
     const currentPage = window.location.pathname.replace(/\/$/, "");
     document.querySelectorAll(".docs-sidebar a").forEach((link) => {
       const linkPage = new URL(link.href).pathname.replace(/\/$/, "");
@@ -260,7 +208,7 @@
       </label>
 
       <div class="hero-meta">
-        <span class="command-count"><strong>{commandCount}+</strong> <span>{copy.commandCountLabel}</span></span>
+        <span class="command-count"><strong>{commandCount}</strong> <span>{copy.commandCountLabel}</span></span>
       </div>
     </section>
 
@@ -276,14 +224,8 @@
               <a class="result-main" href={docHref(item.file, item.hash)}>
                 <span>{copy.categoryLabels[item.category] || item.category} / {item.section}</span>
                 <strong>{item.comment || item.section}</strong>
-                <code>{item.command}</code>
+                <span>{lang === "ru" ? "Открыть пример в разделе" : "Open example in section"}</span>
               </a>
-              <button class="copy-command" type="button" aria-label={copy.copyCommand} on:click={(event) => copyCommand(item.command, event)}>
-                <svg viewBox="0 0 18 18" aria-hidden="true">
-                  <rect x="6" y="5" width="8" height="9" rx="1.5"></rect>
-                  <path d="M4 11V4.5C4 3.7 4.7 3 5.5 3H11"></path>
-                </svg>
-              </button>
             </div>
           {/each}
         </div>
